@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.HttpOverrides;
+using Travether.Api.Authorization;
+using Travether.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,9 @@ if (!string.IsNullOrWhiteSpace(port))
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
+builder.Services.AddTravetherDatabase(builder.Configuration);
+builder.Services.AddScoped<AccessQueries>();
+builder.Services.AddSingleton(TimeProvider.System);
 
 if (builder.Configuration.GetValue<bool>("ForwardedHeaders:Enabled"))
 {
@@ -25,6 +30,8 @@ if (builder.Configuration.GetValue<bool>("ForwardedHeaders:Enabled"))
 }
 
 var app = builder.Build();
+
+await app.MigrateIfConfiguredAsync();
 
 if (app.Configuration.GetValue<bool>("ForwardedHeaders:Enabled"))
 {
@@ -49,6 +56,6 @@ app.MapControllers();
 app.MapFallback("/api/{**path}", () => Results.NotFound());
 app.MapFallbackToFile("index.html");
 
-app.Run();
+await app.RunAsync();
 
 public partial class Program;

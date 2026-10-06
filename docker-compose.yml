@@ -1,9 +1,34 @@
-# Local stack: the same image Render runs.
+# Local stack: PostGIS + the same image Render runs.
 #   docker compose up --build   → http://localhost:8080
+# For `dotnet run` against this database, start only it: docker compose up db
 services:
+  db:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_DB: travether
+      POSTGRES_USER: travether
+      POSTGRES_PASSWORD: travether
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U travether -d travether"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   app:
     build: .
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: Host=db;Port=5432;Database=travether;Username=travether;Password=travether
+      Database__MigrateOnStartup: "true"
+
+volumes:
+  pgdata:
