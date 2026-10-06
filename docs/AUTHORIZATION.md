@@ -39,11 +39,11 @@ Access levels, lowest to highest: `None` → `Preview` → `Member` → `CoAdmin
 
 | Action | Needs |
 |--------|-------|
-| See preview (name, destination, dates, cover, member count) | `Preview` |
+| See preview (name, destination, dates, description, cover, member count) | `Preview` |
 | Request to join | exactly `Preview` (not already a member) |
 | See members, plans list, card chat | `Member` |
 | Approve or reject join requests | `CoAdmin` |
-| Appoint co-admins, remove members, edit or delete the card | `Owner` |
+| Appoint co-admins, remove members, edit or delete the card, upload the cover, issue a new share link | `Owner` |
 
 ## Activity Plans (§4.3, §4.5)
 

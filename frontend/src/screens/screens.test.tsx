@@ -23,8 +23,6 @@ describe('mockup screens', () => {
     ['/', 'Hi Noa'],
     ['/discover', 'Chiang Mai'],
     ['/plans/sanctuary', 'Elephant sanctuary + waterfall'],
-    ['/trips/cm-crew', 'Chiang Mai Crew'],
-    ['/c/cm-crew-7K2', 'Chiang Mai Crew'],
     ['/inbox', 'Inbox'],
     ['/inbox/sanctuary', 'Elephant sanctuary'],
     ['/profile', 'Profile'],
@@ -54,13 +52,6 @@ describe('mockup screens', () => {
     await userEvent.click(screen.getByRole('button', { name: /simulate host approval/ }))
     expect(screen.getByText(/Meet: 7-Eleven, Huay Kaew Rd/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Open plan chat' })).toHaveAttribute('href', '/inbox/sanctuary')
-  })
-
-  it('lets the owner approve a join request', async () => {
-    renderAt('/trips/cm-crew')
-    await userEvent.click(await screen.findByRole('radio', { name: 'Members · 3' }))
-    await userEvent.click(screen.getByRole('button', { name: 'Approve' }))
-    expect(screen.getByRole('radio', { name: 'Members · 4' })).toBeChecked()
   })
 
   it('filters Discover by category', async () => {

@@ -107,7 +107,6 @@
   },
   "home": {
     "greeting": "Hi {{name}}",
-    "subtitle": "Chiang Mai · 12 – 26 Oct",
     "myTrips": "My trips",
     "planCount_one": "{{count}} plan",
     "planCount_other": "{{count}} plans",
@@ -115,7 +114,12 @@
     "requestCount_other": "{{count}} requests",
     "newTrip": "New Vacation Card",
     "joinCode": "Join with a code",
-    "matches": "Matches for your dates"
+    "matches": "Matches for your dates",
+    "noTripSubtitle": "Where are you heading next?",
+    "noTrips": "No trips yet. Create a Vacation Card for your trip, or open a friend's invite link.",
+    "openTrip": "Open trip",
+    "codeLabel": "Invite link or code",
+    "codeHint": "Paste the link a friend sent you, or the code at its end."
   },
   "discover": {
     "subtitle": "{{dates}} · within {{km}} km",
@@ -190,7 +194,21 @@
     "role_owner": "Owner",
     "role_coAdmin": "Co-admin",
     "role_member": "Member",
-    "openChat": "Open full chat"
+    "openChat": "Open full chat",
+    "edit": "Edit trip",
+    "coverInput": "Cover photo",
+    "addCover": "Add cover photo",
+    "changeCover": "Change cover",
+    "noPlans": "No plans yet. Post the first one: a hike, a dinner, a day trip.",
+    "chatHint": "Everyone in the trip can read and write here.",
+    "delete": "Delete trip",
+    "deleteTitle": "Delete this trip?",
+    "deleteBody": "The trip, its plans and open join requests will be removed for everyone. This can't be undone.",
+    "keep": "Keep the trip",
+    "deleteConfirm": "Delete trip",
+    "travelers_one": "{{count}} traveler",
+    "travelers_other": "{{count}} travelers",
+    "signUpToJoin": "Sign up to request to join"
   },
   "share": {
     "title": "Invite to your trip",
@@ -202,7 +220,8 @@
     "copy": "Copy link",
     "copied": "Copied",
     "whatsapp": "WhatsApp",
-    "note": "Anyone with the link can see the trip and request to join. You approve every request."
+    "note": "Anyone with the link can see the trip and request to join. You approve every request.",
+    "newLink": "Make a new link (the old one stops working)"
   },
   "create": {
     "title": "Create",
@@ -414,6 +433,13 @@
     "ImageTooLarge": "That photo is too big. The limit is 5 MB.",
     "UnsupportedImage": "Use a JPEG, PNG or WebP photo.",
     "DisplayNameRequired": "Your first name can't be empty.",
-    "FullNameRequired": "Your name can't be empty."
+    "FullNameRequired": "Your name can't be empty.",
+    "NameRequired": "Give the trip a name.",
+    "RegionsRequired": "Add at least one city or region.",
+    "InvalidRegions": "Up to 5 cities, each under 80 characters.",
+    "DatesOutOfOrder": "The end date is before the start date.",
+    "TripTooLong": "A trip can be up to a year long.",
+    "TripInPast": "This trip has already ended.",
+    "TryAgain": "Something clashed. Please try again."
   }
 }

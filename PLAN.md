@@ -237,7 +237,7 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 ### Phase 1 — MVP (≈6–8 weeks)
 - [x] Auth: email + password, email OTP, Google and Apple sign-in; 18+ gate; onboarding wizard
 - [x] Profile (minimal + gradual completion), contact-verified badge
-- [ ] Vacation Cards: create/edit/delete, cities + dates, visibility, share link + QR, public preview
+- [x] Vacation Cards: create/edit/delete, cities + dates, visibility, share link + QR, public preview
 - [ ] Card join requests (anyone), approve/reject, co-admins, leave/remove
 - [ ] Activity Plans: templates, seat limit, open/groups-only, location privacy
 - [ ] Discover: city radius + date overlap, distance sort, list view, basic filters
