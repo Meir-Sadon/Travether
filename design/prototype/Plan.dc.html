@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0}
-a{color:#D93A4A;text-decoration:none}a:hover{color:#B02C3A}
+a{color:#0E2F2C;text-decoration:none}a:hover{color:#000000}
 </style>
 </helmet>
 <div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #FFFFFF; font-family: 'Rubik', system-ui, sans-serif; color: #222222; overflow: hidden">
@@ -46,13 +46,13 @@ a{color:#D93A4A;text-decoration:none}a:hover{color:#B02C3A}
       </div>
     </div>
 
-    <div style="margin: 20px 20px 0; padding: 14px; border-radius: 16px; background: #F7F7F7">
+    <div style="margin: 20px 20px 0; padding: 14px; border-radius: 20px; background: #F7F7F7">
       <div style="font-size: 14px; font-weight: 600">Recent feedback</div>
       <div style="font-size: 14px; line-height: 1.5; color: #4A4A4A; margin-top: 6px">"Super organised, waited for everyone and split costs fairly." — Tom, UK</div>
     </div>
 
     <sc-if value="{{showStatus}}" hint-placeholder-val="{{ false }}">
-      <div style="margin: 20px 20px 0; padding: 16px; border-radius: 16px; border: 1px solid #EBEBEB">
+      <div style="margin: 20px 20px 0; padding: 16px; border-radius: 20px; border: 1px solid #EBEBEB">
         <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px">Your request</div>
         <div style="display: flex; align-items: center">
           <sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
@@ -69,7 +69,7 @@ a{color:#D93A4A;text-decoration:none}a:hover{color:#B02C3A}
       </div>
     </sc-if>
 
-    <div style="margin: 20px 20px 24px; padding: 14px; border-radius: 16px; border: 1px solid #EBEBEB; display: flex; align-items: center; gap: 12px">
+    <div style="margin: 20px 20px 24px; padding: 14px; border-radius: 20px; border: 1px solid #EBEBEB; display: flex; align-items: center; gap: 12px">
       <div style="flex: 1"><div style="font-size: 14px; font-weight: 600">Book this together</div><div style="font-size: 13px; color: #6A6A6A; margin-top: 2px">Sanctuary day ticket from [PRICE] · via partner</div></div>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>
     </div>
@@ -82,13 +82,13 @@ a{color:#D93A4A;text-decoration:none}a:hover{color:#B02C3A}
           <button onClick="{{p.pick}}" style="flex: 1; height: 40px; border-radius: 999px; border: {{p.border}}; background: #FFFFFF; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; color: #222222">{{p.label}}</button>
         </sc-for>
       </div>
-      <button onClick="{{request}}" style="width: 100%; height: 52px; border-radius: 999px; border: none; background: #D93A4A; color: #FFFFFF; font: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{cta}}</button>
+      <button onClick="{{request}}" style="width: 100%; height: 52px; border-radius: 999px; border: none; background: #C6F36B; color: #0E2F2C; font: inherit; font-size: 16px; font-weight: 600; cursor: pointer">{{cta}}</button>
     </sc-if>
     <sc-if value="{{waiting}}" hint-placeholder-val="{{ false }}">
       <button onClick="{{cancel}}" style="width: 100%; height: 52px; border-radius: 999px; border: 1px solid #222222; background: #FFFFFF; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; color: #222222">Withdraw request</button>
     </sc-if>
     <sc-if value="{{approved}}" hint-placeholder-val="{{ false }}">
-      <a href="Chat.dc.html" style="height: 52px; border-radius: 999px; background: #D93A4A; color: #FFFFFF; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Open plan chat</a>
+      <a href="Chat.dc.html" style="height: 52px; border-radius: 999px; background: #C6F36B; color: #0E2F2C; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E2F2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Open plan chat</a>
     </sc-if>
   </div>
 </div>
@@ -116,7 +116,7 @@ class Component extends DCLogic {
       simulate: () => this.setState({ status: 'approved' }),
       steps: labels.map((label, i) => {
         const done = i <= idx;
-        return { n: String(i + 1), label, bg: done ? '#D93A4A' : '#F0F0F0', fg: done ? '#FFFFFF' : '#6A6A6A', text: done ? '#222222' : '#6A6A6A' };
+        return { n: String(i + 1), label, bg: done ? '#C6F36B' : '#F0F0F0', fg: done ? '#0E2F2C' : '#6A6A6A', text: done ? '#222222' : '#6A6A6A' };
       })
     };
   }

@@ -30,7 +30,7 @@ The core idea, which no competitor combines today:
 | 4 | Matching | Match on **overlapping dates and city/region radius**, not country alone. |
 | 5 | Joining | **Anyone can request to join** another Vacation Card or Activity Plan, solo travelers included. Plans have a seat limit; the owner or co-admins approve. |
 | 6 | Ratings | Prompt both sides with **"Did you meet?"** after the activity date. If both confirm, there is a **14-day window**; reviews stay hidden until both are submitted or the window closes. Ratings go to **individuals**. A profile shows an average only after **3+ reviews**. |
-| 7 | Visual style | **Direction A, "Warm Trust" (Airbnb-like):** white background, one warm accent, photo-led cards, rounded corners, list + map toggle. |
+| 7 | Visual style | **"Fresh Explorer"**: Airbnb-like structure (white background, photo-led cards, rounded corners, list + map toggle) with a modern palette: deep ink green + signature lime instead of coral red (changed after the prototype review). |
 | 8 | Platform | **Mobile-first web app (PWA)**, with a guided "Add to Home Screen" step for push notifications. Native apps later. |
 | 9 | Monetization | **Free core forever.** Revenue order: (1) booking affiliate links → (2) sponsored activities → (3) optional "Plus" subscription. Never charge for contact, matching or safety. |
 
@@ -140,13 +140,14 @@ Users control each category. Quiet hours follow the user's local timezone.
 
 ---
 
-## 5. Design direction — "Warm Trust"
+## 5. Design direction — "Fresh Explorer"
 
 | Token | Value (initial, contrast-check before use) |
 |-------|--------------------------------------------|
 | Background | `#FFFFFF` / surface `#F7F7F7` |
-| Text | `#222222` primary · `#6A6A6A` secondary |
-| Accent (primary actions only) | Warm coral, e.g. `#E8505B` (Travether's own, not Airbnb's) |
+| Text | `#222222` primary · `#6A6A6A` secondary · brand ink `#0E2F2C` for headlines, active states, own chat bubbles |
+| Accent (primary actions, + button, highlights) | Signature lime `#C6F36B`, **always with ink `#0E2F2C` text/icons** (11:1 contrast; never lime text on white) |
+| Alerts | `#E5484D` for notification dots only |
 | Success / Info / Warning | `#2E8B57` · `#1E6FD9` · `#E8A317` |
 | Font | **Rubik** (Google Fonts; covers Latin + Hebrew for later RTL) at 400/500/700 |
 | Radius | 12–16 px cards, full-pill buttons and chips |

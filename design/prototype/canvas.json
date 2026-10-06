@@ -1,31 +1,185 @@
 {
   "v": 3,
-  "createdOnFiles": {"v": 1, "at": "2026-10-06T18:30:00Z"},
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-06T18:30:00Z"
+  },
   "title": "Travether prototype",
-  "launch": {"view": "canvas"},
+  "launch": {
+    "view": "canvas"
+  },
   "pages": [],
   "boards": {
-    "Main.dc.html": {"x": 0, "y": 300, "w": 390, "h": 844, "title": "1 · Landing (public)", "is_interactive": true, "radius": 32},
-    "Signup.dc.html": {"x": 470, "y": 300, "w": 390, "h": 844, "title": "2 · Sign up / onboarding", "is_interactive": true, "radius": 32},
-    "Home.dc.html": {"x": 940, "y": 300, "w": 390, "h": 844, "title": "3 · Home — My trips", "is_interactive": true, "radius": 32},
-    "Card.dc.html": {"x": 0, "y": 1544, "w": 390, "h": 844, "title": "4 · Vacation Card", "is_interactive": true, "radius": 32},
-    "Share.dc.html": {"x": 470, "y": 1544, "w": 390, "h": 844, "title": "5 · Share card (link + QR)", "is_interactive": true, "radius": 32},
-    "CreatePlan.dc.html": {"x": 940, "y": 1544, "w": 390, "h": 844, "title": "6 · Create Activity Plan", "is_interactive": true, "radius": 32},
-    "Discover.dc.html": {"x": 0, "y": 2788, "w": 390, "h": 844, "title": "7 · Discover — list", "is_interactive": true, "radius": 32},
-    "DiscoverMap.dc.html": {"x": 470, "y": 2788, "w": 390, "h": 844, "title": "8 · Discover — map", "is_interactive": true, "radius": 32},
-    "Plan.dc.html": {"x": 940, "y": 2788, "w": 390, "h": 844, "title": "9 · Activity Plan + join", "is_interactive": true, "radius": 32},
-    "Inbox.dc.html": {"x": 0, "y": 4032, "w": 390, "h": 844, "title": "10 · Inbox — requests & chats", "is_interactive": true, "radius": 32},
-    "Chat.dc.html": {"x": 470, "y": 4032, "w": 390, "h": 844, "title": "11 · Plan chat", "is_interactive": true, "radius": 32},
-    "Review.dc.html": {"x": 940, "y": 4032, "w": 390, "h": 844, "title": "12 · Did you meet? + review", "is_interactive": true, "radius": 32},
-    "Profile.dc.html": {"x": 1410, "y": 4032, "w": 390, "h": 844, "title": "13 · Profile", "is_interactive": true, "radius": 32}
+    "Main.dc.html": {
+      "x": 0,
+      "y": 300,
+      "w": 390,
+      "h": 844,
+      "title": "1 \u00b7 Landing (public)",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Signup.dc.html": {
+      "x": 470,
+      "y": 300,
+      "w": 390,
+      "h": 844,
+      "title": "2 \u00b7 Sign up / onboarding",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Home.dc.html": {
+      "x": 940,
+      "y": 300,
+      "w": 390,
+      "h": 844,
+      "title": "3 \u00b7 Home \u2014 My trips",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Card.dc.html": {
+      "x": 0,
+      "y": 1544,
+      "w": 390,
+      "h": 844,
+      "title": "4 \u00b7 Vacation Card",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Share.dc.html": {
+      "x": 470,
+      "y": 1544,
+      "w": 390,
+      "h": 844,
+      "title": "5 \u00b7 Share card (link + QR)",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "CreatePlan.dc.html": {
+      "x": 940,
+      "y": 1544,
+      "w": 390,
+      "h": 844,
+      "title": "6 \u00b7 Create Activity Plan",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Discover.dc.html": {
+      "x": 0,
+      "y": 2788,
+      "w": 390,
+      "h": 844,
+      "title": "7 \u00b7 Discover \u2014 list",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "DiscoverMap.dc.html": {
+      "x": 470,
+      "y": 2788,
+      "w": 390,
+      "h": 844,
+      "title": "8 \u00b7 Discover \u2014 map",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Plan.dc.html": {
+      "x": 940,
+      "y": 2788,
+      "w": 390,
+      "h": 844,
+      "title": "9 \u00b7 Activity Plan + join",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Inbox.dc.html": {
+      "x": 0,
+      "y": 4032,
+      "w": 390,
+      "h": 844,
+      "title": "10 \u00b7 Inbox \u2014 requests & chats",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Chat.dc.html": {
+      "x": 470,
+      "y": 4032,
+      "w": 390,
+      "h": 844,
+      "title": "11 \u00b7 Plan chat",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Review.dc.html": {
+      "x": 940,
+      "y": 4032,
+      "w": 390,
+      "h": 844,
+      "title": "12 \u00b7 Did you meet? + review",
+      "is_interactive": true,
+      "radius": 32
+    },
+    "Profile.dc.html": {
+      "x": 1410,
+      "y": 4032,
+      "w": 390,
+      "h": 844,
+      "title": "13 \u00b7 Profile",
+      "is_interactive": true,
+      "radius": 32
+    }
   },
-  "order": ["Main.dc.html", "Signup.dc.html", "Home.dc.html", "Card.dc.html", "Share.dc.html", "CreatePlan.dc.html", "Discover.dc.html", "DiscoverMap.dc.html", "Plan.dc.html", "Inbox.dc.html", "Chat.dc.html", "Review.dc.html", "Profile.dc.html"],
+  "order": [
+    "Main.dc.html",
+    "Signup.dc.html",
+    "Home.dc.html",
+    "Card.dc.html",
+    "Share.dc.html",
+    "CreatePlan.dc.html",
+    "Discover.dc.html",
+    "DiscoverMap.dc.html",
+    "Plan.dc.html",
+    "Inbox.dc.html",
+    "Chat.dc.html",
+    "Review.dc.html",
+    "Profile.dc.html"
+  ],
   "notes": {
-    "t1": {"x": 0, "y": 0, "text": "Get in", "kind": "title1", "maxW": 1330},
-    "t2": {"x": 0, "y": 1244, "text": "Trips & plans", "kind": "title1", "maxW": 1330},
-    "t3": {"x": 0, "y": 2488, "text": "Discover & join", "kind": "title1", "maxW": 1330},
-    "t4": {"x": 0, "y": 3732, "text": "Connect & trust", "kind": "title1", "maxW": 1800},
-    "s1": {"x": 1410, "y": 300, "w": 340, "text": "Style: \"Warm Trust\"\n• White ground, one coral accent (#D93A4A) for primary actions only\n• Rubik (covers Latin + Hebrew)\n• 16px card corners, pill buttons & chips\n• Photo-led cards (placeholders here)\n• Bottom nav: Home · Discover · + · Inbox · Profile\n\nPress Play on any screen to click through.", "fill": "orange", "size": "m"}
+    "t1": {
+      "x": 0,
+      "y": 0,
+      "text": "Get in",
+      "kind": "title1",
+      "maxW": 1330
+    },
+    "t2": {
+      "x": 0,
+      "y": 1244,
+      "text": "Trips & plans",
+      "kind": "title1",
+      "maxW": 1330
+    },
+    "t3": {
+      "x": 0,
+      "y": 2488,
+      "text": "Discover & join",
+      "kind": "title1",
+      "maxW": 1330
+    },
+    "t4": {
+      "x": 0,
+      "y": 3732,
+      "text": "Connect & trust",
+      "kind": "title1",
+      "maxW": 1800
+    },
+    "s1": {
+      "x": 1410,
+      "y": 300,
+      "w": 340,
+      "text": "Style: \"Fresh Explorer\" (v2)\n\u2022 Deep ink green #0E2F2C for text, chat bubbles, active states\n\u2022 Signature lime #C6F36B for primary buttons, the + button, highlights (always with ink text)\n\u2022 Red only for notification dots\n\u2022 Rubik (covers Latin + Hebrew), bold tight headlines\n\u2022 20px card corners, pill buttons & chips\n\u2022 Photo-led cards (placeholders here)\n\nPress Play on any screen to click through.",
+      "fill": "green",
+      "size": "m"
+    }
   },
   "designSystems": []
 }
