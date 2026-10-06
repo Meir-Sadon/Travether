@@ -116,3 +116,14 @@
 .chat__send:hover {
   background: var(--color-accent);
 }
+
+.chat__report {
+  margin-inline-start: var(--space-2);
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}

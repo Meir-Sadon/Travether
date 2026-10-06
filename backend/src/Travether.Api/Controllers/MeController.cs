@@ -7,6 +7,7 @@ using Travether.Api.Auth;
 using Travether.Api.Data;
 using Travether.Api.Images;
 using Travether.Api.Profiles;
+using Travether.Api.Safety;
 
 namespace Travether.Api.Controllers;
 
@@ -24,7 +25,7 @@ public sealed record UpdateProfileRequest(
 [ApiController]
 [Authorize]
 [Route("api/me")]
-public sealed class MeController(TravetherDbContext db, IImageStore images, TimeProvider clock) : ControllerBase
+public sealed class MeController(TravetherDbContext db, IImageStore images, BanGuard bans, TimeProvider clock) : ControllerBase
 {
     private DateOnly Today => DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
 
@@ -72,6 +73,11 @@ public sealed class MeController(TravetherDbContext db, IImageStore images, Time
 
         if (req.Phone is not null)
         {
+            if (req.Phone.Length > 0 && await bans.IsPhoneBannedAsync(req.Phone, ct).ConfigureAwait(false))
+            {
+                return ApiError.Forbidden("PhoneNotAllowed");
+            }
+
             // Private: only ever shown to others when the user shares it in a chat (PLAN.md decision 3).
             user.Phone = req.Phone.Length == 0 ? null : req.Phone;
         }

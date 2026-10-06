@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../auth/useAuth'
 import { BottomSheet, Button, FormError, Icon } from '../components'
 import { ScreenHeader } from '../layout/ScreenHeader'
@@ -16,7 +16,7 @@ const notificationKeys = ['requests', 'messages', 'matches', 'reminders', 'revie
 export function SettingsScreen() {
   const { t } = useTranslation()
   const [confirmDelete, setConfirmDelete] = useState(false)
-  const { logout } = useAuth()
+  const { logout, user } = useAuth()
   const navigate = useNavigate()
 
   const logOut = async () => {
@@ -35,7 +35,7 @@ export function SettingsScreen() {
           {t('settings.privacy')}
         </h2>
         <ul className="list-reset settings__list">
-          {(['whoSees', 'safety', 'blocked', 'export'] as const).map((k) => (
+          {(['whoSees', 'export'] as const).map((k) => (
             <li key={k}>
               <button type="button" className="settings__row">
                 {t(`settings.${k}`)}
@@ -43,6 +43,26 @@ export function SettingsScreen() {
               </button>
             </li>
           ))}
+          <li>
+            <Link to="/safety" className="settings__row">
+              {t('settings.safety')}
+              <Icon name="forward" size={18} />
+            </Link>
+          </li>
+          <li>
+            <Link to="/settings/blocked" className="settings__row">
+              {t('settings.blocked')}
+              <Icon name="forward" size={18} />
+            </Link>
+          </li>
+          {user?.role === 'moderator' && (
+            <li>
+              <Link to="/admin" className="settings__row">
+                {t('admin.title')}
+                <Icon name="forward" size={18} />
+              </Link>
+            </li>
+          )}
           <li>
             <button type="button" className="settings__row settings__row--danger" onClick={() => setConfirmDelete(true)}>
               {t('settings.delete')}

@@ -13,6 +13,7 @@ using Travether.Api.Places;
 using Travether.Api.Plans;
 using Travether.Api.Profiles;
 using Travether.Api.Reviews;
+using Travether.Api.Safety;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,7 @@ builder.Services.AddTravetherImages(builder.Configuration, builder.Environment);
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddTravetherEmail(builder.Configuration);
 builder.Services.AddTravetherNotifications(builder.Configuration, builder.Environment);
+builder.Services.AddTravetherSafety(builder.Configuration);
 builder.Services.AddTravetherAuth(builder.Configuration, builder.Environment);
 
 if (builder.Configuration.GetValue<bool>("ForwardedHeaders:Enabled"))

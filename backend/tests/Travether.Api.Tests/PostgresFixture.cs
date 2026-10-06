@@ -77,6 +77,7 @@ public sealed class ApiFactory(string connectionString) : WebApplicationFactory<
     {
         builder.UseSetting("ConnectionStrings:Default", connectionString);
         builder.UseSetting("RateLimits:AuthPerMinute", "100000");
+        builder.UseSetting("RateLimits:SignupsPerIpPerDay", "100000");
         builder.UseSetting("Notifications:RunJobs", "false");
         builder.UseSetting("Notifications:DigestHour", "0");
         builder.UseSetting("Images:LocalPath", Path.Combine(Path.GetTempPath(), "travether-test-uploads"));

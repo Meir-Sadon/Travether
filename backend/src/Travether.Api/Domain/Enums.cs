@@ -43,4 +43,8 @@ public enum ReportTargetType { User, Card, Plan, Message, Review }
 
 public enum ReportStatus { Open, Actioned, Dismissed }
 
+public enum ReportReason { Spam, Harassment, Inappropriate, Scam, Safety, FakeProfile, Underage, Other }
+
+public enum BannedIdentifierKind { Email, Phone, Device }
+
 public enum ConsentKind { Terms, PrivacyPolicy, CommunityGuidelines, MarketingEmail }

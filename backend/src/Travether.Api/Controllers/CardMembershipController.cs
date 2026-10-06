@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Travether.Api.Api;
@@ -10,6 +11,7 @@ using Travether.Api.Data;
 using Travether.Api.Domain;
 using Travether.Api.Notifications;
 using Travether.Api.Profiles;
+using Travether.Api.Safety;
 
 namespace Travether.Api.Controllers;
 
@@ -28,6 +30,7 @@ public sealed class CardMembershipController(TravetherDbContext db, AccessQuerie
 
     /// <summary>Asks to join. Invite-only cards need the share slug the requester opened.</summary>
     [HttpPost("cards/{cardId:guid}/requests")]
+    [EnableRateLimiting(SafetySetup.JoinRequestsRateLimit)]
     public async Task<IActionResult> RequestToJoin(Guid cardId, CardJoinRequestInput input, CancellationToken ct)
     {
         var level = await access.GetCardAccessAsync(Me, cardId, input.ShareSlug, ct).ConfigureAwait(false);

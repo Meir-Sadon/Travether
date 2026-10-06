@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router'
 import { useMe } from '../auth/useAuth'
 import { Avatar, BottomSheet, Button, FormError, IconButton } from '../components'
+import { ReportSheet, type ReportTarget } from '../features/ReportSheet'
 import { ScreenHeader } from '../layout/ScreenHeader'
 import { api, errorCode } from '../lib/api'
 import { useChatEvents } from '../lib/chatHub'
@@ -34,6 +35,7 @@ export function ChatScreen() {
   const [sendError, setSendError] = useState<string | null>(null)
   const [sharing, setSharing] = useState(false)
   const [loadingOlder, setLoadingOlder] = useState(false)
+  const [reporting, setReporting] = useState<ReportTarget | null>(null)
   const lastId = chat?.messages.at(-1)?.id
 
   useChatEvents((e) => {
@@ -131,7 +133,19 @@ export function ChatScreen() {
               <div className="chat__bubble">
                 {!mine && firstOfRun && <span className="chat__sender">{m.sender.displayName}</span>}
                 <MessageBody message={m} />
-                <span className="chat__time">{time.format(new Date(m.createdAt))}</span>
+                <span className="chat__time">
+                  {time.format(new Date(m.createdAt))}
+                  {!mine && (
+                    <button
+                      type="button"
+                      className="chat__report"
+                      aria-label={t('chat.reportMessage', { name: m.sender.displayName })}
+                      onClick={() => setReporting({ type: 'message', id: m.id })}
+                    >
+                      {t('chat.report')}
+                    </button>
+                  )}
+                </span>
               </div>
             </li>
           )
@@ -182,6 +196,7 @@ export function ChatScreen() {
           <FormError code={sendError} />
         </div>
       </BottomSheet>
+      <ReportSheet target={reporting} onClose={() => setReporting(null)} />
     </div>
   )
 }

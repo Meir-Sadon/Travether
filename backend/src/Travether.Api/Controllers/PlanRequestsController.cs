@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using Travether.Api.Api;
@@ -10,6 +11,7 @@ using Travether.Api.Domain;
 using Travether.Api.Notifications;
 using Travether.Api.Plans;
 using Travether.Api.Profiles;
+using Travether.Api.Safety;
 
 namespace Travether.Api.Controllers;
 
@@ -27,6 +29,7 @@ public sealed class PlanRequestsController(TravetherDbContext db, AccessQueries 
     private Guid Me => User.RequireUserId();
 
     [HttpPost("plans/{planId:guid}/requests")]
+    [EnableRateLimiting(SafetySetup.JoinRequestsRateLimit)]
     public async Task<IActionResult> RequestToJoin(Guid planId, PlanJoinRequestInput input, CancellationToken ct)
     {
         var (planAccess, planCardAccess) = await access.GetPlanAccessAsync(Me, planId, ct).ConfigureAwait(false);

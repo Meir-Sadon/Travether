@@ -10,6 +10,7 @@ using Travether.Api.Authorization;
 using Travether.Api.Data;
 using Travether.Api.Domain;
 using Travether.Api.Profiles;
+using Travether.Api.Safety;
 
 namespace Travether.Api.Controllers;
 
@@ -27,6 +28,7 @@ public sealed class AuthController(
     SessionCookie session,
     IExternalIdentityVerifier external,
     AuthOptions options,
+    BanGuard bans,
     TimeProvider clock) : ControllerBase
 {
     private static readonly PasswordHasher<User> Hasher = new();
@@ -88,7 +90,7 @@ public sealed class AuthController(
         // Receiving the code proves the address: that earns the contact-verified badge.
         user.VerificationBadges |= VerificationBadges.ContactVerified;
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        return SignIn(user);
+        return await SignInAsync(user, ct).ConfigureAwait(false);
     }
 
     [HttpPost("external")]
@@ -109,7 +111,7 @@ public sealed class AuthController(
             .FirstOrDefaultAsync(x => x.Provider == identity.Provider && x.Subject == identity.Subject, ct).ConfigureAwait(false);
         if (linked is not null)
         {
-            return AccessRules.IsActive(linked.User) ? SignIn(linked.User) : ApiError.Forbidden("AccountSuspended");
+            return AccessRules.IsActive(linked.User) ? await SignInAsync(linked.User, ct).ConfigureAwait(false) : ApiError.Forbidden("AccountSuspended");
         }
 
         if (!identity.EmailVerified)
@@ -130,7 +132,7 @@ public sealed class AuthController(
             db.ExternalLogins.Add(new ExternalLogin { Provider = identity.Provider, Subject = identity.Subject, UserId = user.Id });
             user.VerificationBadges |= VerificationBadges.ContactVerified;
             await db.SaveChangesAsync(ct).ConfigureAwait(false);
-            return SignIn(user);
+            return await SignInAsync(user, ct).ConfigureAwait(false);
         }
 
         var name = identity.Name ?? req.GivenName;
@@ -140,6 +142,7 @@ public sealed class AuthController(
 
     /// <summary>Creates the account: with a sign-up token (verified email), or with email + password.</summary>
     [HttpPost("register")]
+    [EnableRateLimiting(SafetySetup.SignupRateLimit)]
     public async Task<IActionResult> Register(RegisterRequest req, CancellationToken ct)
     {
         if (!req.AcceptTerms)
@@ -181,6 +184,12 @@ public sealed class AuthController(
         if (await FindByEmailAsync(email, ct).ConfigureAwait(false) is not null)
         {
             return ApiError.Conflict("EmailTaken");
+        }
+
+        // Someone banned before, by address or by this browser, can't start over (PLAN.md §4.8).
+        if (await bans.IsBannedAsync(email, BanGuard.DeviceId(HttpContext), ct).ConfigureAwait(false))
+        {
+            return ApiError.Forbidden("AccountSuspended");
         }
 
         var user = new User
@@ -225,7 +234,7 @@ public sealed class AuthController(
             await codes.SendAsync(email, LoginCodePurpose.VerifyEmail, ct).ConfigureAwait(false);
         }
 
-        return SignIn(user);
+        return await SignInAsync(user, ct).ConfigureAwait(false);
     }
 
     [HttpPost("login")]
@@ -249,7 +258,7 @@ public sealed class AuthController(
             await db.SaveChangesAsync(ct).ConfigureAwait(false);
         }
 
-        return SignIn(user);
+        return await SignInAsync(user, ct).ConfigureAwait(false);
     }
 
     [HttpPost("logout")]
@@ -303,7 +312,7 @@ public sealed class AuthController(
         user.SessionVersion++;
         user.VerificationBadges |= VerificationBadges.ContactVerified;
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        return SignIn(user);
+        return await SignInAsync(user, ct).ConfigureAwait(false);
     }
 
     /// <summary>Sends a code to confirm the signed-in user's email (for accounts made with a password).</summary>
@@ -341,8 +350,9 @@ public sealed class AuthController(
     private Task<User?> FindByEmailAsync(string email, CancellationToken ct) =>
         db.Users.FirstOrDefaultAsync(u => u.Email == email && u.DeletedAt == null, ct);
 
-    private OkObjectResult SignIn(User user)
+    private async Task<IActionResult> SignInAsync(User user, CancellationToken ct)
     {
+        await bans.RecordDeviceAsync(user.Id, BanGuard.DeviceId(HttpContext), ct).ConfigureAwait(false);
         session.SignIn(HttpContext, user);
         return Ok(AuthResultDto.SignedIn(MeDto.From(user, Today)));
     }

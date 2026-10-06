@@ -76,6 +76,9 @@ public sealed class Review
     public string? ReplyText { get; set; }
 
     public DateTimeOffset? RepliedAt { get; set; }
+
+    /// <summary>Removed by moderation: no longer shown or counted.</summary>
+    public DateTimeOffset? HiddenAt { get; set; }
 }
 
 public sealed class Report
@@ -84,7 +87,11 @@ public sealed class Report
     public Guid ReporterId { get; set; }
     public ReportTargetType TargetType { get; set; }
     public Guid TargetId { get; set; }
-    public required string Reason { get; set; }
+    public ReportReason Reason { get; set; }
+
+    /// <summary>What happened, in the reporter's words. Only moderators see it.</summary>
+    public string? Details { get; set; }
+
     public ReportStatus Status { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public Guid? ResolvedById { get; set; }
@@ -92,6 +99,26 @@ public sealed class Report
 
     /// <summary>Statement of reasons sent to the affected user when content is removed (EU DSA).</summary>
     public string? ResolutionNote { get; set; }
+}
+
+/// <summary>
+/// Keyed hashes of a banned account's email, phone and devices (PLAN.md §4.8), so the same person
+/// can't simply sign up again. Only the hash is kept.
+/// </summary>
+public sealed class BannedIdentifier
+{
+    public required string Hash { get; set; }
+    public BannedIdentifierKind Kind { get; set; }
+    public Guid UserId { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
+}
+
+/// <summary>Devices (a random long-lived cookie, hashed) an account signed in from; used only for ban checks.</summary>
+public sealed class UserDevice
+{
+    public Guid UserId { get; set; }
+    public required string DeviceHash { get; set; }
+    public DateTimeOffset LastSeenAt { get; set; }
 }
 
 public sealed class Block

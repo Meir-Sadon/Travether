@@ -223,7 +223,8 @@
     "partySize_other": "{{count}} people",
     "withParty": "With {{names}} from {{trip}}",
     "remove": "Remove",
-    "removeName": "Remove {{name}} from the plan"
+    "removeName": "Remove {{name}} from the plan",
+    "safetyMore": "More safety tips"
   },
   "trip": {
     "share": "Share trip",
@@ -400,7 +401,9 @@
     "noPhone": "Add your phone number to your profile first. It stays private until you share it here.",
     "addPhone": "Add phone number",
     "sharedWhatsapp": "My WhatsApp:",
-    "sharedPhone": "My number:"
+    "sharedPhone": "My number:",
+    "report": "Report",
+    "reportMessage": "Report message from {{name}}"
   },
   "profile": {
     "title": "Profile",
@@ -622,7 +625,12 @@
     "ReviewNotPublished": "You can reply once the review is visible.",
     "AlreadyReplied": "You already replied to this review.",
     "ReplyEmpty": "Write a reply first.",
-    "NotParticipant": "Only people on this plan can do that."
+    "NotParticipant": "Only people on this plan can do that.",
+    "AlreadyReported": "You already reported this. A moderator will look at it.",
+    "CannotBlockSelf": "You can't block yourself.",
+    "NoteRequired": "Write the reason first.",
+    "NothingToRemove": "Suspend the person instead.",
+    "PhoneNotAllowed": "This phone number can't be used."
   },
   "notifications": {
     "title": "Notifications",
@@ -644,5 +652,86 @@
     "type_meet_prompt": "Did {{subject}} happen? Tell us, then review each other",
     "type_review_received": "{{actor}} reviewed you. Leave yours to see it",
     "type_other": "Something new on Travether"
+  },
+  "report": {
+    "title_user": "Report this person",
+    "title_card": "Report this trip",
+    "title_plan": "Report this plan",
+    "title_message": "Report message",
+    "title_review": "Report review",
+    "why": "What is wrong?",
+    "reason_harassment": "Harassment or hate",
+    "reason_inappropriate": "Sexual or inappropriate content",
+    "reason_scam": "Scam, money or ID requests",
+    "reason_safety": "Someone may be in danger",
+    "reason_fakeProfile": "Fake profile or impersonation",
+    "reason_underage": "Under 18",
+    "reason_spam": "Spam or advertising",
+    "reason_other": "Something else",
+    "details": "What happened? (optional)",
+    "detailsHint": "Only our moderators read this. The person you report isn't told who reported them.",
+    "send": "Send report",
+    "sentTitle": "Thanks for telling us",
+    "sentBody": "A moderator will look at it. If you feel unsafe, you can also block this person.",
+    "emergency": "In immediate danger? Call local emergency services first (112 in most of Europe and Asia)."
+  },
+  "safety": {
+    "title": "Safety center",
+    "intro": "Most meetups go great. These habits help keep it that way.",
+    "tipsTitle": "Before you meet",
+    "tip_public": "Meet in a public place",
+    "tip_public_body": "Pick a busy café, a trailhead with people, or the meeting point the host shared. Not a private room.",
+    "tip_tell": "Tell someone your plans",
+    "tip_tell_body": "Send a friend the plan link: what, where and when, and check in after.",
+    "tip_own": "Keep your own way back",
+    "tip_own_body": "Know how you will get home, keep your phone charged and some cash on you.",
+    "tip_chat": "Keep talking in Travether",
+    "tip_chat_body": "Share your number only when you are ready. Never send ID photos, card details or money.",
+    "tip_trust": "Trust your gut",
+    "tip_trust_body": "You can leave any plan at any time, no explanation needed.",
+    "tip_report": "Block and report",
+    "tip_report_body": "If something feels off, block the person and report them. Moderators review every report.",
+    "toolsTitle": "Block and report",
+    "tools": "You can report a person, trip, plan, chat message or review from its page. Blocking hides you from each other everywhere; they are not told.",
+    "emergency": "In an emergency, call local emergency services first: 112 works in most of Europe and Asia, 911 in the Americas."
+  },
+  "blocked": {
+    "explain": "People you blocked can't see your profile, trips or plans, and you won't see theirs.",
+    "none": "You haven't blocked anyone.",
+    "unblock": "Unblock",
+    "unblockName": "Unblock {{name}}",
+    "block": "Block {{name}}",
+    "confirmTitle": "Block {{name}}?",
+    "confirmBody": "You won't see each other's profiles, trips or plans, and their messages are hidden from you. They aren't told. You can unblock them in Settings.",
+    "confirm": "Block",
+    "keep": "Cancel"
+  },
+  "admin": {
+    "title": "Moderation",
+    "status": "Reports",
+    "status_open": "Open",
+    "status_actioned": "Actioned",
+    "status_dismissed": "Dismissed",
+    "empty": "Nothing here.",
+    "reportLabel": "{{type}} report: {{reason}}",
+    "type_user": "Person",
+    "type_card": "Trip",
+    "type_plan": "Plan",
+    "type_message": "Message",
+    "type_review": "Review",
+    "reportCount_one": "{{count}} report",
+    "reportCount_other": "{{count}} reports",
+    "by": "By {{name}}",
+    "banned": "suspended",
+    "removed": "removed",
+    "targetGone": "This no longer exists.",
+    "reportedBy": "Reported by {{name}}, {{when}}",
+    "note": "Reason for the decision",
+    "noteHint": "Required to act. Sent to the person affected (statement of reasons).",
+    "dismiss": "Dismiss",
+    "remove": "Remove",
+    "ban": "Suspend author",
+    "removeAndBan": "Remove and suspend",
+    "resolution": "Decision: {{note}}"
   }
 }

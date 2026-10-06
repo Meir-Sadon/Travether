@@ -28,8 +28,10 @@ The tables follow [PLAN.md §6.1](../PLAN.md#61-data-model-initial). Additions a
 | `conversation_members` | New. Members of `direct` conversations. | Card and plan chats derive members from memberships; direct chats need their own list. CHECK: `ref_id` is null exactly for `direct`. |
 | `messages` | Added `kind` (`text`, `contact_phone`, `contact_whatsapp`; step 1.8). | A shared number is a message of its own kind, so the client can render it as a call / WhatsApp link. |
 | `conversation_reads` | New (step 1.8): `conversation_id`, `user_id`, `last_read_at`. PK (conversation, user). | Unread counts for the inbox and the tab badge. |
-| `reviews` | Added `replied_at`. Unique per (plan, reviewer, reviewee); stars 1–5; no self-review. | |
-| `reports` | Added `resolved_by_id`, `resolved_at`, `resolution_note`. | EU DSA: reasons are given when content is removed (§4.9). |
+| `reviews` | Added `replied_at`, and `hidden_at` (step 1.11). Unique per (plan, reviewer, reviewee); stars 1–5; no self-review. | A review removed by moderation no longer shows or counts. |
+| `reports` | Added `resolved_by_id`, `resolved_at`, `resolution_note`; `reason` is a code (`harassment`, `scam`, …) plus free-text `details` (step 1.11). One open report per reporter and target. | EU DSA: reasons are given when content is removed (§4.9). |
+| `banned_identifiers` | New (step 1.11): HMAC of a banned account's canonical email, phone and device ids, with `kind` and `user_id` (no FK, so it outlives the account). | Stops banned people from signing up again (§4.8). Only hashes are kept; unbanning deletes them. |
+| `user_devices` | New (step 1.11): `user_id`, `device_hash`, `last_seen_at`. | The hashed `tv_device` cookie seen at each sign-in, used only for ban checks. |
 | `push_subscriptions` | Added `id`; `keys` split into `p256dh` and `auth`. | Web Push needs both keys; endpoints are unique. |
 | `notifications` | Added `dedupe_key` (unique per user when set) and `delivered_at` (step 1.9). | Reminders, digests and chat batches are sent once; `delivered_at` null means push/email are still queued. |
 | `notification_settings` | New (step 1.9): one row per user with a toggle per category, `email`, `quiet_from`/`quiet_to` and `time_zone_id`. No row means the defaults. | PLAN.md §4.7: users control each category; quiet hours follow their time zone. |
