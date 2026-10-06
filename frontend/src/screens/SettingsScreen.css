@@ -1,0 +1,41 @@
+.settings__list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.settings__list > li + li {
+  border-block-start: 1px solid var(--color-border);
+}
+
+.settings__toggle,
+.settings__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  inline-size: 100%;
+  min-block-size: 3.5rem;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+}
+
+.settings__toggle > span {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings__toggle input {
+  inline-size: 2.75rem;
+  block-size: 1.5rem;
+  flex-shrink: 0;
+  accent-color: var(--palette-ink);
+}
+
+.settings__row--danger {
+  color: #c0392b;
+}

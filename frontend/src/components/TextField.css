@@ -1,0 +1,35 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.field__label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+.field__control {
+  min-block-size: var(--control-height-md);
+  padding-inline: var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+  font-size: 1rem; /* 16 px stops iOS zooming on focus */
+}
+
+.field__control--area {
+  min-block-size: 6rem;
+  padding-block: var(--space-3);
+  resize: vertical;
+}
+
+.field__control:focus {
+  border-color: var(--color-focus);
+  outline: 1px solid var(--color-focus);
+}
+
+.field__hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
