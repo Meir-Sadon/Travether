@@ -8,6 +8,7 @@ using Travether.Api.Authorization;
 using Travether.Api.Cards;
 using Travether.Api.Data;
 using Travether.Api.Domain;
+using Travether.Api.Notifications;
 using Travether.Api.Profiles;
 
 namespace Travether.Api.Controllers;
@@ -19,7 +20,7 @@ namespace Travether.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api")]
-public sealed class CardMembershipController(TravetherDbContext db, AccessQueries access, CardViews views, TimeProvider clock) : ControllerBase
+public sealed class CardMembershipController(TravetherDbContext db, AccessQueries access, CardViews views, Notifier notifier, TimeProvider clock) : ControllerBase
 {
     private Guid Me => User.RequireUserId();
 
@@ -65,6 +66,7 @@ public sealed class CardMembershipController(TravetherDbContext db, AccessQuerie
             return ApiError.Conflict("AlreadyRequested");
         }
 
+        await notifier.CardRequestedAsync(cardId, Me, ct).ConfigureAwait(false);
         return Ok(await views.LoadAsync(cardId, level, Me, ct).ConfigureAwait(false));
     }
 
@@ -239,6 +241,11 @@ public sealed class CardMembershipController(TravetherDbContext db, AccessQuerie
         }
 
         await tx.CommitAsync(ct).ConfigureAwait(false);
+        if (status != RequestStatus.Expired)
+        {
+            await notifier.CardRequestDecidedAsync(request.CardId, request.UserId, status == RequestStatus.Approved, ct).ConfigureAwait(false);
+        }
+
         return status == RequestStatus.Expired
             ? ApiError.Conflict("RequestExpired")
             : Ok(await views.LoadAsync(request.CardId, level, Me, ct).ConfigureAwait(false));

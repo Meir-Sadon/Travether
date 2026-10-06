@@ -112,6 +112,36 @@ public sealed class Notification
 
     public DateTimeOffset? ReadAt { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
+
+    /// <summary>One notification per user and key (reminders, digests, chat batches); null for one-off events.</summary>
+    public string? DedupeKey { get; set; }
+
+    /// <summary>When push and email were sent (or skipped by the user's settings). Null while queued.</summary>
+    public DateTimeOffset? DeliveredAt { get; set; }
+}
+
+/// <summary>
+/// Per-user notification choices (PLAN.md §4.7). No row means the defaults: every category on,
+/// email on, quiet hours 22:00–08:00 in UTC until the app reports the user's time zone.
+/// </summary>
+public sealed class NotificationSettings
+{
+    public Guid UserId { get; set; }
+    public bool Requests { get; set; } = true;
+    public bool Messages { get; set; } = true;
+    public bool Matches { get; set; } = true;
+    public bool Reminders { get; set; } = true;
+    public bool Reviews { get; set; } = true;
+
+    /// <summary>Also send the email-worthy categories (requests, digest, cancellations, reviews) by email.</summary>
+    public bool Email { get; set; } = true;
+
+    /// <summary>Push is held back between these local times; null turns quiet hours off.</summary>
+    public TimeOnly? QuietFrom { get; set; } = new(22, 0);
+    public TimeOnly? QuietTo { get; set; } = new(8, 0);
+
+    /// <summary>IANA zone reported by the user's device; quiet hours and the digest hour use it.</summary>
+    public string TimeZoneId { get; set; } = "UTC";
 }
 
 public sealed class PushSubscription

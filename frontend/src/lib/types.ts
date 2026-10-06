@@ -189,3 +189,23 @@ export type InboxRequest = {
   status: RequestStatus
   createdAt: string
 }
+
+/** What a notification points at; the text comes from `notifications.type_<type>`. */
+export type NotificationPayload = { url: string; actor?: string; subject?: string; preview?: string; count?: number }
+
+export type AppNotification = { id: string; type: string; payload: NotificationPayload; readAt: string | null; createdAt: string }
+
+export type NotificationPage = { items: AppNotification[]; unread: number; hasMore: boolean }
+
+export type NotificationSettings = {
+  requests: boolean
+  messages: boolean
+  matches: boolean
+  reminders: boolean
+  reviews: boolean
+  email: boolean
+  /** "HH:mm:ss" local time, or null when quiet hours are off. */
+  quietFrom: string | null
+  quietTo: string | null
+  timeZone: string
+}

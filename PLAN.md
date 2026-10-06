@@ -243,7 +243,7 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 - [x] Discover: city radius + date overlap, distance sort, list view, basic filters
 - [x] Plan join requests with status stepper
 - [x] In-app chat (card + plan) via SignalR; voluntary contact sharing
-- [ ] Notifications: in-app + email + Web Push; daily digest for matches
+- [x] Notifications: in-app + email + Web Push; daily digest for matches
 - [ ] "Did you meet?" flow + double-blind reviews + rating display rules
 - [ ] Safety: block, report, moderation admin page, rate limits, safety tips
 - [ ] Privacy: policy pages, consent, data export, delete account

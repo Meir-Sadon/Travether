@@ -9,6 +9,7 @@ using Testcontainers.PostgreSql;
 using Travether.Api.Auth;
 using Travether.Api.Data;
 using Travether.Api.Email;
+using Travether.Api.Notifications;
 
 namespace Travether.Api.Tests;
 
@@ -62,6 +63,8 @@ public sealed class ApiFactory(string connectionString) : WebApplicationFactory<
 
     public FakeExternalVerifier External { get; } = new();
 
+    public CapturingPushHandler Push { get; } = new();
+
     /// <summary>A client that keeps cookies and sends the CSRF header, like the frontend.</summary>
     public HttpClient CreateApiClient()
     {
@@ -74,6 +77,8 @@ public sealed class ApiFactory(string connectionString) : WebApplicationFactory<
     {
         builder.UseSetting("ConnectionStrings:Default", connectionString);
         builder.UseSetting("RateLimits:AuthPerMinute", "100000");
+        builder.UseSetting("Notifications:RunJobs", "false");
+        builder.UseSetting("Notifications:DigestHour", "0");
         builder.UseSetting("Images:LocalPath", Path.Combine(Path.GetTempPath(), "travether-test-uploads"));
         builder.ConfigureTestServices(services =>
         {
@@ -81,6 +86,7 @@ public sealed class ApiFactory(string connectionString) : WebApplicationFactory<
             services.AddSingleton<IEmailSender>(Emails);
             services.RemoveAll<IExternalIdentityVerifier>();
             services.AddSingleton<IExternalIdentityVerifier>(External);
+            services.AddHttpClient<IWebPushSender, WebPushSender>().ConfigurePrimaryHttpMessageHandler(() => Push);
         });
     }
 }

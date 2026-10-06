@@ -6,6 +6,7 @@ using Travether.Api.Auth;
 using Travether.Api.Authorization;
 using Travether.Api.Data;
 using Travether.Api.Domain;
+using Travether.Api.Notifications;
 using Travether.Api.Plans;
 
 namespace Travether.Api.Controllers;
@@ -16,7 +17,7 @@ namespace Travether.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api")]
-public sealed class PlansController(TravetherDbContext db, AccessQueries access, PlanViews views, TimeProvider clock) : ControllerBase
+public sealed class PlansController(TravetherDbContext db, AccessQueries access, PlanViews views, Notifier notifier, TimeProvider clock) : ControllerBase
 {
     /// <summary>Any member of the card can host. The host may bring card members along as participants.</summary>
     [Authorize]
@@ -189,6 +190,7 @@ public sealed class PlansController(TravetherDbContext db, AccessQueries access,
         await db.PlanRequests.Where(r => r.PlanId == id && r.Status == RequestStatus.Requested)
             .ExecuteUpdateAsync(u => u.SetProperty(r => r.Status, RequestStatus.Expired).SetProperty(r => r.DecidedAt, now), ct).ConfigureAwait(false);
         await tx.CommitAsync(ct).ConfigureAwait(false);
+        await notifier.PlanCancelledAsync(id, me, ct).ConfigureAwait(false);
         return Ok(await views.LoadAsync(id, me, null, ct).ConfigureAwait(false));
     }
 
@@ -245,6 +247,7 @@ public sealed class PlansController(TravetherDbContext db, AccessQueries access,
         plan.Status = PlanRules.StatusFor(plan.Status, seatsTaken + 1, plan.SeatLimit);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
         await tx.CommitAsync(ct).ConfigureAwait(false);
+        await notifier.PlanJoinedAsync(id, me, ct).ConfigureAwait(false);
         return Ok(await views.LoadAsync(id, me, null, ct).ConfigureAwait(false));
     }
 

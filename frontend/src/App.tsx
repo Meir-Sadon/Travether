@@ -14,6 +14,7 @@ import { InboxScreen } from './screens/InboxScreen'
 import { LandingScreen } from './screens/LandingScreen'
 import { LoginScreen } from './screens/LoginScreen'
 import { NotFoundScreen } from './screens/NotFoundScreen'
+import { NotificationsScreen } from './screens/NotificationsScreen'
 import { PersonScreen } from './screens/PersonScreen'
 import { PlanScreen } from './screens/PlanScreen'
 import { ProfileScreen } from './screens/ProfileScreen'
@@ -50,6 +51,7 @@ export default function App() {
             <Route path="trips/:tripId" element={<TripScreen />} />
             <Route path="plans/:planId/review" element={<ReviewScreen />} />
             <Route path="inbox/:chatId" element={<ChatScreen />} />
+            <Route path="notifications" element={<NotificationsScreen />} />
             <Route path="settings" element={<SettingsScreen />} />
             <Route path="profile/edit" element={<EditProfileScreen />} />
           </Route>

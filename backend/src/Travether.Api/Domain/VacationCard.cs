@@ -30,6 +30,9 @@ public sealed class VacationCard
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
 
+    /// <summary>Geocoded centre of the first region, filled lazily for the daily digest (PLAN.md §4.7).</summary>
+    public NetTopologySuite.Geometries.Point? Area { get; set; }
+
     public List<CardMember> Members { get; set; } = [];
     public List<ActivityPlan> Plans { get; set; } = [];
 }
