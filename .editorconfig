@@ -22,6 +22,10 @@ dotnet_diagnostic.CA1848.severity = none
 dotnet_diagnostic.CA1707.severity = none
 # xUnit needs public test classes; ConfigureAwait is irrelevant in tests
 dotnet_diagnostic.CA2007.severity = none
+# Test classes own their ApiFactory and dispose it through xUnit's IAsyncLifetime
+dotnet_diagnostic.CA1001.severity = none
+# Inline arrays keep request bodies readable in tests
+dotnet_diagnostic.CA1861.severity = none
 
 [backend/src/**/Migrations/*.cs]
 # EF Core generates these; analyzers and style rules skip them.
