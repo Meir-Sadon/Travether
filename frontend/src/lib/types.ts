@@ -52,7 +52,18 @@ export type Card = {
   access: CardAccess
   shareSlug: string | null
   members: CardMember[] | null
+  /** The viewer's latest join request; only on the preview, for a signed-in viewer. */
+  myRequest: MyCardRequest | null
+  /** Open join requests; only for the owner and co-admins. */
+  pendingRequestCount: number | null
 }
+
+export type RequestStatus = 'requested' | 'approved' | 'rejected' | 'withdrawn' | 'expired'
+
+export type MyCardRequest = { id: string; status: RequestStatus; createdAt: string }
+
+/** A join request as the owner and co-admins see it. */
+export type CardRequest = { id: string; person: Person; message: string | null; status: RequestStatus; createdAt: string }
 
 /** A card on Home. */
 export type MyCard = {
@@ -68,4 +79,6 @@ export type MyCard = {
   memberCount: number
   planCount: number
   membersPreview: Person[]
+  /** Open join requests; 0 for plain members. */
+  pendingRequests: number
 }

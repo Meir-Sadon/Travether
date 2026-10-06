@@ -21,6 +21,8 @@ export const crewCard: Card = {
     { person: noa, role: 'owner', joinedAt: '2026-10-01T00:00:00Z' },
     { person: lena, role: 'member', joinedAt: '2026-10-02T00:00:00Z' },
   ],
+  myRequest: null,
+  pendingRequestCount: 0,
 }
 
 export const crewTile: MyCard = {
@@ -36,6 +38,7 @@ export const crewTile: MyCard = {
   memberCount: 2,
   planCount: 0,
   membersPreview: [noa, lena],
+  pendingRequests: 0,
 }
 
-export const previewOf = (card: Card): Card => ({ ...card, access: 'preview', shareSlug: null, members: null })
+export const previewOf = (card: Card): Card => ({ ...card, access: 'preview', shareSlug: null, members: null, pendingRequestCount: null })

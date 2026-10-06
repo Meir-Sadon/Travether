@@ -5,12 +5,13 @@ import { useMe } from '../auth/useAuth'
 import { BottomSheet, Button, Chip, FormError, Icon, IconButton, Segmented } from '../components'
 import { CardForm, type CardFields } from '../features/CardForm'
 import { CreateSheet } from '../features/CreateSheet'
+import { JoinRequest } from '../features/JoinRequest'
 import { PersonItem } from '../features/PersonItem'
 import { ShareSheet } from '../features/ShareSheet'
 import { api, errorCode } from '../lib/api'
 import { countryName } from '../lib/countries'
 import { formatDateRange, tintFor } from '../lib/dates'
-import type { Card } from '../lib/types'
+import type { Card, CardMember, CardRequest, CardRole } from '../lib/types'
 import { useApi } from '../lib/useApi'
 import { NotFoundScreen } from './NotFoundScreen'
 import './TripScreen.css'
@@ -51,9 +52,14 @@ export function TripScreen() {
   const [creating, setCreating] = useState(false)
   const [editing, setEditing] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [confirmLeave, setConfirmLeave] = useState(false)
+  const [managing, setManaging] = useState<CardMember | null>(null)
+  const [confirmHandOver, setConfirmHandOver] = useState(false)
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const coverRef = useRef<HTMLInputElement>(null)
+  const canDecide = card?.access === 'owner' || card?.access === 'coAdmin'
+  const requests = useApi<CardRequest[]>(canDecide ? `/cards/${tripId}/requests` : null)
 
   if (error === 'NotFound') return <NotFoundScreen />
   if (!card) {
@@ -65,7 +71,7 @@ export function TripScreen() {
   }
 
   // A preview-level viewer (public card, not a member) gets the public page instead.
-  if (card.access === 'preview') return <TripPreview card={card} />
+  if (card.access === 'preview') return <TripPreview card={card} footer={<JoinRequest card={card} onChange={setData} />} />
 
   const isOwner = card.access === 'owner'
   const members = card.members ?? []
@@ -86,6 +92,29 @@ export function TripScreen() {
     run(async () => {
       setData(await api.patch<Card>(`/cards/${card.id}`, fields))
       setEditing(false)
+    })
+
+  const decide = (request: CardRequest, verdict: 'approve' | 'reject') =>
+    run(async () => {
+      setData(await api.post<Card>(`/card-requests/${request.id}/${verdict}`))
+      requests.reload()
+    })
+
+  const closeManage = () => {
+    setManaging(null)
+    setConfirmHandOver(false)
+  }
+
+  const setRole = (member: CardMember, role: CardRole) =>
+    run(async () => {
+      setData(await api.put<Card>(`/cards/${card.id}/members/${member.person.id}/role`, { role }))
+      closeManage()
+    })
+
+  const remove = (member: CardMember) =>
+    run(async () => {
+      setData(await api.del<Card>(`/cards/${card.id}/members/${member.person.id}`))
+      closeManage()
     })
 
   const uploadCover = (file: File) =>
@@ -162,13 +191,51 @@ export function TripScreen() {
 
       {tab === 'members' && (
         <section className="screen__section" aria-label={t('trip.tabMembers', { count: members.length })}>
+          {canDecide && !!requests.data?.length && (
+            <>
+              <h2 className="screen__section-title">{t('trip.requests', { count: requests.data.length })}</h2>
+              <ul className="list-reset screen__stack">
+                {requests.data.map((r) => (
+                  <li key={r.id} className="screen__stack">
+                    <PersonItem person={r.person} />
+                    {r.message && <p className="screen__body">{r.message}</p>}
+                    <div className="screen__row">
+                      <Button size="sm" loading={busy} onClick={() => void decide(r, 'approve')}>
+                        {t('trip.approve')}
+                      </Button>
+                      <Button size="sm" variant="secondary" disabled={busy} onClick={() => void decide(r, 'reject')}>
+                        {t('trip.decline')}
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <h2 className="screen__section-title">{t('trip.members')}</h2>
+            </>
+          )}
           <ul className="list-reset screen__stack">
             {members.map((m) => (
               <li key={m.person.id}>
-                <PersonItem person={m.person} you={m.person.id === me.id} trailing={<Chip>{t(`trip.role_${m.role}`)}</Chip>} />
+                <PersonItem
+                  person={m.person}
+                  you={m.person.id === me.id}
+                  trailing={
+                    <span className="screen__row">
+                      <Chip>{t(`trip.role_${m.role}`)}</Chip>
+                      {isOwner && m.person.id !== me.id && (
+                        <IconButton icon="more" label={t('trip.manageMember', { name: m.person.displayName })} onClick={() => setManaging(m)} />
+                      )}
+                    </span>
+                  }
+                />
               </li>
             ))}
           </ul>
+          {!isOwner && (
+            <Button variant="ghost" onClick={() => setConfirmLeave(true)}>
+              {t('trip.leave')}
+            </Button>
+          )}
         </section>
       )}
 
@@ -239,6 +306,69 @@ export function TripScreen() {
         }
       >
         <p className="screen__body">{t('trip.deleteBody')}</p>
+      </BottomSheet>
+
+      <BottomSheet
+        open={confirmLeave}
+        onClose={() => setConfirmLeave(false)}
+        title={t('trip.leaveTitle')}
+        footer={
+          <div className="screen__stack">
+            <Button block size="lg" variant="brand" onClick={() => setConfirmLeave(false)}>
+              {t('trip.stay')}
+            </Button>
+            <Button
+              block
+              variant="ghost"
+              loading={busy}
+              onClick={() =>
+                void run(async () => {
+                  await api.post(`/cards/${card.id}/leave`)
+                  void navigate('/', { replace: true })
+                })
+              }
+            >
+              {t('trip.leave')}
+            </Button>
+          </div>
+        }
+      >
+        <p className="screen__body">{t('trip.leaveBody')}</p>
+        <FormError code={actionError} />
+      </BottomSheet>
+
+      <BottomSheet open={managing !== null} onClose={closeManage} title={managing?.person.displayName ?? ''}>
+        {managing && (
+          <div className="screen__stack">
+            {confirmHandOver ? (
+              <>
+                <p className="screen__body">{t('trip.handOverBody', { name: managing.person.displayName })}</p>
+                <Button block loading={busy} onClick={() => void setRole(managing, 'owner')}>
+                  {t('trip.handOverConfirm')}
+                </Button>
+              </>
+            ) : (
+              <>
+                {managing.role === 'member' ? (
+                  <Button block variant="secondary" loading={busy} onClick={() => void setRole(managing, 'coAdmin')}>
+                    {t('trip.makeCoAdmin')}
+                  </Button>
+                ) : (
+                  <Button block variant="secondary" loading={busy} onClick={() => void setRole(managing, 'member')}>
+                    {t('trip.makeMember')}
+                  </Button>
+                )}
+                <Button block variant="secondary" disabled={busy} onClick={() => setConfirmHandOver(true)}>
+                  {t('trip.handOver')}
+                </Button>
+                <Button block variant="ghost" disabled={busy} onClick={() => void remove(managing)}>
+                  {t('trip.remove')}
+                </Button>
+              </>
+            )}
+            <FormError code={actionError} />
+          </div>
+        )}
       </BottomSheet>
     </div>
   )

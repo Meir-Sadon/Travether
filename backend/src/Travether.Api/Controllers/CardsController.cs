@@ -16,7 +16,7 @@ namespace Travether.Api.Controllers;
 /// <summary>Vacation Cards (PLAN.md §4.2). Every read and write is gated by AccessQueries/AccessRules.</summary>
 [ApiController]
 [Route("api/cards")]
-public sealed class CardsController(TravetherDbContext db, AccessQueries access, IImageStore images, TimeProvider clock) : ControllerBase
+public sealed class CardsController(TravetherDbContext db, AccessQueries access, CardViews views, IImageStore images, TimeProvider clock) : ControllerBase
 {
     private DateOnly Today => DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
 
@@ -35,6 +35,7 @@ public sealed class CardsController(TravetherDbContext db, AccessQueries access,
                 m.Role,
                 MemberCount = m.Card.Members.Count(x => x.Status == MembershipStatus.Active),
                 PlanCount = m.Card.Plans.Count(p => p.Status != PlanStatus.Cancelled),
+                Pending = m.Role == CardRole.Member ? 0 : db.CardRequests.Count(r => r.CardId == m.CardId && r.Status == RequestStatus.Requested),
                 Preview = m.Card.Members
                     .Where(x => x.Status == MembershipStatus.Active)
                     .OrderBy(x => x.JoinedAt)
@@ -49,7 +50,7 @@ public sealed class CardsController(TravetherDbContext db, AccessQueries access,
             .ThenBy(r => r.Card.StartsOn)
             .Select(r => new MyCardDto(
                 r.Card.Id, r.Card.Name, r.Card.CountryCode, r.Card.Regions, r.Card.StartsOn, r.Card.EndsOn, r.Card.CoverUrl,
-                r.Card.Visibility, r.Role, r.MemberCount, r.PlanCount, r.Preview.Select(u => PersonDto.From(u, today)).ToList()))
+                r.Card.Visibility, r.Role, r.MemberCount, r.PlanCount, r.Preview.Select(u => PersonDto.From(u, today)).ToList(), r.Pending))
             .ToList();
     }
 
@@ -230,21 +231,5 @@ public sealed class CardsController(TravetherDbContext db, AccessQueries access,
         return Ok(await LoadAsync(id, level, ct).ConfigureAwait(false));
     }
 
-    private async Task<CardDto> LoadAsync(Guid id, CardAccess level, CancellationToken ct)
-    {
-        var card = await db.VacationCards.AsNoTracking().FirstAsync(c => c.Id == id, ct).ConfigureAwait(false);
-        var members = await db.CardMembers.AsNoTracking()
-            .Where(m => m.CardId == id && m.Status == MembershipStatus.Active && m.User.BannedAt == null)
-            .Select(m => new { m.User, m.Role, m.JoinedAt })
-            .ToListAsync(ct).ConfigureAwait(false);
-        members = [.. members.OrderBy(m => m.Role).ThenBy(m => m.JoinedAt)]; // owner, co-admins, members
-
-        var inside = AccessRules.CanSeeCardInside(level);
-        var today = Today;
-        return new CardDto(
-            card.Id, card.Name, card.CountryCode, card.Regions, card.StartsOn, card.EndsOn, card.Description, card.CoverUrl,
-            card.Visibility, members.Count, CardRules.AccessName(level),
-            inside ? card.ShareSlug : null,
-            inside ? members.Select(m => new CardMemberDto(PersonDto.From(m.User, today), m.Role, m.JoinedAt)).ToList() : null);
-    }
+    private Task<CardDto> LoadAsync(Guid id, CardAccess level, CancellationToken ct) => views.LoadAsync(id, level, User.GetUserId(), ct);
 }

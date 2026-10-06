@@ -43,7 +43,10 @@ Access levels, lowest to highest: `None` → `Preview` → `Member` → `CoAdmin
 | Request to join | exactly `Preview` (not already a member) |
 | See members, plans list, card chat | `Member` |
 | Approve or reject join requests | `CoAdmin` |
-| Appoint co-admins, remove members, edit or delete the card, upload the cover, issue a new share link | `Owner` |
+| Leave the card | `Member` or `CoAdmin` (the owner hands over ownership or deletes the card instead) |
+| Appoint co-admins, hand over ownership, remove members, edit or delete the card, upload the cover, issue a new share link | `Owner` |
+
+**Card join requests** are refused with `AlreadyMember` (already active), `AlreadyRequested` (an open request exists) or `TripEnded` (the end date has passed); invite-only cards need the share slug in the request. Approving a request whose requester was banned or deleted, or who is now blocked either way with the owner, marks it `expired` and answers `RequestExpired`. Two people deciding at once: the second gets `AlreadyDecided`. Handing over ownership makes the old owner a co-admin. Leaving or being removed also ends the person's participation in this card's plans that they joined as its member.
 
 ## Activity Plans (§4.3, §4.5)
 
