@@ -22,7 +22,7 @@ describe('App', () => {
       'fetch',
       vi.fn().mockResolvedValue(new Response(JSON.stringify({ status: 'ok', database: 'ok' }))),
     )
-    renderAt('/')
+    renderAt('/status')
     expect(screen.getByRole('heading', { name: 'Travether' })).toBeInTheDocument()
     expect(await screen.findByText('API: ok · database: ok')).toBeInTheDocument()
   })
@@ -30,7 +30,7 @@ describe('App', () => {
   it('reports an unreachable API', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('', { status: 503 })))
-    renderAt('/')
+    renderAt('/status')
     expect(await screen.findByText('API: unreachable')).toBeInTheDocument()
   })
 
