@@ -1,6 +1,7 @@
 # Travether — Travel Together · Project Plan
 
 > Status: approved direction, pre-development · Last updated: 2026-10-06
+> Model & session per step: [PHASE_MODEL_MAP.md](PHASE_MODEL_MAP.md)
 > Inputs: original Hebrew spec (אפיון פרויקט Travether), [competitive research report](reports/Travether%20competitive%20research.md), and the founder's decisions recorded below.
 
 ---
