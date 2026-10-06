@@ -68,6 +68,8 @@ export const hikePlan: Plan = {
   canSelfJoin: false,
   host: noa,
   participants: [noa, lena],
+  myRequest: null,
+  pendingRequestCount: 0,
 }
 
 /** What someone outside the plan's card sees. */
@@ -81,6 +83,7 @@ export const publicPlan: Plan = {
   distance: { km: 2, underOneKm: false },
   host: lena,
   participants: null,
+  pendingRequestCount: null,
 }
 
 export const hikeSummary: PlanSummary = {

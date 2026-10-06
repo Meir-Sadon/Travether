@@ -241,7 +241,7 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 - [x] Card join requests (anyone), approve/reject, co-admins, leave/remove
 - [x] Activity Plans: templates, seat limit, open/groups-only, location privacy
 - [x] Discover: city radius + date overlap, distance sort, list view, basic filters
-- [ ] Plan join requests with status stepper
+- [x] Plan join requests with status stepper
 - [ ] In-app chat (card + plan) via SignalR; voluntary contact sharing
 - [ ] Notifications: in-app + email + Web Push; daily digest for matches
 - [ ] "Did you meet?" flow + double-blind reviews + rating display rules

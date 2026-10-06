@@ -78,19 +78,22 @@ A plan's date must fall within its card's dates (`PlanOutsideTrip`) and in the f
 
 **Deciding requests:** the host, or a co-admin/owner of the plan's card.
 
-**Requesting to join** is refused, with one of these error codes, when:
+**Requesting to join** (`POST /api/plans/{id}/requests`) is refused when (the `JoinDenial` rule, then the API code):
 
-| Code | Condition |
-|------|-----------|
-| `Blocked` | Either side blocked the other |
-| `AlreadyParticipant` | Already an active participant |
-| `OwnCardMembersSelfJoin` | Member of the plan's own card (they self-join) |
-| `NotOpen` | Plan is full, cancelled or done |
-| `Full` | Active participants ≥ seat limit |
-| `AlreadyRequested` | An open request exists |
-| `GroupsOnlyNeedsCard` | "Groups only" plan and no source card given |
-| `SourceCardNotYours` | Source card given but requester isn't an active member of it |
-| `PartyNotInSourceCard` | Someone in the party isn't an active member of the source card |
+| Rule | API code | Condition |
+|------|----------|-----------|
+| `Blocked` | 404 `NotFound` | Either side blocked the other |
+| `AlreadyParticipant` | `AlreadyParticipant` | Already an active participant |
+| `OwnCardMembersSelfJoin` | `JoinDirectly` | Member of the plan's own card (they self-join) |
+| `NotOpen` / `Full` | `PlanNotOpen` / `PlanFull` | Plan is full, cancelled, done or already started |
+| `AlreadyRequested` | `AlreadyRequested` | An open request exists |
+| `GroupsOnlyNeedsCard` | `GroupsOnly` | "Groups only" plan and no source card given |
+| `SourceCardNotYours` | `SourceCardNotYours` | Source card given but requester isn't an active member of it |
+| `PartyNotInSourceCard` | `PartyNotInSourceCard` | Someone in the party isn't an active member of the source card |
+| | `NotEnoughSeats` | Requester plus party don't fit in the free seats |
+| | `PartyAlreadyGoing` | Someone in the party is already a participant |
+
+**Deciding** (host, or the card's owner/co-admins): approval locks the plan row, re-checks seats (`NotEnoughSeats` keeps the request open), and seats the requester and their party with the source card recorded. If anyone coming was banned, deleted or is now blocked either way with the host, or the party left the source card, the request becomes `expired` (`RequestExpired`). When approval fills the plan, the other open requests expire. Requests also expire when the plan is cancelled or starts (a background sweep every 5 minutes). The host or the card's admins can remove a participant (status `removed`); the host can't be removed.
 
 ## Chat
 

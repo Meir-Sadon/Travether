@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useParams, useSearchParams } from 'react-router'
 import { useAuth } from '../auth/useAuth'
-import { BottomSheet, Button, Card, CardBody, Chip, FormError, Icon } from '../components'
+import { BottomSheet, Button, Card, CardBody, Chip, FormError, Icon, Stepper } from '../components'
 import { PersonItem } from '../features/PersonItem'
 import { PlanForm, type PlanFields } from '../features/PlanForm'
+import { PlanRequestSheet } from '../features/PlanRequestSheet'
 import { api, errorCode } from '../lib/api'
 import { categoryTint, formatPlanWhen, mapLink } from '../lib/plans'
-import type { Card as TripCard, Plan } from '../lib/types'
+import type { Card as TripCard, Plan, PlanRequest } from '../lib/types'
 import { useApi } from '../lib/useApi'
 import { NotFoundScreen } from './NotFoundScreen'
 import './PlanScreen.css'
@@ -24,9 +25,11 @@ export function PlanScreen() {
   const { data: plan, error, setData } = useApi<Plan>(user === undefined ? null : `/plans/${planId}${near}`)
   const [editing, setEditing] = useState(false)
   const [confirmCancel, setConfirmCancel] = useState(false)
+  const [requesting, setRequesting] = useState(false)
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const { data: card } = useApi<TripCard>(editing && plan ? `/cards/${plan.cardId}` : null)
+  const requests = useApi<PlanRequest[]>(plan?.canManage && plan.pendingRequestCount ? `/plans/${planId}/requests` : null)
 
   if (error === 'NotFound') return <NotFoundScreen />
   if (!plan) {
@@ -55,10 +58,20 @@ export function PlanScreen() {
       setEditing(false)
     })
 
+  const decide = (request: PlanRequest, verdict: 'approve' | 'reject') =>
+    run(async () => {
+      setData(await api.post<Plan>(`/plan-requests/${request.id}/${verdict}`))
+      requests.reload()
+    })
+
   const going = plan.access !== 'public'
+  const insider = plan.participants !== null
+  const request = plan.myRequest
+  const pending = request?.status === 'requested'
+  // Outsiders (not in the plan's trip) ask for a seat; trip members join directly.
+  const canAsk = !!user && !insider && !pending && plan.status === 'open'
   const left = plan.seatLimit - plan.seatsTaken
   const closed = plan.status === 'cancelled' || plan.status === 'done'
-  const insider = plan.participants !== null
   const backTo = insider ? `/trips/${plan.cardId}` : '/discover'
 
   return (
@@ -130,6 +143,60 @@ export function PlanScreen() {
         <FormError code={editing || confirmCancel ? null : actionError} />
       </section>
 
+      {plan.canManage && !!requests.data?.length && (
+        <section className="screen__section" aria-labelledby="plan-requests">
+          <h2 id="plan-requests" className="screen__section-title">
+            {t('trip.requests', { count: requests.data.length })}
+          </h2>
+          <ul className="list-reset screen__stack">
+            {requests.data.map((r) => (
+              <li key={r.id} className="screen__stack">
+                <PersonItem
+                  person={r.requester}
+                  trailing={r.party.length > 0 ? <Chip>{t('plan.partySize', { count: r.party.length + 1 })}</Chip> : undefined}
+                />
+                {r.party.length > 0 && (
+                  <p className="screen__meta">
+                    {t('plan.withParty', { names: r.party.map((p) => p.displayName).join(', '), trip: r.sourceCardName ?? '' })}
+                  </p>
+                )}
+                {r.message && <p className="screen__body">{r.message}</p>}
+                <div className="screen__row">
+                  <Button size="sm" loading={busy} onClick={() => void decide(r, 'approve')}>
+                    {t('trip.approve')}
+                  </Button>
+                  <Button size="sm" variant="secondary" disabled={busy} onClick={() => void decide(r, 'reject')}>
+                    {t('trip.decline')}
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {request && request.status !== 'approved' && !going && (
+        <section className="screen__section">
+          <Card>
+            <CardBody>
+              <strong>{t('plan.yourRequest')}</strong>
+              {pending ? (
+                <>
+                  <div className="plan__stepper">
+                    <Stepper label={t('plan.requestStatus')} steps={[t('plan.stepRequested'), t('plan.stepApproved'), t('plan.stepChat')]} current={1} />
+                  </div>
+                  <p className="screen__meta plan__center">{t('plan.waiting', { hosts: plan.host.displayName })}</p>
+                </>
+              ) : (
+                <p className="screen__meta">
+                  {request.status === 'rejected' ? t('plan.request_rejected') : request.status === 'expired' ? t('plan.request_expired') : t('plan.request_withdrawn')}
+                </p>
+              )}
+            </CardBody>
+          </Card>
+        </section>
+      )}
+
       <section className="screen__section" aria-labelledby="plan-hosts">
         <h2 id="plan-hosts" className="screen__section-title">
           {plan.cardName ? t('plan.hostedBy', { group: plan.cardName }) : t('plan.host')}
@@ -147,7 +214,23 @@ export function PlanScreen() {
               .filter((p) => p.id !== plan.host.id)
               .map((p) => (
                 <li key={p.id}>
-                  <PersonItem person={p} you={p.id === user?.id} />
+                  <PersonItem
+                    person={p}
+                    you={p.id === user?.id}
+                    trailing={
+                      plan.canManage && !closed ? (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          aria-label={t('plan.removeName', { name: p.displayName })}
+                          disabled={busy}
+                          onClick={() => void run(async () => setData(await api.del<Plan>(`/plans/${plan.id}/participants/${p.id}`)))}
+                        >
+                          {t('plan.remove')}
+                        </Button>
+                      ) : undefined
+                    }
+                  />
                 </li>
               ))}
           </ul>
@@ -172,6 +255,27 @@ export function PlanScreen() {
               {t('plan.signUpToJoin')}
             </Link>
           )}
+          {canAsk && (
+            <Button size="lg" block onClick={() => setRequesting(true)}>
+              {request?.status === 'rejected' || request?.status === 'expired' ? t('plan.requestAgain') : t('plan.request')}
+            </Button>
+          )}
+          {pending && (
+            <Button
+              variant="secondary"
+              size="lg"
+              block
+              loading={busy}
+              onClick={() =>
+                void run(async () => {
+                  await api.del(`/plan-requests/${request.id}`)
+                  setData({ ...plan, myRequest: { ...request, status: 'withdrawn' } })
+                })
+              }
+            >
+              {t('plan.withdraw')}
+            </Button>
+          )}
           {plan.canSelfJoin && (
             <Button size="lg" block loading={busy} onClick={() => void run(async () => setData(await api.post<Plan>(`/plans/${plan.id}/join`)))}>
               {t('plan.join')}
@@ -190,6 +294,8 @@ export function PlanScreen() {
           )}
         </footer>
       )}
+
+      {user && <PlanRequestSheet plan={plan} meId={user.id} open={requesting} onClose={() => setRequesting(false)} onSent={setData} />}
 
       <BottomSheet
         open={editing}

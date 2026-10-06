@@ -39,6 +39,20 @@ public sealed class PlanViews(TravetherDbContext db, AccessQueries access, TimeP
 
         var plan = row.Plan;
         var today = Today;
+        var canManage = AccessRules.CanDecidePlanRequests(planAccess, cardAccess);
+        MyPlanRequestDto? myRequest = null;
+        if (viewerId is { } me && planAccess == PlanAccess.Public)
+        {
+            myRequest = await db.PlanRequests.AsNoTracking()
+                .Where(r => r.PlanId == planId && r.RequesterId == me)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new MyPlanRequestDto(r.Id, r.Status, r.PartyUserIds.Count + 1, r.CreatedAt))
+                .FirstOrDefaultAsync(ct).ConfigureAwait(false);
+        }
+
+        int? pending = canManage
+            ? await db.PlanRequests.CountAsync(r => r.PlanId == planId && r.Status == RequestStatus.Requested, ct).ConfigureAwait(false)
+            : null;
         var seatsTaken = row.Participants.Count;
         var (localDate, localTime) = PlanRules.ToLocal(plan.StartsAt, plan.TimeZoneId);
         var isInsider = planAccess >= PlanAccess.Participant || cardAccess >= CardAccess.Member;
@@ -63,10 +77,12 @@ public sealed class PlanViews(TravetherDbContext db, AccessQueries access, TimeP
             plan.Audience,
             plan.Status,
             JsonNamingPolicyName(planAccess),
-            AccessRules.CanDecidePlanRequests(planAccess, cardAccess),
+            canManage,
             CanSelfJoin(plan, planAccess, cardAccess, seatsTaken, clock.GetUtcNow()),
             PersonDto.From(row.Host, today),
-            isInsider ? row.Participants.Select(u => PersonDto.From(u, today)).ToList() : null);
+            isInsider ? row.Participants.Select(u => PersonDto.From(u, today)).ToList() : null,
+            myRequest,
+            pending);
     }
 
     /// <summary>A card's plans for its members: upcoming first, then past; cancelled plans left out.</summary>

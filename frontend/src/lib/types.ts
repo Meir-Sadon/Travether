@@ -122,6 +122,21 @@ export type Plan = {
   canSelfJoin: boolean
   host: Person
   participants: Person[] | null
+  /** The viewer's latest join request; only for viewers outside the plan. */
+  myRequest: { id: string; status: RequestStatus; partySize: number; createdAt: string } | null
+  /** Open requests; only for the host and the card's admins. */
+  pendingRequestCount: number | null
+}
+
+/** A request to join a plan as the host and the card's admins see it. */
+export type PlanRequest = {
+  id: string
+  requester: Person
+  party: Person[]
+  sourceCardName: string | null
+  message: string | null
+  status: RequestStatus
+  createdAt: string
 }
 
 /** A plan in a list. */
