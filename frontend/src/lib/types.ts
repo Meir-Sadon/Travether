@@ -147,3 +147,45 @@ export type PlanSummary = Pick<
 
 /** A plan found by Discover, with its rounded distance from the search origin. */
 export type DiscoverPlan = { plan: PlanSummary; distance: { km: number; underOneKm: boolean } }
+
+export type MessageKind = 'text' | 'contactPhone' | 'contactWhatsapp'
+export type ChatMessage = { id: string; sender: { id: string; displayName: string; photoUrl: string | null }; body: string; kind: MessageKind; createdAt: string }
+
+/** A card or plan chat with its latest messages, oldest first. `key` is "card-…" or "plan-…". */
+export type Chat = {
+  key: string
+  type: 'card' | 'plan'
+  refId: string
+  title: string
+  memberCount: number
+  meetingPoint: { name: string; lat: number; lng: number } | null
+  messages: ChatMessage[]
+  hasMore: boolean
+}
+
+export type ChatSummary = {
+  key: string
+  type: 'card' | 'plan'
+  refId: string
+  title: string
+  category: PlanCategory | null
+  last: { senderName: string; mine: boolean; body: string; kind: MessageKind; createdAt: string } | null
+  unread: number
+  updatedAt: string
+}
+
+/** A message pushed over the chat hub. */
+export type ChatEvent = { chat: string; message: ChatMessage }
+
+export type InboxRequest = {
+  id: string
+  target: 'card' | 'plan'
+  targetId: string
+  targetTitle: string
+  category: PlanCategory | null
+  person: Person
+  partySize: number
+  message: string | null
+  status: RequestStatus
+  createdAt: string
+}

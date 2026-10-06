@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Travether.Api.Auth;
 using Travether.Api.Authorization;
 using Travether.Api.Cards;
+using Travether.Api.Chat;
 using Travether.Api.Data;
 using Travether.Api.Email;
 using Travether.Api.Images;
@@ -31,6 +32,9 @@ builder.Services.AddScoped<RatingQueries>();
 builder.Services.AddScoped<CardViews>();
 builder.Services.AddScoped<PlanViews>();
 builder.Services.AddHostedService<PlanRequestSweeper>();
+builder.Services.AddScoped<ChatService>();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, UserIdProvider>();
 builder.Services.AddTravetherPlaces(builder.Configuration);
 builder.Services.AddTravetherImages(builder.Configuration, builder.Environment);
 builder.Services.AddSingleton(TimeProvider.System);
@@ -76,6 +80,7 @@ app.UseAuthorization();
 app.UseRateLimiter();
 
 app.MapControllers();
+app.MapHub<ChatHub>(ChatHub.Path);
 
 // Client-side routes fall back to index.html; unknown /api routes stay 404.
 app.MapFallback("/api/{**path}", () => Results.NotFound());

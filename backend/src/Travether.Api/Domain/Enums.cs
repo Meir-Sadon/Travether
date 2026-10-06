@@ -34,6 +34,9 @@ public enum PlanStatus { Open, Full, Cancelled, Done }
 
 public enum ConversationType { Card, Plan, Direct }
 
+/// <summary>Text, or a phone/WhatsApp number the sender chose to share (PLAN.md decision 3).</summary>
+public enum MessageKind { Text, ContactPhone, ContactWhatsapp }
+
 public enum MeetAnswer { Met, Cancelled, NoShow }
 
 public enum ReportTargetType { User, Card, Plan, Message, Review }
