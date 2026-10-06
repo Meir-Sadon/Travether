@@ -219,7 +219,8 @@ blocks           (blocker_id, blocked_id)
 notifications    (id, user_id, type, payload, read_at, created_at)
 push_subscriptions(user_id, endpoint, keys, created_at)
 ```
-Key queries: `ST_DWithin(origin, :point, :radius)` and `daterange(starts_on, ends_on) && :range`, with GiST indexes on both.
+Implemented with additions; see [docs/DATA_MODEL.md](docs/DATA_MODEL.md) and [docs/AUTHORIZATION.md](docs/AUTHORIZATION.md).
+Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_on, ends_on) && :range`, with GiST indexes on both.
 
 ---
 
@@ -227,7 +228,7 @@ Key queries: `ST_DWithin(origin, :point, :radius)` and `daterange(starts_on, end
 
 ### Phase 0 — Foundations (≈1–2 weeks)
 - [x] Repo setup: `frontend/` (React + Vite + TS, oxlint, Vitest), `backend/` (.NET 10 Web API + xUnit), Dockerfile, docker-compose, render.yaml, GitHub Actions
-- [ ] PostgreSQL + PostGIS (docker compose locally, Neon EU in production), EF Core migrations workflow
+- [x] PostgreSQL + PostGIS (docker compose locally, Neon EU in production), EF Core migrations workflow
 - [ ] Design tokens, base components (Button, Card, Chip, Avatar stack, BottomSheet, Stepper)
 - [ ] i18n scaffolding (en), logical CSS for future RTL
 - [ ] Clickable mockups of key screens; quick test with 5–10 travelers
