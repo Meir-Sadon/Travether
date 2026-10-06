@@ -229,7 +229,7 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 ### Phase 0 — Foundations (≈1–2 weeks)
 - [x] Repo setup: `frontend/` (React + Vite + TS, oxlint, Vitest), `backend/` (.NET 10 Web API + xUnit), Dockerfile, docker-compose, render.yaml, GitHub Actions
 - [x] PostgreSQL + PostGIS (docker compose locally, Neon EU in production), EF Core migrations workflow
-- [ ] Design tokens, base components (Button, Card, Chip, Avatar stack, BottomSheet, Stepper)
+- [x] Design tokens, base components (Button, Card, Chip, Avatar stack, BottomSheet, Stepper)
 - [ ] i18n scaffolding (en), logical CSS for future RTL
 - [ ] Clickable mockups of key screens; quick test with 5–10 travelers
 
