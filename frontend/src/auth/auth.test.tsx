@@ -33,7 +33,7 @@ describe('auth', () => {
   it('lets visitors browse Discover without an account', async () => {
     mockApi({ 'GET /auth/me': { user: null } })
     renderAt('/discover')
-    expect(await screen.findByRole('heading', { level: 1, name: /Chiang Mai/ })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: 'Discover' })).toBeInTheDocument()
   })
 
   it('signs up with an emailed code in three steps', async () => {

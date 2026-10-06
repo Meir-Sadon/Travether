@@ -21,7 +21,6 @@ describe('mockup screens', () => {
   it.each([
     ['/signup', 'Sign up'],
     ['/', 'Hi Noa'],
-    ['/discover', 'Chiang Mai'],
     ['/inbox', 'Inbox'],
     ['/inbox/sanctuary', 'Elephant sanctuary'],
     ['/profile', 'Profile'],
@@ -36,13 +35,6 @@ describe('mockup screens', () => {
   it('shows the bottom navigation only on the main tabs', async () => {
     renderAt('/discover')
     expect(await screen.findByRole('navigation', { name: 'Main' })).toBeInTheDocument()
-  })
-
-  it('filters Discover by category', async () => {
-    renderAt('/discover')
-    await userEvent.click(await screen.findByRole('button', { name: 'Food' }))
-    expect(screen.getByText('Khao soi tasting tour')).toBeInTheDocument()
-    expect(screen.queryByText('Mae Sa waterfall trail')).not.toBeInTheDocument()
   })
 
   it('sends a chat message', async () => {

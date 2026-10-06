@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Travether.Api.Api;
@@ -6,9 +5,11 @@ using Travether.Api.Places;
 
 namespace Travether.Api.Controllers;
 
-/// <summary>Meeting-point search for plan forms. Proxied so the provider and its key stay on the server.</summary>
+/// <summary>
+/// Place search for plan forms and Discover (visitors browse too). Proxied so the provider and its key stay on
+/// the server; rate-limited per user or IP.
+/// </summary>
 [ApiController]
-[Authorize]
 [Route("api/places")]
 [EnableRateLimiting(PlaceSetup.RateLimit)]
 public sealed class PlacesController(IPlaceSearch places, ILogger<PlacesController> log) : ControllerBase

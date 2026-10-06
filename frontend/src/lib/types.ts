@@ -129,3 +129,6 @@ export type PlanSummary = Pick<
   Plan,
   'id' | 'title' | 'category' | 'startsAt' | 'timeZoneId' | 'localDate' | 'localTime' | 'areaLabel' | 'seatLimit' | 'seatsTaken' | 'audience' | 'status' | 'host'
 > & { joined: boolean }
+
+/** A plan found by Discover, with its rounded distance from the search origin. */
+export type DiscoverPlan = { plan: PlanSummary; distance: { km: number; underOneKm: boolean } }

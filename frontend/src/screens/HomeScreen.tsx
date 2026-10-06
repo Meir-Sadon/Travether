@@ -4,14 +4,14 @@ import { Link, useNavigate } from 'react-router'
 import { useMe } from '../auth/useAuth'
 import { AvatarStack, BottomSheet, Button, Card, CardBody, Chip, Icon, TextField } from '../components'
 import { CreateSheet } from '../features/CreateSheet'
-import { PlanCard } from '../features/PlanCard'
+import { PlanTile } from '../features/PlanTile'
 import { ScreenHeader } from '../layout/ScreenHeader'
 import { countryName } from '../lib/countries'
-import { formatDateRange, tintFor } from '../lib/dates'
+import { formatDateRange, tintFor, todayIso } from '../lib/dates'
+import { discoverPath, useTripOrigin } from '../lib/discover'
 import { shareCodeFrom } from '../lib/share'
-import type { MyCard } from '../lib/types'
+import type { DiscoverPlan, MyCard } from '../lib/types'
 import { useApi } from '../lib/useApi'
-import { myTripIds, plans } from '../mock/data'
 import './HomeScreen.css'
 
 /** 3 · Home: my trips + plans matching my dates nearby. */
@@ -23,8 +23,13 @@ export function HomeScreen() {
   const [joining, setJoining] = useState(false)
   const [code, setCode] = useState('')
   const { data: myTrips } = useApi<MyCard[]>('/cards')
-  const nearby = plans.filter((p) => !myTripIds.includes(p.tripId))
-  const current = myTrips?.[0]
+  const today = todayIso()
+  const current = myTrips?.find((c) => c.endsOn >= today)
+  const origin = useTripOrigin(current ?? null, i18n.language)
+  const { data: matches } = useApi<DiscoverPlan[]>(
+    current && origin ? discoverPath({ origin, from: current.startsOn > today ? current.startsOn : today, to: current.endsOn }) : null,
+  )
+  const nearby = matches?.slice(0, 8) ?? []
 
   const join = (e: FormEvent) => {
     e.preventDefault()
@@ -83,21 +88,29 @@ export function HomeScreen() {
         </div>
       </section>
 
-      <section className="screen__section" aria-labelledby="home-matches">
-        <div className="screen__section-head">
-          <h2 id="home-matches" className="screen__section-title">
-            {t('home.matches')}
-          </h2>
-          <Link to="/discover" className="screen__link">
-            {t('common.seeAll')}
-          </Link>
-        </div>
-        <ul className="list-reset home__carousel">
-          {nearby.map((p) => (
-            <PlanCard key={p.id} plan={p} variant="compact" />
-          ))}
-        </ul>
-      </section>
+      {nearby.length > 0 && (
+        <section className="screen__section" aria-labelledby="home-matches">
+          <div className="screen__section-head">
+            <h2 id="home-matches" className="screen__section-title">
+              {t('home.matches')}
+            </h2>
+            <Link to="/discover" className="screen__link">
+              {t('common.seeAll')}
+            </Link>
+          </div>
+          <ul className="list-reset home__carousel">
+            {nearby.map((m) => (
+              <PlanTile
+                key={m.plan.id}
+                compact
+                plan={m.plan}
+                origin={origin}
+                distance={m.distance.underOneKm ? t('plan.underOneKm') : t('plan.km', { count: m.distance.km })}
+              />
+            ))}
+          </ul>
+        </section>
+      )}
       <CreateSheet open={creating} onClose={() => setCreating(false)} initialMode="trip" />
       <BottomSheet
         open={joining}
