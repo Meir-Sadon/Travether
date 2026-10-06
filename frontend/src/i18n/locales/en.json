@@ -1,0 +1,19 @@
+{
+  "app": {
+    "name": "Travether",
+    "tagline": "Find people to do things with on your trip."
+  },
+  "status": {
+    "api": "API: {{state}}",
+    "apiWithDatabase": "API: {{state}} · database: {{database}}",
+    "checking": "checking…",
+    "unreachable": "unreachable",
+    "designSystem": "Design system"
+  },
+  "common": {
+    "close": "Close",
+    "done": "done",
+    "back": "Back",
+    "moreOptions": "More options"
+  }
+}

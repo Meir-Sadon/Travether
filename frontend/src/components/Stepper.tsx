@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Icon } from './Icon'
 import './Stepper.css'
 
@@ -11,6 +12,7 @@ type StepperProps = {
 
 /** Horizontal status steps, e.g. Requested → Approved → Chat open (PLAN.md §4.5). */
 export function Stepper({ steps, current, label }: StepperProps) {
+  const { t } = useTranslation()
   return (
     <ol className="stepper" aria-label={label}>
       {steps.map((step, i) => {
@@ -19,7 +21,7 @@ export function Stepper({ steps, current, label }: StepperProps) {
           <li key={step} className={`stepper__step stepper__step--${state}`} aria-current={state === 'current' ? 'step' : undefined}>
             <span className="stepper__dot">{state === 'done' ? <Icon name="check" size={14} /> : i + 1}</span>
             <span className="stepper__label">{step}</span>
-            {state === 'done' && <span className="visually-hidden"> (done)</span>}
+            {state === 'done' && <span className="visually-hidden"> ({t('common.done')})</span>}
           </li>
         )
       })}

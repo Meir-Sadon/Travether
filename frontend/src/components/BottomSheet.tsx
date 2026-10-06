@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import { IconButton } from './Button'
 import './BottomSheet.css'
 
@@ -20,6 +21,7 @@ const focusableSelector =
  * Escape and the scrim close it; focus moves in on open, stays inside, and returns on close.
  */
 export function BottomSheet({ open, onClose, title, children, footer }: BottomSheetProps) {
+  const { t } = useTranslation()
   const titleId = useId()
   const sheetRef = useRef<HTMLDivElement>(null)
   const onCloseRef = useRef(onClose)
@@ -74,7 +76,7 @@ export function BottomSheet({ open, onClose, title, children, footer }: BottomSh
           <h2 id={titleId} className="sheet__title">
             {title}
           </h2>
-          <IconButton icon="close" label="Close" onClick={onClose} />
+          <IconButton icon="close" label={t('common.close')} onClick={onClose} />
         </header>
         <div className="sheet__content">{children}</div>
         {footer && <footer className="sheet__footer">{footer}</footer>}
