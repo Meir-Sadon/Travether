@@ -7,11 +7,12 @@ import { CardForm, type CardFields } from '../features/CardForm'
 import { CreateSheet } from '../features/CreateSheet'
 import { JoinRequest } from '../features/JoinRequest'
 import { PersonItem } from '../features/PersonItem'
+import { PlanTile } from '../features/PlanTile'
 import { ShareSheet } from '../features/ShareSheet'
 import { api, errorCode } from '../lib/api'
 import { countryName } from '../lib/countries'
 import { formatDateRange, tintFor } from '../lib/dates'
-import type { Card, CardMember, CardRequest, CardRole } from '../lib/types'
+import type { Card, CardMember, CardRequest, CardRole, PlanSummary } from '../lib/types'
 import { useApi } from '../lib/useApi'
 import { NotFoundScreen } from './NotFoundScreen'
 import './TripScreen.css'
@@ -60,6 +61,7 @@ export function TripScreen() {
   const coverRef = useRef<HTMLInputElement>(null)
   const canDecide = card?.access === 'owner' || card?.access === 'coAdmin'
   const requests = useApi<CardRequest[]>(canDecide ? `/cards/${tripId}/requests` : null)
+  const plans = useApi<PlanSummary[]>(card && card.access !== 'preview' ? `/cards/${tripId}/plans` : null)
 
   if (error === 'NotFound') return <NotFoundScreen />
   if (!card) {
@@ -182,7 +184,14 @@ export function TripScreen() {
 
       {tab === 'plans' && (
         <section className="screen__section" aria-label={t('trip.tabPlans')}>
-          <p className="screen__empty">{t('trip.noPlans')}</p>
+          {plans.data?.length === 0 && <p className="screen__empty">{t('trip.noPlans')}</p>}
+          {!!plans.data?.length && (
+            <ul className="list-reset screen__stack">
+              {plans.data.map((p) => (
+                <PlanTile key={p.id} plan={p} />
+              ))}
+            </ul>
+          )}
           <Button variant="secondary" icon="plus" onClick={() => setCreating(true)}>
             {t('create.planTitle')}
           </Button>
@@ -265,7 +274,7 @@ export function TripScreen() {
           onNewLink={isOwner ? () => void run(async () => setData(await api.post<Card>(`/cards/${card.id}/share-link`))) : undefined}
         />
       )}
-      <CreateSheet open={creating} onClose={() => setCreating(false)} initialMode="plan" />
+      <CreateSheet open={creating} onClose={() => setCreating(false)} initialMode="plan" cardId={card.id} />
 
       <BottomSheet
         open={editing}

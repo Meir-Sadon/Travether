@@ -7,6 +7,8 @@ using Travether.Api.Cards;
 using Travether.Api.Data;
 using Travether.Api.Email;
 using Travether.Api.Images;
+using Travether.Api.Places;
+using Travether.Api.Plans;
 using Travether.Api.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +29,8 @@ builder.Services.AddTravetherDatabase(builder.Configuration);
 builder.Services.AddScoped<AccessQueries>();
 builder.Services.AddScoped<RatingQueries>();
 builder.Services.AddScoped<CardViews>();
+builder.Services.AddScoped<PlanViews>();
+builder.Services.AddTravetherPlaces(builder.Configuration);
 builder.Services.AddTravetherImages(builder.Configuration, builder.Environment);
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddTravetherEmail(builder.Configuration);

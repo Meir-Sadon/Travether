@@ -148,6 +148,7 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
             e.Property(x => x.Title).HasMaxLength(80);
             e.Property(x => x.Category).HasMaxLength(16);
             e.Property(x => x.Origin).HasColumnType("geography (point, 4326)");
+            e.Property(x => x.OriginName).HasMaxLength(200);
             e.Property(x => x.OriginAreaLabel).HasMaxLength(120);
             e.Property(x => x.Destination).HasMaxLength(200);
             e.Property(x => x.DestinationPrecision).HasMaxLength(16);

@@ -82,3 +82,50 @@ export type MyCard = {
   /** Open join requests; 0 for plain members. */
   pendingRequests: number
 }
+
+export type PlanCategory = 'hike' | 'dayTrip' | 'food' | 'nightlife' | 'tour' | 'beach' | 'transport' | 'other'
+export type PlanAudience = 'open' | 'groupsOnly'
+export type PlanStatus = 'open' | 'full' | 'cancelled' | 'done'
+export type LocationPrecision = 'exact' | 'regional'
+export type PlanAccess = 'public' | 'participant' | 'host'
+export type LatLng = { lat: number; lng: number }
+
+/** A place picked as a meeting point; `area` is the coarse public label. */
+export type Place = { name: string; area: string; lat: number; lng: number }
+
+/**
+ * An Activity Plan as the viewer may see it. `meetingPoint` and an exact `destination` arrive only for participants;
+ * `participants` only for participants and members of the plan's card.
+ */
+export type Plan = {
+  id: string
+  cardId: string
+  cardName: string | null
+  title: string
+  category: PlanCategory
+  startsAt: string
+  timeZoneId: string
+  localDate: string
+  localTime: string
+  areaLabel: string
+  distance: { km: number; underOneKm: boolean } | null
+  meetingPoint: { name: string; lat: number; lng: number } | null
+  destination: string | null
+  destinationPrecision: LocationPrecision
+  purpose: string | null
+  seatLimit: number
+  seatsTaken: number
+  audience: PlanAudience
+  status: PlanStatus
+  access: PlanAccess
+  canManage: boolean
+  canSelfJoin: boolean
+  host: Person
+  participants: Person[] | null
+}
+
+/** A plan in a list. */
+export type PlanSummary = Pick<
+  Plan,
+  'id' | 'title' | 'category' | 'startsAt' | 'timeZoneId' | 'localDate' | 'localTime' | 'areaLabel' | 'seatLimit' | 'seatsTaken' | 'audience' | 'status' | 'host'
+> & { joined: boolean }

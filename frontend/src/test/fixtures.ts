@@ -1,4 +1,4 @@
-import type { Card, MyCard, Person } from '../lib/types'
+import type { Card, MyCard, Person, Plan, PlanSummary } from '../lib/types'
 import { testUser } from './mockApi'
 
 export const noa: Person = { id: testUser.id, displayName: 'Noa', age: 30, countryCode: 'IL', photoUrl: null, badges: ['contactVerified'] }
@@ -42,3 +42,60 @@ export const crewTile: MyCard = {
 }
 
 export const previewOf = (card: Card): Card => ({ ...card, access: 'preview', shareSlug: null, members: null, pendingRequestCount: null })
+
+export const hikePlan: Plan = {
+  id: 'plan-1',
+  cardId: crewCard.id,
+  cardName: crewCard.name,
+  title: 'Sunrise hike to Doi Suthep',
+  category: 'hike',
+  startsAt: '2026-10-13T22:30:00Z',
+  timeZoneId: 'Asia/Bangkok',
+  localDate: '2026-10-14',
+  localTime: '05:30:00',
+  areaLabel: 'Old City, Chiang Mai',
+  distance: null,
+  meetingPoint: { name: 'Tha Phae Gate', lat: 18.7877, lng: 98.9933 },
+  destination: 'Wat Phra That Doi Suthep',
+  destinationPrecision: 'exact',
+  purpose: "Monk's trail up, breakfast after.",
+  seatLimit: 4,
+  seatsTaken: 2,
+  audience: 'open',
+  status: 'open',
+  access: 'host',
+  canManage: true,
+  canSelfJoin: false,
+  host: noa,
+  participants: [noa, lena],
+}
+
+/** What someone outside the plan's card sees. */
+export const publicPlan: Plan = {
+  ...hikePlan,
+  cardName: null,
+  access: 'public',
+  canManage: false,
+  meetingPoint: null,
+  destination: null,
+  distance: { km: 2, underOneKm: false },
+  host: lena,
+  participants: null,
+}
+
+export const hikeSummary: PlanSummary = {
+  id: hikePlan.id,
+  title: hikePlan.title,
+  category: 'hike',
+  startsAt: hikePlan.startsAt,
+  timeZoneId: hikePlan.timeZoneId,
+  localDate: hikePlan.localDate,
+  localTime: hikePlan.localTime,
+  areaLabel: hikePlan.areaLabel,
+  seatLimit: 4,
+  seatsTaken: 2,
+  audience: 'open',
+  status: 'open',
+  host: noa,
+  joined: true,
+}

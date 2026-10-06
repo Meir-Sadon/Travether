@@ -24,7 +24,7 @@ The tables follow [PLAN.md §6.1](../PLAN.md#61-data-model-initial). Additions a
 | `vacation_cards` | CHECK `ends_on >= starts_on`, at least one region. GiST index on `daterange(starts_on, ends_on, '[]')`. | Date-overlap matching (§4.4). The expression index is raw SQL in the migration. |
 | `card_members` | Partial unique index: one `owner` per card. | |
 | `card_requests`, `plan_requests` | Partial unique index: one open (`requested`) request per person per card/plan. | Stops double-submits; a rejected request doesn't block a new one. |
-| `activity_plans` | Added `time_zone_id` (IANA) and `origin_public`. `seat_limit` 2–100. | Local dates for reminders and "Did you meet?" (§4.6). `origin_public` is explained below. |
+| `activity_plans` | Added `time_zone_id` (IANA), `origin_public` and `origin_name` (the meeting point's name, private like `origin`). `seat_limit` 2–100. | Local dates for reminders and "Did you meet?" (§4.6). `origin_public` is explained below. |
 | `conversation_members` | New. Members of `direct` conversations. | Card and plan chats derive members from memberships; direct chats need their own list. CHECK: `ref_id` is null exactly for `direct`. |
 | `reviews` | Added `replied_at`. Unique per (plan, reviewer, reviewee); stars 1–5; no self-review. | |
 | `reports` | Added `resolved_by_id`, `resolved_at`, `resolution_note`. | EU DSA: reasons are given when content is removed (§4.9). |
