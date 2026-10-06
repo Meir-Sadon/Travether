@@ -69,7 +69,9 @@ public sealed record PlanDto(
     bool CanManage,
     bool CanSelfJoin,
     PersonDto Host,
-    IReadOnlyList<PersonDto>? Participants);
+    IReadOnlyList<PersonDto>? Participants,
+    MyPlanRequestDto? MyRequest,
+    int? PendingRequestCount);
 
 /// <summary>A plan in a list (the card's plans tab, Discover).</summary>
 public sealed record PlanSummaryDto(
@@ -87,3 +89,12 @@ public sealed record PlanSummaryDto(
     PlanStatus Status,
     PersonDto Host,
     bool Joined);
+
+public sealed record PlanJoinRequestInput([MaxLength(300)] string? Message, Guid? SourceCardId, IReadOnlyList<Guid>? PartyUserIds);
+
+/// <summary>The viewer's latest request to a plan, for the status stepper (PLAN.md §4.5).</summary>
+public sealed record MyPlanRequestDto(Guid Id, RequestStatus Status, int PartySize, DateTimeOffset CreatedAt);
+
+/// <summary>An open request as the host and the card's admins see it.</summary>
+public sealed record PlanRequestDto(
+    Guid Id, PersonDto Requester, IReadOnlyList<PersonDto> Party, string? SourceCardName, string? Message, RequestStatus Status, DateTimeOffset CreatedAt);

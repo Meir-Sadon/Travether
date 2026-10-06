@@ -30,6 +30,7 @@ builder.Services.AddScoped<AccessQueries>();
 builder.Services.AddScoped<RatingQueries>();
 builder.Services.AddScoped<CardViews>();
 builder.Services.AddScoped<PlanViews>();
+builder.Services.AddHostedService<PlanRequestSweeper>();
 builder.Services.AddTravetherPlaces(builder.Configuration);
 builder.Services.AddTravetherImages(builder.Configuration, builder.Environment);
 builder.Services.AddSingleton(TimeProvider.System);

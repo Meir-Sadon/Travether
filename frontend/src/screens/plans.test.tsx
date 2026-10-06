@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router'
 import { describe, expect, it } from 'vitest'
 import App from '../App'
 import { crewCard, crewTile, hikePlan, hikeSummary, lena, noa, publicPlan } from '../test/fixtures'
-import { mockApi } from '../test/mockApi'
+import { mockApi, reply } from '../test/mockApi'
 
 function renderAt(path: string) {
   return render(
@@ -115,5 +115,74 @@ describe('activity plans', () => {
     await userEvent.selectOptions(within(sheet).getByLabelText('Which trip is this plan for?'), crewCard.id)
     expect(await within(sheet).findByText('in Chiang Mai Crew')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Publish plan' })).toBeEnabled()
+  })
+})
+
+describe('plan requests', () => {
+  const myTrip = { ...crewCard, id: 'card-mine', name: 'Pai Pals', access: 'owner' as const }
+  const myTripTile = { ...crewTile, id: 'card-mine', name: 'Pai Pals', endsOn: '2999-01-01' }
+
+  it('sends a solo request, shows its status and withdraws it', async () => {
+    const api = mockApi({
+      'GET /plans/plan-1': publicPlan,
+      'POST /plans/plan-1/requests': { ...publicPlan, myRequest: { id: 'pr-1', status: 'requested', partySize: 1, createdAt: '2026-10-06T10:00:00Z' } },
+      'DELETE /plan-requests/pr-1': reply(204),
+    })
+    renderAt('/plans/plan-1')
+    await userEvent.click(await screen.findByRole('button', { name: 'Request to join' }))
+    const sheet = screen.getByRole('dialog', { name: 'Request to join' })
+    await userEvent.type(within(sheet).getByLabelText('A note to the host (optional)'), 'Hi!')
+    await userEvent.click(within(sheet).getByRole('button', { name: 'Request to join' }))
+
+    const steps = await screen.findByRole('list', { name: 'Request status' })
+    expect(within(steps).getByText('Approved').closest('li')).toHaveAttribute('aria-current', 'step')
+    expect(api.calls.find((c) => c.method === 'POST')?.body).toEqual({ message: 'Hi!' })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Withdraw request' }))
+    expect(await screen.findByText('You withdrew your request.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Request to join' })).toBeInTheDocument()
+  })
+
+  it('asks for a groups-only plan with people from my trip', async () => {
+    const api = mockApi({
+      'GET /plans/plan-1': { ...publicPlan, audience: 'groupsOnly' },
+      'GET /cards': [myTripTile],
+      'GET /cards/card-mine': myTrip,
+      'POST /plans/plan-1/requests': { ...publicPlan, myRequest: { id: 'pr-1', status: 'requested', partySize: 2, createdAt: '2026-10-06T10:00:00Z' } },
+    })
+    renderAt('/plans/plan-1')
+    await userEvent.click(await screen.findByRole('button', { name: 'Request to join' }))
+    const sheet = screen.getByRole('dialog', { name: 'Request to join' })
+    expect(within(sheet).getByRole('radio', { name: /Just me/ })).toBeDisabled()
+    await userEvent.click(await within(sheet).findByRole('checkbox', { name: 'Lena' }))
+    await userEvent.click(within(sheet).getByRole('button', { name: 'Request 2 seats' }))
+
+    expect(await screen.findByRole('list', { name: 'Request status' })).toBeInTheDocument()
+    expect(api.calls.find((c) => c.method === 'POST')?.body).toEqual({ message: '', sourceCardId: 'card-mine', partyUserIds: [lena.id] })
+  })
+
+  it('lets the host approve a request', async () => {
+    const max = { ...lena, id: 'u-max', displayName: 'Max' }
+    const api = mockApi({
+      'GET /plans/plan-1': { ...hikePlan, pendingRequestCount: 1 },
+      'GET /plans/plan-1/requests': [
+        { id: 'pr-1', requester: max, party: [{ ...lena, id: 'u-ana', displayName: 'Ana' }], sourceCardName: 'Pai Pals', message: 'Two of us!', status: 'requested', createdAt: '2026-10-06T10:00:00Z' },
+      ],
+      'POST /plan-requests/pr-1/approve': { ...hikePlan, seatsTaken: 4, pendingRequestCount: 0 },
+    })
+    renderAt('/plans/plan-1')
+    expect(await screen.findByText('Two of us!')).toBeInTheDocument()
+    expect(screen.getByText('With Ana from Pai Pals')).toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Approve' }))
+    expect(api.calls.some((c) => c.method === 'POST' && c.path === '/plan-requests/pr-1/approve')).toBe(true)
+    expect(await screen.findByText(/4 going/)).toBeInTheDocument()
+  })
+
+  it('offers to ask again after a declined request', async () => {
+    mockApi({ 'GET /plans/plan-1': { ...publicPlan, myRequest: { id: 'pr-1', status: 'rejected', partySize: 1, createdAt: '2026-10-06T10:00:00Z' } } })
+    renderAt('/plans/plan-1')
+    expect(await screen.findByText("This request wasn't approved. You can ask again.")).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Ask again' })).toBeInTheDocument()
   })
 })
