@@ -47,7 +47,7 @@ cd backend && dotnet format --verify-no-changes && dotnet test
 
 Backend tests start a PostGIS container with Testcontainers, so Docker must be running.
 
-More docs: [data model and migrations](docs/DATA_MODEL.md) · [authorization rules](docs/AUTHORIZATION.md) · [deploying to Render + Neon](docs/DEPLOY.md).
+More docs: [design system](docs/DESIGN_SYSTEM.md) · [data model and migrations](docs/DATA_MODEL.md) · [authorization rules](docs/AUTHORIZATION.md) · [deploying to Render + Neon](docs/DEPLOY.md).
 
 ## Tech stack
 
