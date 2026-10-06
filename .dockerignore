@@ -1,0 +1,15 @@
+**/node_modules
+**/dist
+**/bin
+**/obj
+**/TestResults
+.git
+.github
+.claude
+design
+reports
+research_notes
+docs
+*.md
+.env
+.env.*

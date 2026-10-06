@@ -1,0 +1,13 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #222222;
+  background: #ffffff;
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  padding: 24px 20px;
+}
