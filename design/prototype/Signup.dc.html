@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Travether — Sign up</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#D93A4A;text-decoration:none}a:hover{color:#B02C3A}
+input::placeholder{color:#8A8A8A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #FFFFFF; font-family: 'Rubik', system-ui, sans-serif; color: #222222; overflow: hidden">
+  <div style="padding: 16px 12px 0; display: flex; align-items: center; gap: 8px">
+    <button onClick="{{back}}" aria-label="Back" style="width: 44px; height: 44px; border: none; background: transparent; border-radius: 999px; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+    <div style="flex: 1; display: flex; gap: 6px; padding-right: 20px">
+      <div style="flex: 1; height: 4px; border-radius: 4px; background: #D93A4A"></div>
+      <div style="flex: 1; height: 4px; border-radius: 4px; background: {{bar2}}"></div>
+      <div style="flex: 1; height: 4px; border-radius: 4px; background: {{bar3}}"></div>
+    </div>
+  </div>
+
+  <div style="flex: 1; overflow-y: auto; padding: 20px 20px 0">
+    <sc-if value="{{s1}}" hint-placeholder-val="{{ true }}">
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px">Create your account</h1>
+        <p style="margin: 0 0 8px; font-size: 15px; color: #6A6A6A; line-height: 1.5">Takes under a minute. No ID number needed.</p>
+        <button onClick="{{next}}" style="height: 52px; border-radius: 999px; border: 1px solid #DDDDDD; background: #FFFFFF; font: inherit; font-size: 15px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; color: #222222"><span style="width: 20px; height: 20px; border-radius: 999px; background: #F1F1F1; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center">G</span>Continue with Google</button>
+        <button onClick="{{next}}" style="height: 52px; border-radius: 999px; border: none; background: #222222; color: #FFFFFF; font: inherit; font-size: 15px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8s-1.9-.8-3.1-.8C6.8 7.2 5.3 8.1 4.5 9.6c-1.7 2.9-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8s1.9.8 3.1.8c1.3 0 2.1-1.2 2.9-2.4.9-1.3 1.3-2.6 1.3-2.7 0 0-2.6-1-2.7-4zM14.1 5.5c.6-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.4-.6.7-1.1 1.8-1 2.9 1.1.1 2.1-.5 2.8-1.3z"/></svg>Continue with Apple</button>
+        <div style="display: flex; align-items: center; gap: 10px; color: #8A8A8A; font-size: 13px; margin: 6px 0"><div style="flex: 1; height: 1px; background: #EBEBEB"></div>or<div style="flex: 1; height: 1px; background: #EBEBEB"></div></div>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500">Email
+          <input type="email" placeholder="you@example.com" style="height: 50px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 0 14px; font: inherit; font-size: 15px">
+        </label>
+        <button onClick="{{next}}" style="height: 52px; border-radius: 999px; border: none; background: #D93A4A; color: #FFFFFF; font: inherit; font-size: 16px; font-weight: 600; cursor: pointer">Send me a code</button>
+        <p style="margin: 4px 0 0; font-size: 12px; color: #6A6A6A; line-height: 1.5; text-align: center">You must be 18+. By continuing you agree to the <a href="#" style="text-decoration: underline">Terms</a> and <a href="#" style="text-decoration: underline">Community guidelines</a>.</p>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s2}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px">About you</h1>
+        <p style="margin: 0 0 4px; font-size: 15px; color: #6A6A6A; line-height: 1.5">Only your first name, age and country are shown to others.</p>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500">First name
+          <input value="Noa" style="height: 50px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 0 14px; font: inherit; font-size: 15px">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500">Last name <span style="font-weight: 400; color: #6A6A6A">Private — shown only to people you meet</span>
+          <input value="Levi" style="height: 50px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 0 14px; font: inherit; font-size: 15px">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500">Date of birth
+          <input value="12 / 03 / 1999" style="height: 50px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 0 14px; font: inherit; font-size: 15px">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500">Country of origin
+          <div style="height: 50px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 0 14px; font-size: 15px; font-weight: 400; display: flex; align-items: center; justify-content: space-between">Israel <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6A6A6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
+        </label>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{s3}}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; flex-direction: column; gap: 14px">
+        <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px">Make it yours</h1>
+        <p style="margin: 0; font-size: 15px; color: #6A6A6A; line-height: 1.5">Optional — a photo and a few interests help other travelers say yes. You can do this later.</p>
+        <div style="display: flex; align-items: center; gap: 16px; margin-top: 4px">
+          <div style="width: 84px; height: 84px; border-radius: 999px; background: #F4F4F4; border: 2px dashed #CCCCCC; display: flex; align-items: center; justify-content: center"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6A6A6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg></div>
+          <div style="font-size: 15px; font-weight: 500">Add a profile photo</div>
+        </div>
+        <div style="font-size: 13px; font-weight: 500; margin-top: 6px">What do you like doing?</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <sc-for list="{{tags}}" as="t" hint-placeholder-count="8">
+            <button onClick="{{t.toggle}}" style="height: 40px; padding: 0 16px; border-radius: 999px; border: 1px solid {{t.border}}; background: {{t.bg}}; color: {{t.fg}}; font: inherit; font-size: 14px; cursor: pointer">{{t.label}}</button>
+          </sc-for>
+        </div>
+        <div style="font-size: 13px; font-weight: 500; margin-top: 6px">Languages</div>
+        <div style="height: 50px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 0 14px; font-size: 15px; display: flex; align-items: center">Hebrew, English</div>
+      </div>
+    </sc-if>
+  </div>
+
+  <sc-if value="{{notFirst}}" hint-placeholder-val="{{ false }}">
+    <div style="padding: 12px 20px 24px; display: flex; flex-direction: column; gap: 8px">
+      <sc-if value="{{s2}}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{next}}" style="height: 52px; border-radius: 999px; border: none; background: #D93A4A; color: #FFFFFF; font: inherit; font-size: 16px; font-weight: 600; cursor: pointer">Continue</button>
+      </sc-if>
+      <sc-if value="{{s3}}" hint-placeholder-val="{{ false }}">
+        <a href="Home.dc.html" style="height: 52px; border-radius: 999px; background: #D93A4A; color: #FFFFFF; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center">Start exploring</a>
+        <a href="Home.dc.html" style="height: 44px; color: #222222; font-size: 15px; display: flex; align-items: center; justify-content: center; text-decoration: underline">Skip for now</a>
+      </sc-if>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { step: 1, picked: ['Hiking', 'Food'] }; }
+  renderVals() {
+    const step = this.state.step;
+    const all = ['Hiking', 'Food', 'Nightlife', 'Culture', 'Beach', 'Day trips', 'Diving', 'Budget'];
+    return {
+      s1: step === 1, s2: step === 2, s3: step === 3, notFirst: step > 1,
+      bar2: step >= 2 ? '#D93A4A' : '#EBEBEB',
+      bar3: step >= 3 ? '#D93A4A' : '#EBEBEB',
+      next: () => this.setState({ step: Math.min(3, step + 1) }),
+      back: () => this.setState({ step: Math.max(1, step - 1) }),
+      tags: all.map((label) => {
+        const on = this.state.picked.includes(label);
+        return {
+          label,
+          bg: on ? '#222222' : '#FFFFFF', fg: on ? '#FFFFFF' : '#222222', border: on ? '#222222' : '#DDDDDD',
+          toggle: () => this.setState({ picked: on ? this.state.picked.filter((x) => x !== label) : [...this.state.picked, label] })
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

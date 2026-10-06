@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Travether — Create Activity Plan</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#D93A4A;text-decoration:none}a:hover{color:#B02C3A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #6F6F6F; font-family: 'Rubik', system-ui, sans-serif; color: #222222; overflow: hidden">
+  <div style="height: 56px"></div>
+  <div style="flex: 1; min-height: 0; background: #FFFFFF; border-radius: 24px 24px 0 0; display: flex; flex-direction: column">
+    <div style="display: flex; justify-content: center; padding-top: 8px"><div style="width: 40px; height: 5px; border-radius: 5px; background: #DDDDDD"></div></div>
+    <div style="padding: 8px 12px 0 20px; display: flex; align-items: center; justify-content: space-between">
+      <div>
+        <div style="font-size: 20px; font-weight: 700">New Activity Plan</div>
+        <div style="font-size: 13px; color: #6A6A6A; margin-top: 2px">in Chiang Mai Crew</div>
+      </div>
+      <a href="Card.dc.html" aria-label="Close" style="width: 44px; height: 44px; border-radius: 999px; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></a>
+    </div>
+
+    <div style="flex: 1; overflow-y: auto; padding: 14px 20px 0; display: flex; flex-direction: column; gap: 16px">
+      <div>
+        <div style="font-size: 13px; font-weight: 500; margin-bottom: 8px">Type</div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <sc-for list="{{cats}}" as="c" hint-placeholder-count="7">
+            <button onClick="{{c.pick}}" style="height: 38px; padding: 0 14px; border-radius: 999px; border: 1px solid {{c.border}}; background: {{c.bg}}; color: {{c.fg}}; font: inherit; font-size: 14px; cursor: pointer">{{c.label}}</button>
+          </sc-for>
+        </div>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500">Title
+        <input value="Sunrise hike to Doi Suthep" style="height: 48px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 0 14px; font: inherit; font-size: 15px">
+      </label>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500">Date
+          <input value="Tue, 14 Oct" style="height: 48px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 0 14px; font: inherit; font-size: 15px; min-width: 0">
+        </label>
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500">Time
+          <input value="05:30" style="height: 48px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 0 14px; font: inherit; font-size: 15px; min-width: 0">
+        </label>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500">Meeting point
+        <input value="Tha Phae Gate, Old City" style="height: 48px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 0 14px; font: inherit; font-size: 15px">
+        <span style="font-weight: 400; color: #6A6A6A; font-size: 12px">Exact spot is shown only to approved participants. Others see "~2 km away".</span>
+      </label>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500">Destination
+          <input value="Wat Phra That Doi Suthep" style="height: 48px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 0 14px; font: inherit; font-size: 15px">
+        </label>
+        <div style="display: flex; gap: 4px; background: #F4F4F4; border-radius: 999px; padding: 4px; margin-top: 4px">
+          <sc-for list="{{precision}}" as="p" hint-placeholder-count="2">
+            <button onClick="{{p.pick}}" style="flex: 1; height: 36px; border: none; border-radius: 999px; background: {{p.bg}}; font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; color: #222222">{{p.label}}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <div><div style="font-size: 15px; font-weight: 500">Seats</div><div style="font-size: 12px; color: #6A6A6A">Including your group (3 going)</div></div>
+        <div style="display: flex; align-items: center; gap: 14px">
+          <button onClick="{{minus}}" aria-label="Fewer seats" style="width: 40px; height: 40px; border-radius: 999px; border: 1px solid #DDDDDD; background: #FFFFFF; font: inherit; font-size: 20px; cursor: pointer; color: #222222">−</button>
+          <span style="font-size: 18px; font-weight: 600; min-width: 22px; text-align: center">{{seats}}</span>
+          <button onClick="{{plus}}" aria-label="More seats" style="width: 40px; height: 40px; border-radius: 999px; border: 1px solid #DDDDDD; background: #FFFFFF; font: inherit; font-size: 20px; cursor: pointer; color: #222222">+</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size: 13px; font-weight: 500; margin-bottom: 8px">Who can request to join?</div>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <sc-for list="{{audience}}" as="a" hint-placeholder-count="2">
+            <button onClick="{{a.pick}}" style="text-align: left; border-radius: 14px; border: {{a.border}}; background: #FFFFFF; padding: 12px 14px; font: inherit; cursor: pointer; color: #222222">
+              <div style="font-size: 15px; font-weight: 600">{{a.label}}</div>
+              <div style="font-size: 13px; color: #6A6A6A; margin-top: 2px">{{a.desc}}</div>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+      <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; padding-bottom: 16px">What's the plan? <span style="font-weight: 400; color: #6A6A6A">Optional</span>
+        <textarea style="height: 80px; border-radius: 12px; border: 1px solid #DDDDDD; padding: 12px 14px; font: inherit; font-size: 15px; resize: none">Monk's trail up, sunrise at the temple, breakfast after. Moderate pace.</textarea>
+      </label>
+    </div>
+
+    <div style="padding: 12px 20px 24px; border-top: 1px solid #F0F0F0">
+      <a href="Plan.dc.html" style="height: 52px; border-radius: 999px; background: #D93A4A; color: #FFFFFF; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center">Publish plan</a>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { cat: 'Hike', exact: true, seats: 8, open: true }; }
+  renderVals() {
+    const s = this.state;
+    return {
+      cats: ['Hike', 'Day trip', 'Food', 'Nightlife', 'Tour', 'Beach', 'Ride share'].map((label) => {
+        const on = s.cat === label;
+        return { label, bg: on ? '#222222' : '#FFFFFF', fg: on ? '#FFFFFF' : '#222222', border: on ? '#222222' : '#DDDDDD', pick: () => this.setState({ cat: label }) };
+      }),
+      precision: [{ label: 'Exact place', v: true }, { label: 'General area', v: false }].map((p) => ({
+        label: p.label, bg: s.exact === p.v ? '#FFFFFF' : 'transparent', pick: () => this.setState({ exact: p.v })
+      })),
+      seats: s.seats,
+      minus: () => this.setState({ seats: Math.max(4, s.seats - 1) }),
+      plus: () => this.setState({ seats: Math.min(20, s.seats + 1) }),
+      audience: [
+        { label: 'Open to everyone', desc: 'Solo travelers and other groups can ask for a seat', v: true },
+        { label: 'Groups only', desc: 'Only other Vacation Cards can ask to join', v: false }
+      ].map((a) => ({ ...a, border: s.open === a.v ? '2px solid #222222' : '1px solid #DDDDDD', pick: () => this.setState({ open: a.v }) }))
+    };
+  }
+}
+</script>
+</body>
+</html>

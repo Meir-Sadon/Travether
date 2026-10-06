@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Travether — Vacation Card</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#D93A4A;text-decoration:none}a:hover{color:#B02C3A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #FFFFFF; font-family: 'Rubik', system-ui, sans-serif; color: #222222; overflow: hidden">
+  <div style="flex: 1; overflow-y: auto">
+    <div style="height: 210px; position: relative; background: #F3E3CF">
+      <svg width="390" height="210" viewBox="0 0 390 210" style="position: absolute; inset: 0"><circle cx="300" cy="70" r="28" fill="#F7C98B"/><path d="M0 160 L70 112 L130 146 L200 90 L270 140 L330 104 L390 130 L390 210 L0 210Z" fill="#D9B48C"/><path d="M160 210 L160 132 L176 116 L192 132 L192 210Z M206 210 L206 144 L218 132 L230 144 L230 210Z" fill="#B8865B"/></svg>
+      <a href="Home.dc.html" aria-label="Back" style="position: absolute; top: 16px; left: 16px; width: 44px; height: 44px; border-radius: 999px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a>
+      <a href="Share.dc.html" aria-label="Share card" style="position: absolute; top: 16px; right: 16px; width: 44px; height: 44px; border-radius: 999px; background: #FFFFFF; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/></svg></a>
+    </div>
+
+    <div style="padding: 18px 20px 0">
+      <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #6A6A6A"><span style="background: #F7F7F7; border-radius: 999px; padding: 4px 10px; font-weight: 500; color: #222222">Public</span>Thailand</div>
+      <h1 style="margin: 8px 0 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px">Chiang Mai Crew</h1>
+      <div style="display: flex; gap: 16px; margin-top: 10px; font-size: 14px; color: #222222">
+        <span style="display: flex; align-items: center; gap: 6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6A6A6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>12 – 26 Oct</span>
+        <span style="display: flex; align-items: center; gap: 6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6A6A6A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Chiang Mai, Pai</span>
+      </div>
+      <p style="margin: 12px 0 0; font-size: 14px; line-height: 1.5; color: #4A4A4A">Three friends after the army, into hikes, street food and the odd night out. Happy to share rides.</p>
+    </div>
+
+    <div style="margin: 18px 20px 0; display: flex; gap: 4px; background: #F4F4F4; border-radius: 999px; padding: 4px">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="3">
+        <button onClick="{{t.pick}}" style="flex: 1; height: 38px; border: none; border-radius: 999px; background: {{t.bg}}; font: inherit; font-size: 14px; font-weight: 500; color: #222222; cursor: pointer">{{t.label}}</button>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{onPlans}}" hint-placeholder-val="{{ true }}">
+      <div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 12px">
+        <a href="Plan.dc.html" style="border: 1px solid #EBEBEB; border-radius: 16px; padding: 14px; color: #222222; display: flex; gap: 12px">
+          <div style="width: 52px; height: 52px; border-radius: 12px; background: #E3EFE6; flex: 0 0 52px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">Hike</div>
+          <div style="flex: 1">
+            <div style="font-size: 15px; font-weight: 600">Sunrise hike to Doi Suthep</div>
+            <div style="font-size: 13px; color: #6A6A6A; margin-top: 3px">Tue 14 Oct · 05:30 · Open to everyone</div>
+            <div style="font-size: 12px; color: #1F7A4D; font-weight: 600; margin-top: 6px">3 of 8 seats · 2 join requests</div>
+          </div>
+        </a>
+        <div style="border: 1px solid #EBEBEB; border-radius: 16px; padding: 14px; display: flex; gap: 12px">
+          <div style="width: 52px; height: 52px; border-radius: 12px; background: #FBE7D9; flex: 0 0 52px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600">Food</div>
+          <div style="flex: 1">
+            <div style="font-size: 15px; font-weight: 600">Night market food crawl</div>
+            <div style="font-size: 13px; color: #6A6A6A; margin-top: 3px">Wed 15 Oct · 19:00 · Groups only</div>
+            <div style="font-size: 12px; color: #6A6A6A; font-weight: 500; margin-top: 6px">3 of 10 seats</div>
+          </div>
+        </div>
+        <a href="CreatePlan.dc.html" style="height: 50px; border-radius: 999px; border: 1px solid #222222; color: #222222; font-size: 15px; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New Activity Plan</a>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{onMembers}}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 12px">
+        <sc-if value="{{pending}}" hint-placeholder-val="{{ true }}">
+          <div style="border-radius: 16px; background: #FCEBEC; padding: 14px">
+            <div style="font-size: 12px; font-weight: 600; color: #B02C3A; text-transform: uppercase; letter-spacing: 0.5px">Join request</div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px">
+              <span style="width: 40px; height: 40px; border-radius: 999px; background: #FFFFFF; font-weight: 600; display: flex; align-items: center; justify-content: center">L</span>
+              <div style="flex: 1"><div style="font-size: 15px; font-weight: 600">Lena, 26 · Germany</div><div style="font-size: 13px; color: #4A4A4A">"Solo in Chiang Mai the same dates — love hiking!"</div></div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 12px">
+              <button onClick="{{decline}}" style="flex: 1; height: 44px; border-radius: 999px; border: 1px solid #222222; background: #FFFFFF; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; color: #222222">Decline</button>
+              <button onClick="{{approve}}" style="flex: 1; height: 44px; border-radius: 999px; border: none; background: #D93A4A; color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer">Approve</button>
+            </div>
+          </div>
+        </sc-if>
+        <sc-for list="{{members}}" as="m" hint-placeholder-count="3">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 6px 0">
+            <span style="width: 44px; height: 44px; border-radius: 999px; background: {{m.tint}}; font-weight: 600; display: flex; align-items: center; justify-content: center">{{m.initial}}</span>
+            <div style="flex: 1"><div style="font-size: 15px; font-weight: 600">{{m.name}}</div><div style="font-size: 13px; color: #6A6A6A">{{m.meta}}</div></div>
+            <span style="font-size: 12px; font-weight: 500; color: #6A6A6A; background: #F4F4F4; border-radius: 999px; padding: 5px 10px">{{m.role}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{onChat}}" hint-placeholder-val="{{ false }}">
+      <div style="padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 10px">
+        <div style="align-self: flex-start; max-width: 75%; background: #F4F4F4; border-radius: 16px 16px 16px 4px; padding: 10px 14px; font-size: 14px">Itay: booked the scooter for Pai</div>
+        <div style="align-self: flex-end; max-width: 75%; background: #D93A4A; color: #FFFFFF; border-radius: 16px 16px 4px 16px; padding: 10px 14px; font-size: 14px">Amazing. I opened the sunrise hike plan</div>
+        <a href="Chat.dc.html" style="align-self: center; font-size: 14px; font-weight: 500; margin-top: 8px">Open full chat</a>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { tab: 'Plans', pending: true, lena: false }; }
+  renderVals() {
+    const tab = this.state.tab;
+    const members = [
+      { initial: 'N', tint: '#FBE1DE', name: 'Noa (you)', meta: '27 · Israel', role: 'Owner' },
+      { initial: 'I', tint: '#DDEBF7', name: 'Itay', meta: '26 · Israel · ★ 4.8', role: 'Co-admin' },
+      { initial: 'M', tint: '#E3EFE6', name: 'Maya', meta: '27 · Israel', role: 'Member' }
+    ];
+    if (this.state.lena) members.push({ initial: 'L', tint: '#F3E3CF', name: 'Lena', meta: '26 · Germany · ★ 4.9', role: 'Member' });
+    return {
+      tabs: ['Plans', 'Members', 'Chat'].map((label) => ({
+        label: label === 'Members' ? 'Members · ' + members.length : label,
+        bg: tab === label ? '#FFFFFF' : 'transparent',
+        pick: () => this.setState({ tab: label })
+      })),
+      onPlans: tab === 'Plans', onMembers: tab === 'Members', onChat: tab === 'Chat',
+      pending: this.state.pending,
+      approve: () => this.setState({ pending: false, lena: true }),
+      decline: () => this.setState({ pending: false }),
+      members
+    };
+  }
+}
+</script>
+</body>
+</html>
