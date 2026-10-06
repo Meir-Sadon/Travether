@@ -34,6 +34,7 @@ export const testUser: Me = {
   role: 'traveler',
   hasPassword: true,
   createdAt: '2026-09-01T10:00:00Z',
+  strength: { percent: 75, missing: ['photo'] },
 }
 
 /**

@@ -1,21 +1,41 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
-import { Avatar, Button, Card, CardBody, Chip, Icon } from '../components'
+import type { Me } from '../auth/types'
+import { useAuth, useMe } from '../auth/useAuth'
+import { Button, Card, CardBody, FormError, Icon, TextField } from '../components'
+import { ProfileView } from '../features/ProfileView'
 import { ScreenHeader } from '../layout/ScreenHeader'
-import { me, reviewsAboutMe } from '../mock/data'
+import { api, errorCode } from '../lib/api'
+import type { PublicProfile } from '../lib/types'
+import { useApi } from '../lib/useApi'
 import './ProfileScreen.css'
 
-/** 8 · Profile: badges, rating (3+ reviews), reviews. */
+/** 8 · Your profile: badges, rating (3+ reviews), and a nudge to fill in one more thing (PLAN.md §4.1). */
 export function ProfileScreen() {
   const { t } = useTranslation()
-  const [idDone, setIdDone] = useState(false)
+  const me = useMe()
+  const { setUser } = useAuth()
+  const publicView = useApi<PublicProfile>(`/users/${me.id}`)
+  const fileRef = useRef<HTMLInputElement>(null)
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  const badges = [
-    { key: 'contact', done: true },
-    { key: 'photo', done: true },
-    { key: 'id', done: idDone },
-  ] as const
+  const upload = async (file: File) => {
+    setUploading(true)
+    setError(null)
+    try {
+      const form = new FormData()
+      form.append('file', file)
+      setUser(await api.post<Me>('/me/photo', form))
+    } catch (err) {
+      setError(errorCode(err))
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const next = me.strength.missing[0]
 
   return (
     <div className="screen">
@@ -28,94 +48,125 @@ export function ProfileScreen() {
           </Link>
         }
       />
-      <section className="screen__section profile__head">
-        <Avatar person={{ name: me.name, tint: me.tint }} size="lg" />
-        <div>
-          <h2 className="profile__name">
-            {me.name}, {me.age}
-          </h2>
-          <p className="screen__meta">
-            {me.flag} {me.country}
-          </p>
-        </div>
-      </section>
-
-      <section className="screen__section">
-        <dl className="profile__stats">
-          <div>
-            <dt>{t('profile.reviews')}</dt>
-            <dd>{me.reviewCount}</dd>
-          </div>
-          <div>
-            <dt>{t('profile.rating')}</dt>
-            <dd>{me.rating !== null ? `${me.rating} ★` : '—'}</dd>
-          </div>
-          <div>
-            <dt>{t('profile.meetups')}</dt>
-            <dd>7</dd>
-          </div>
-        </dl>
-        <p className="screen__meta">{t('profile.ratingRule')}</p>
-      </section>
-
-      <section className="screen__section" aria-labelledby="profile-verify">
-        <h2 id="profile-verify" className="screen__section-title">
-          {t('profile.verification')}
-        </h2>
-        <ul className="list-reset screen__stack">
-          {badges.map((b) => (
-            <li key={b.key} className="profile__badge">
-              <span className={`profile__badge-icon${b.done ? ' profile__badge-icon--done' : ''}`}>
-                <Icon name="shieldCheck" size={18} />
-              </span>
-              <span className="profile__badge-label">{t(`profile.badge_${b.key}`)}</span>
-              {b.done ? (
-                <Chip tone="success">{t('profile.done')}</Chip>
-              ) : (
-                <Button size="sm" variant="brand" onClick={() => setIdDone(true)}>
-                  {t('profile.verify')}
-                </Button>
-              )}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="screen__section" aria-labelledby="profile-about">
-        <h2 id="profile-about" className="screen__section-title">
-          {t('profile.about')}
-        </h2>
-        <p className="screen__body">{t('profile.bio')}</p>
-        <div className="screen__row">
-          {(['hiking', 'food', 'dayTrips'] as const).map((i) => (
-            <Chip key={i}>{t(`interest.${i}`)}</Chip>
-          ))}
-        </div>
-        <p className="screen__meta">{t('profile.speaks', { languages: me.languages.join(', ') })}</p>
-      </section>
-
-      <section className="screen__section" aria-labelledby="profile-reviews">
-        <h2 id="profile-reviews" className="screen__section-title">
-          {t('profile.whatPeopleSay')}
-        </h2>
-        <ul className="list-reset screen__stack">
-          {reviewsAboutMe.map((r) => (
-            <Card as="li" key={r.from} variant="filled">
+      <ProfileView
+        name={me.displayName}
+        age={me.age}
+        countryCode={me.countryCode}
+        photoUrl={me.photoUrl}
+        bio={me.bio}
+        languages={me.languages}
+        interests={me.interests}
+        badges={me.badges}
+        rating={publicView.data?.rating}
+        fullName={me.fullName}
+        avatarAction={
+          <>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              hidden
+              aria-label={t('profile.photoInput')}
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) void upload(file)
+                e.target.value = ''
+              }}
+            />
+            <Button size="sm" variant="secondary" loading={uploading} onClick={() => fileRef.current?.click()}>
+              {me.photoUrl ? t('profile.changePhoto') : t('profile.addPhoto')}
+            </Button>
+          </>
+        }
+      >
+        <section className="screen__section">
+          <FormError code={error} />
+          {me.strength.percent < 100 && next && (
+            <Card variant="filled" as="div">
               <CardBody>
-                <span aria-label={t('profile.stars', { count: r.stars })} className="profile__stars">
-                  {'★'.repeat(r.stars)}
-                  {'☆'.repeat(5 - r.stars)}
-                </span>
-                <p className="screen__body">“{r.text}”</p>
-                <span className="screen__meta">
-                  {r.from} · {r.country} · {r.date}
-                </span>
+                <div className="profile__strength">
+                  <span>{t('profile.strength', { percent: me.strength.percent })}</span>
+                  <progress max={100} value={me.strength.percent} aria-label={t('profile.strengthLabel')} />
+                </div>
+                <p className="screen__meta">{t(`profile.next_${next}`)}</p>
+                {next === 'contactVerified' ? (
+                  <ConfirmEmail email={me.email} />
+                ) : next === 'photo' ? (
+                  <Button size="sm" variant="brand" loading={uploading} onClick={() => fileRef.current?.click()}>
+                    {t('profile.addPhoto')}
+                  </Button>
+                ) : (
+                  <Link to="/profile/edit" className="btn btn--brand btn--sm">
+                    {t('profile.addNow')}
+                  </Link>
+                )}
               </CardBody>
             </Card>
-          ))}
-        </ul>
-      </section>
+          )}
+          <Link to="/profile/edit" className="btn btn--secondary btn--md btn--block">
+            {t('profile.edit')}
+          </Link>
+        </section>
+      </ProfileView>
       <div className="screen__section" />
     </div>
   )
 }
+
+/** Confirms the email with an emailed code; earns the contact-verified badge. */
+function ConfirmEmail({ email }: { email: string }) {
+  const { t } = useTranslation()
+  const { setUser } = useAuth()
+  const [sent, setSent] = useState(false)
+  const [code, setCode] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const run = async (work: () => Promise<void>) => {
+    setBusy(true)
+    setError(null)
+    try {
+      await work()
+    } catch (err) {
+      setError(errorCode(err))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  if (!sent) {
+    return (
+      <Button size="sm" variant="brand" loading={busy} onClick={() => void run(async () => {
+        await api.post('/auth/email/confirm/start')
+        setSent(true)
+      })}>
+        {t('profile.confirmEmail')}
+      </Button>
+    )
+  }
+
+  return (
+    <form
+      className="screen__stack"
+      onSubmit={(e) => {
+        e.preventDefault()
+        void run(async () => setUser(await api.post<Me>('/auth/email/confirm', { code })))
+      }}
+    >
+      <TextField
+        label={t('auth.code')}
+        inputMode="numeric"
+        autoComplete="one-time-code"
+        maxLength={6}
+        value={code}
+        onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+        hint={t('auth.codeSent', { email })}
+      />
+      <FormError code={error} />
+      <Button type="submit" size="sm" variant="brand" loading={busy}>
+        {t('auth.verifyCode')}
+      </Button>
+    </form>
+  )
+}
+
