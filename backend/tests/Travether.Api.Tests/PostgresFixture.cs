@@ -74,6 +74,7 @@ public sealed class ApiFactory(string connectionString) : WebApplicationFactory<
     {
         builder.UseSetting("ConnectionStrings:Default", connectionString);
         builder.UseSetting("RateLimits:AuthPerMinute", "100000");
+        builder.UseSetting("Images:LocalPath", Path.Combine(Path.GetTempPath(), "travether-test-uploads"));
         builder.ConfigureTestServices(services =>
         {
             services.RemoveAll<IEmailSender>();

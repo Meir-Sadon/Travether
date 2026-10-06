@@ -6,12 +6,14 @@ import { DesignSystemPage } from './pages/DesignSystemPage'
 import { StatusPage } from './pages/StatusPage'
 import { ChatScreen } from './screens/ChatScreen'
 import { DiscoverScreen } from './screens/DiscoverScreen'
+import { EditProfileScreen } from './screens/EditProfileScreen'
 import { ForgotPasswordScreen } from './screens/ForgotPasswordScreen'
 import { HomeScreen } from './screens/HomeScreen'
 import { InboxScreen } from './screens/InboxScreen'
 import { LandingScreen } from './screens/LandingScreen'
 import { LoginScreen } from './screens/LoginScreen'
 import { NotFoundScreen } from './screens/NotFoundScreen'
+import { PersonScreen } from './screens/PersonScreen'
 import { PlanScreen } from './screens/PlanScreen'
 import { ProfileScreen } from './screens/ProfileScreen'
 import { ReviewScreen } from './screens/ReviewScreen'
@@ -42,11 +44,13 @@ export default function App() {
           <Route path="forgot" element={<ForgotPasswordScreen />} />
           <Route path="c/:slug" element={<TripScreen preview />} />
           <Route path="plans/:planId" element={<PlanScreen />} />
+          <Route path="people/:userId" element={<PersonScreen />} />
           <Route element={<RequireAuth />}>
             <Route path="trips/:tripId" element={<TripScreen />} />
             <Route path="plans/:planId/review" element={<ReviewScreen />} />
             <Route path="inbox/:chatId" element={<ChatScreen />} />
             <Route path="settings" element={<SettingsScreen />} />
+            <Route path="profile/edit" element={<EditProfileScreen />} />
           </Route>
           <Route path="*" element={<NotFoundScreen />} />
         </Route>

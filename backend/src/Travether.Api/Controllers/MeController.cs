@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Travether.Api.Api;
 using Travether.Api.Auth;
 using Travether.Api.Data;
+using Travether.Api.Images;
 using Travether.Api.Profiles;
 
 namespace Travether.Api.Controllers;
@@ -15,6 +16,7 @@ public sealed record UpdateProfileRequest(
     [MaxLength(120)] string? FullName,
     [RegularExpression("^[A-Z]{2}$")] string? CountryCode,
     [MaxLength(500)] string? Bio,
+    [RegularExpression(@"^(\+[1-9]\d{6,14})?$")] string? Phone,
     [MaxLength(ProfileRules.MaxLanguages)] IReadOnlyList<string>? Languages,
     [MaxLength(ProfileRules.MaxInterests)] IReadOnlyList<string>? Interests);
 
@@ -22,13 +24,15 @@ public sealed record UpdateProfileRequest(
 [ApiController]
 [Authorize]
 [Route("api/me")]
-public sealed class MeController(TravetherDbContext db, TimeProvider clock) : ControllerBase
+public sealed class MeController(TravetherDbContext db, IImageStore images, TimeProvider clock) : ControllerBase
 {
+    private DateOnly Today => DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
+
     [HttpGet]
     public async Task<MeDto> Get(CancellationToken ct)
     {
         var user = await db.Users.AsNoTracking().FirstAsync(u => u.Id == User.RequireUserId(), ct).ConfigureAwait(false);
-        return MeDto.From(user, DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime));
+        return MeDto.From(user, Today);
     }
 
     [HttpPatch]
@@ -66,6 +70,12 @@ public sealed class MeController(TravetherDbContext db, TimeProvider clock) : Co
             user.Bio = string.IsNullOrWhiteSpace(req.Bio) ? null : req.Bio.Trim();
         }
 
+        if (req.Phone is not null)
+        {
+            // Private: only ever shown to others when the user shares it in a chat (PLAN.md decision 3).
+            user.Phone = req.Phone.Length == 0 ? null : req.Phone;
+        }
+
         if (req.Languages is not null)
         {
             if (!ProfileRules.TryNormalizeLanguages(req.Languages, out var languages))
@@ -87,6 +97,49 @@ public sealed class MeController(TravetherDbContext db, TimeProvider clock) : Co
         }
 
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        return Ok(MeDto.From(user, DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime)));
+        return Ok(MeDto.From(user, Today));
+    }
+
+    /// <summary>Uploads a profile photo (JPEG, PNG or WebP, up to 5 MB) and replaces the old one.</summary>
+    [HttpPost("photo")]
+    [RequestSizeLimit(ImageRules.MaxBytes + 64 * 1024)]
+    public async Task<IActionResult> UploadPhoto(IFormFile? file, CancellationToken ct)
+    {
+        var (data, kind, error) = await ImageRules.ReadAsync(file, ct).ConfigureAwait(false);
+        if (data is null)
+        {
+            return ApiError.BadRequest(error!);
+        }
+
+        string url;
+        await using (data)
+        {
+            url = await images.SaveAsync(data, kind, "avatars", ct).ConfigureAwait(false);
+        }
+
+        var user = await db.Users.FirstAsync(u => u.Id == User.RequireUserId(), ct).ConfigureAwait(false);
+        var old = user.PhotoUrl;
+        user.PhotoUrl = url;
+        await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        if (old is not null)
+        {
+            await images.DeleteAsync(old, ct).ConfigureAwait(false);
+        }
+
+        return Ok(MeDto.From(user, Today));
+    }
+
+    [HttpDelete("photo")]
+    public async Task<IActionResult> DeletePhoto(CancellationToken ct)
+    {
+        var user = await db.Users.FirstAsync(u => u.Id == User.RequireUserId(), ct).ConfigureAwait(false);
+        if (user.PhotoUrl is { } old)
+        {
+            user.PhotoUrl = null;
+            await db.SaveChangesAsync(ct).ConfigureAwait(false);
+            await images.DeleteAsync(old, ct).ConfigureAwait(false);
+        }
+
+        return Ok(MeDto.From(user, Today));
     }
 }

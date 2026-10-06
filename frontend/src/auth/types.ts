@@ -18,7 +18,11 @@ export type Me = {
   role: 'traveler' | 'moderator'
   hasPassword: boolean
   createdAt: string
+  strength: { percent: number; missing: ProfileItem[] }
 }
+
+/** Profile parts the strength meter asks for, most valuable first. */
+export type ProfileItem = 'contactVerified' | 'photo' | 'bio' | 'interests' | 'languages'
 
 export type AuthResult =
   | { status: 'signedIn'; user: Me }

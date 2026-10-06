@@ -5,6 +5,8 @@ using Travether.Api.Auth;
 using Travether.Api.Authorization;
 using Travether.Api.Data;
 using Travether.Api.Email;
+using Travether.Api.Images;
+using Travether.Api.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,8 @@ builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 builder.Services.AddTravetherDatabase(builder.Configuration);
 builder.Services.AddScoped<AccessQueries>();
+builder.Services.AddScoped<RatingQueries>();
+builder.Services.AddTravetherImages(builder.Configuration, builder.Environment);
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddTravetherEmail(builder.Configuration);
 builder.Services.AddTravetherAuth(builder.Configuration, builder.Environment);
@@ -58,6 +62,7 @@ if (app.Environment.IsDevelopment())
 // The built frontend is copied into wwwroot by the Dockerfile, so one service serves both.
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseLocalImages();
 
 app.UseAuthentication();
 app.UseAuthorization();
