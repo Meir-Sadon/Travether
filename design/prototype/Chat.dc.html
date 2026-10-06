@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Travether — Plan chat</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#0E2F2C;text-decoration:none}a:hover{color:#000000}
+input::placeholder{color:#8A8A8A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; display: flex; flex-direction: column; background: #FFFFFF; font-family: 'Rubik', system-ui, sans-serif; color: #222222; overflow: hidden">
+  <div style="padding: 12px 12px 10px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #F0F0F0">
+    <a href="Inbox.dc.html" aria-label="Back" style="width: 44px; height: 44px; border-radius: 999px; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></a>
+    <div style="width: 40px; height: 40px; border-radius: 12px; background: #DDEBF7; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600">Trip</div>
+    <div style="flex: 1"><div style="font-size: 16px; font-weight: 600">Elephant sanctuary</div><div style="font-size: 12px; color: #6A6A6A">7 people · Thu 16 Oct, 08:00</div></div>
+    <button aria-label="Chat options" style="width: 44px; height: 44px; border-radius: 999px; border: none; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="#222222"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg></button>
+  </div>
+
+  <div style="margin: 10px 16px 0; padding: 12px 14px; border-radius: 14px; background: #F7F7F7; display: flex; gap: 10px; align-items: center">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E2F2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+    <div style="flex: 1; font-size: 13px; line-height: 1.4"><span style="font-weight: 600">Meeting point:</span> 7-Eleven, Huay Kaew Rd · 07:50</div>
+    <button style="height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid #DDDDDD; background: #FFFFFF; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; color: #222222">Add to calendar</button>
+  </div>
+
+  <div style="flex: 1; overflow-y: auto; padding: 14px 12px; display: flex; flex-direction: column; gap: 4px; background: #EEF1EA; margin-top: 10px">
+    <div style="align-self: center; font-size: 12px; font-weight: 500; color: #4A4A4A; background: #FFFFFF; border-radius: 999px; padding: 5px 12px; margin-bottom: 6px">Today</div>
+    <div style="align-self: center; font-size: 12px; color: #4A4A4A; text-align: center; max-width: 290px; line-height: 1.5; background: #FFF6D9; border-radius: 12px; padding: 8px 12px; margin-bottom: 8px">Lena approved Noa's group. Keep chats here until you're comfortable — meet in a public place.</div>
+    <sc-for list="{{msgs}}" as="m" hint-placeholder-count="5">
+      <div style="display: flex; justify-content: {{m.justify}}; align-items: flex-end; gap: 8px; margin-top: {{m.gapTop}}px">
+        <sc-if value="{{m.other}}" hint-placeholder-val="{{ true }}">
+          <span style="flex: 0 0 32px; width: 32px; height: 32px; border-radius: 999px; background: {{m.avatarBg}}; border: 2px solid {{m.avatarBorder}}; box-sizing: border-box; font-size: 13px; font-weight: 600; color: #222222; display: flex; align-items: center; justify-content: center; visibility: {{m.avatarVis}}">{{m.initial}}</span>
+        </sc-if>
+        <div style="max-width: 74%; background: {{m.bg}}; color: {{m.fg}}; border-radius: {{m.radius}}; padding: 8px 12px 6px; box-shadow: {{m.shadow}}">
+          <sc-if value="{{m.showName}}" hint-placeholder-val="{{ true }}"><div style="font-size: 13px; font-weight: 600; color: {{m.nameColor}}; margin-bottom: 2px">{{m.who}}</div></sc-if>
+          <div style="font-size: 15px; line-height: 1.4">{{m.text}}</div>
+          <div style="display: flex; justify-content: flex-end; align-items: center; gap: 4px; margin-top: 2px; font-size: 11px; color: {{m.metaColor}}">{{m.time}}<sc-if value="{{m.mine}}" hint-placeholder-val="{{ false }}"><svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#C6F36B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-label="Seen"><path d="M1 6.5 4 9.5 10 2.5M6.5 9.5 9.5 9.5 15 2.5"/></svg></sc-if></div>
+        </div>
+      </div>
+    </sc-for>
+    <div style="display: flex; align-items: flex-end; gap: 8px; margin-top: 10px">
+      <span style="flex: 0 0 32px; width: 32px; height: 32px; border-radius: 999px; background: #F3E3CF; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center">L</span>
+      <div style="background: #FFFFFF; border-radius: 18px 18px 18px 4px; padding: 10px 12px; display: flex; gap: 10px; align-items: center; max-width: 74%; box-shadow: 0 1px 2px rgba(0,0,0,0.08)">
+        <span style="width: 36px; height: 36px; border-radius: 999px; background: #E7F4EC; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1F7A4D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></span>
+        <div><div style="font-size: 13px; font-weight: 600; color: #9A4F1A">Lena shared her WhatsApp</div><div style="font-size: 13px; color: #6A6A6A">+49 ••• ••• 214 · tap to open</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 8px 12px 20px; border-top: 1px solid #F0F0F0">
+    <div style="display: flex; gap: 8px; padding: 0 4px 8px; overflow-x: auto">
+      <button onClick="{{shareNum}}" style="flex: 0 0 auto; height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid #DDDDDD; background: #FFFFFF; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; color: #222222">Share my number</button>
+      <button style="flex: 0 0 auto; height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid #DDDDDD; background: #FFFFFF; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; color: #222222">Share plan with a friend</button>
+      <button style="flex: 0 0 auto; height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid #DDDDDD; background: #FFFFFF; font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; color: #222222">Split costs</button>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center">
+      <label style="flex: 1; display: flex"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Message</span>
+        <input value="{{draft}}" onInput="{{type}}" placeholder="Message the group" style="flex: 1; height: 46px; border-radius: 999px; border: 1px solid #DDDDDD; padding: 0 16px; font: inherit; font-size: 15px; min-width: 0">
+      </label>
+      <button onClick="{{send}}" aria-label="Send" style="width: 46px; height: 46px; border-radius: 999px; border: none; background: #C6F36B; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E2F2C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    this.state = {
+      draft: '',
+      msgs: [
+        { me: false, who: 'Lena', time: '08:41', text: 'Welcome! We booked a songthaew for 8:00, 200 THB each.' },
+        { me: false, who: 'Lena', time: '08:41', text: 'It fits all of us.' },
+        { me: false, who: 'Jonas', time: '08:45', text: 'Bring swimwear for the waterfall' },
+        { me: true, who: 'Noa', time: '08:52', text: 'Perfect, the three of us are in.' },
+        { me: true, who: 'Noa', time: '08:52', text: 'Is cash OK?' },
+        { me: false, who: 'Lena', time: '09:02', text: 'Yes cash is easiest. See you at 8 by the 7-Eleven!' }
+      ]
+    };
+  }
+  renderVals() {
+    const list = this.state.msgs;
+    return {
+      draft: this.state.draft,
+      type: (e) => this.setState({ draft: e.target.value }),
+      send: () => {
+        const t = this.state.draft.trim();
+        if (t) this.setState({ msgs: [...list, { me: true, who: 'Noa', time: 'now', text: t }], draft: '' });
+      },
+      shareNum: () => this.setState({ msgs: [...list, { me: true, who: 'Noa', time: 'now', text: 'Shared my WhatsApp: +972 ••• ••• 381' }] }),
+      msgs: list.map((m, i) => {
+        const prev = list[i - 1], next = list[i + 1];
+        const first = !prev || prev.who !== m.who;
+        const last = !next || next.who !== m.who;
+        const people = { Lena: ['#F3E3CF', '#9A4F1A'], Jonas: ['#DDEBF7', '#1E5BB0'] };
+        const p = people[m.who] || ['#E6E1F3', '#5B3FA8'];
+        return {
+          text: m.text, who: m.who, time: m.time,
+          mine: m.me, other: !m.me,
+          justify: m.me ? 'flex-end' : 'flex-start',
+          gapTop: first && i > 0 ? 10 : 0,
+          showName: !m.me && first,
+          initial: m.who[0],
+          avatarBg: p[0], avatarBorder: '#FFFFFF',
+          avatarVis: last ? 'visible' : 'hidden',
+          nameColor: p[1],
+          bg: m.me ? '#0E2F2C' : '#FFFFFF',
+          fg: m.me ? '#FFFFFF' : '#222222',
+          metaColor: m.me ? '#B9C9C5' : '#8A8A8A',
+          shadow: m.me ? 'none' : '0 1px 2px rgba(0,0,0,0.08)',
+          radius: m.me ? (last ? '18px 18px 4px 18px' : '18px') : (last ? '18px 18px 18px 4px' : '18px')
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>
