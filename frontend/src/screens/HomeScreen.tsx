@@ -11,9 +11,10 @@ import { formatDateRange, tintFor, todayIso } from '../lib/dates'
 import { useNotificationEvents } from '../lib/chatHub'
 import { discoverPath, useTripOrigin } from '../lib/discover'
 import { shareCodeFrom } from '../lib/share'
-import type { DiscoverPlan, MyCard } from '../lib/types'
+import type { DiscoverPlan, MyCard, PendingWrapUp } from '../lib/types'
 import { useApi } from '../lib/useApi'
 import './HomeScreen.css'
+import './InboxScreen.css'
 import './NotificationsScreen.css'
 
 /** 3 · Home: my trips + plans matching my dates nearby. */
@@ -35,6 +36,7 @@ export function HomeScreen() {
   const unread = useApi<{ count: number }>('/notifications/unread')
   useNotificationEvents(() => unread.reload())
   const unreadCount = unread.data?.count ?? 0
+  const { data: wrapUps } = useApi<PendingWrapUp[]>('/me/wrap-ups')
 
   const join = (e: FormEvent) => {
     e.preventDefault()
@@ -55,6 +57,19 @@ export function HomeScreen() {
           </Link>
         }
       />
+
+      {wrapUps && wrapUps.length > 0 && (
+        <section className="screen__section" aria-labelledby="home-wrapups">
+          <h2 id="home-wrapups" className="screen__section-title">
+            {t('home.wrapUpsTitle')}
+          </h2>
+          {wrapUps.map((w) => (
+            <Link key={w.planId} to={`/plans/${w.planId}/review`} className="inbox__prompt">
+              <strong>{w.needsAnswer ? t('home.wrapUpAnswer', { title: w.title }) : t('home.wrapUpReview', { count: w.toReview, title: w.title })}</strong>
+            </Link>
+          ))}
+        </section>
+      )}
 
       <section className="screen__section" aria-labelledby="home-trips">
         <h2 id="home-trips" className="screen__section-title">

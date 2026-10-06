@@ -53,6 +53,60 @@ public sealed partial class NotificationJobs(
     }
 
     /// <summary>
+    /// "Did you meet?" (PLAN.md §4.6): from 10:00 local time the day after a plan it becomes Done and
+    /// everyone on it with company is asked; on day 7 those who still haven't answered are asked again.
+    /// </summary>
+    public async Task<int> MeetPromptsAsync(CancellationToken ct)
+    {
+        var now = clock.GetUtcNow();
+        var since = now.AddDays(-8);
+        var plans = await db.ActivityPlans.AsNoTracking()
+            .Where(p => p.Status != PlanStatus.Cancelled && p.StartsAt < now && p.StartsAt > since)
+            .Select(p => new
+            {
+                p.Id,
+                p.Title,
+                p.StartsAt,
+                p.TimeZoneId,
+                p.Status,
+                Going = p.Participants.Where(x => x.Status == MembershipStatus.Active).Select(x => x.UserId).ToList(),
+                Answered = db.MeetConfirmations.Where(m => m.PlanId == p.Id).Select(m => m.UserId).ToList(),
+            })
+            .ToListAsync(ct).ConfigureAwait(false);
+
+        var sent = 0;
+        foreach (var plan in plans)
+        {
+            var promptAt = PlanRules.ToInstant(PlanRules.ToLocal(plan.StartsAt, plan.TimeZoneId).Date.AddDays(1), new TimeOnly(10, 0), plan.TimeZoneId);
+            if (now < promptAt)
+            {
+                continue;
+            }
+
+            if (plan.Status is PlanStatus.Open or PlanStatus.Full)
+            {
+                await db.ActivityPlans.Where(p => p.Id == plan.Id && (p.Status == PlanStatus.Open || p.Status == PlanStatus.Full))
+                    .ExecuteUpdateAsync(u => u.SetProperty(p => p.Status, PlanStatus.Done), ct).ConfigureAwait(false);
+            }
+
+            var waiting = plan.Going.Except(plan.Answered).ToList();
+            if (plan.Going.Count < 2 || waiting.Count == 0)
+            {
+                continue;
+            }
+
+            var payload = new NotificationPayload($"/plans/{plan.Id}/review", Subject: plan.Title);
+            sent += await notifier.SendAsync(waiting, NotificationTypes.MeetPrompt, payload, $"meet-1:{plan.Id:N}", ct).ConfigureAwait(false);
+            if (now >= promptAt.AddDays(6))
+            {
+                sent += await notifier.SendAsync(waiting, NotificationTypes.MeetPrompt, payload, $"meet-7:{plan.Id:N}", ct).ConfigureAwait(false);
+            }
+        }
+
+        return sent;
+    }
+
+    /// <summary>
     /// Once a day, from <see cref="NotificationOptions.DigestHour"/> local time, tells members of
     /// current and upcoming trips how many plans near the trip were posted in the last 24 hours,
     /// using the same exclusions as Discover.

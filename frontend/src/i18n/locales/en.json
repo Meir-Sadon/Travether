@@ -121,7 +121,11 @@
     "codeLabel": "Invite link or code",
     "codeHint": "Paste the link a friend sent you, or the code at its end.",
     "notifications": "Notifications",
-    "notificationsUnread": "Notifications, {{count}} new"
+    "notificationsUnread": "Notifications, {{count}} new",
+    "wrapUpsTitle": "How did it go?",
+    "wrapUpAnswer": "Did {{title}} happen?",
+    "wrapUpReview_one": "Review 1 person from {{title}}",
+    "wrapUpReview_other": "Review {{count}} people from {{title}}"
   },
   "discover": {
     "subtitle": "{{dates}} · within {{km}} km",
@@ -477,21 +481,34 @@
   },
   "review": {
     "didItHappen": "Did \"{{plan}}\" happen?",
-    "askMeta": "{{when}} with {{group}}. Only people who both confirm can review each other.",
     "yesMet": "Yes, we met",
     "cancelled": "It was cancelled",
     "didntGo": "I didn't go",
     "report": "Something went wrong? Report it privately",
     "howWasIt": "How was it with them?",
     "blindNote": "Your review stays hidden until they review you too, or for 14 days, so everyone can be honest.",
-    "hostMeta": "Host · {{country}}",
     "starsFor": "Stars for {{name}}",
     "feedbackFor": "Feedback for {{name}} (optional)",
     "placeholder": "What was it like?",
-    "submit": "Submit reviews",
-    "thanks": "Thanks, {{name}}!",
-    "thanksBody": "Your reviews will appear once {{names}} review you, or in 14 days.",
-    "findNext": "Find the next plan"
+    "findNext": "Find the next plan",
+    "askMeta_one": "{{when}}, with 1 other person. Only people who both confirm can review each other.",
+    "askMeta_other": "{{when}}, with {{count}} others. Only people who both confirm can review each other.",
+    "answerClosed": "Answers for this plan have closed.",
+    "thanksForTelling": "Thanks for telling us",
+    "submitFor": "Send review for {{name}}",
+    "until": "You can review until {{date}}.",
+    "waiting": "Waiting for {{name}} to confirm you met.",
+    "closed": "Reviewing is closed.",
+    "yourReview": "Your review",
+    "theirReview": "{{name}}'s review of you",
+    "theyReviewedYou": "{{name}} reviewed you. Leave your review to see theirs.",
+    "none": "No reviews yet.",
+    "deletedUser": "Deleted user",
+    "replyLabel": "Reply",
+    "reply": "Reply publicly",
+    "replyField": "Your reply",
+    "replyHint": "Shown under the review. You can reply once.",
+    "sendReply": "Post reply"
   },
   "notFound": {
     "title": "Nothing here",
@@ -595,7 +612,17 @@
     "InvalidTimeZone": "We couldn't read your time zone.",
     "InvalidQuietHours": "Pick both a start and an end time.",
     "PushEndpointNotAllowed": "This browser's push service isn't supported.",
-    "InvalidPushKeys": "Push couldn't be set up on this device."
+    "InvalidPushKeys": "Push couldn't be set up on this device.",
+    "PlanNotOver": "This plan hasn't happened yet.",
+    "AnswerClosed": "Answers for this plan have closed.",
+    "AlreadyAnswered": "You already answered.",
+    "ReviewNotOpen": "Reviewing isn't open for this person.",
+    "AlreadyReviewed": "You already reviewed this person.",
+    "InvalidStars": "Pick 1 to 5 stars.",
+    "ReviewNotPublished": "You can reply once the review is visible.",
+    "AlreadyReplied": "You already replied to this review.",
+    "ReplyEmpty": "Write a reply first.",
+    "NotParticipant": "Only people on this plan can do that."
   },
   "notifications": {
     "title": "Notifications",
@@ -614,6 +641,8 @@
     "type_plan_reminder_other": "{{subject}} starts in about {{count}} hours",
     "type_matches_digest_one": "{{count}} new plan near {{subject}}",
     "type_matches_digest_other": "{{count}} new plans near {{subject}}",
+    "type_meet_prompt": "Did {{subject}} happen? Tell us, then review each other",
+    "type_review_received": "{{actor}} reviewed you. Leave yours to see it",
     "type_other": "Something new on Travether"
   }
 }

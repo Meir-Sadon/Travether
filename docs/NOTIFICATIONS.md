@@ -21,12 +21,13 @@ Rows older than 12 hours that were never delivered (say, the server was down) ar
 | `plan_reminder` (24 h and 2 h before; skipped when the plan was created inside that window) | Reminders | ✔ | ✔ | |
 | `chat_message` | Messages | Inbox unread only | ✔ batched | |
 | `matches_digest` (new plans near a current or upcoming trip, posted in the last 24 h) | Matches | ✔ | ✔ | ✔ |
+| `meet_prompt` ("Did you meet?", the day after from 10:00 local, again on day 7 for those who haven't answered) | Reviews | ✔ | ✔ | ✔ |
+| `review_received` (who reviewed you, never what they wrote) | Reviews | ✔ | ✔ | |
 
 - **Settings:** a category that is off still shows in the app (the digest is simply not made) but sends no push or email. Email has its own switch.
 - **Quiet hours** (default 22:00 to 08:00 in the user's zone) hold back push only; in-app and email still arrive. The zone is reported by the device when settings are saved or push is turned on.
 - **Chat batching:** at most one push per conversation per 10 minutes per person (`dedupe_key`), and the device replaces the previous one (same tag and Web Push `Topic`).
 - **Digest:** sent once a day per trip from 08:00 local time (`Notifications:DigestHour`), using Discover's rules: within 30 km, dates inside the trip, not your own trips, not plans you joined, no blocked hosts. Cards have regions, not coordinates, so the first region is geocoded once and stored in `vacation_cards.area`.
-- Review reminders ("Did you meet?") arrive with step 1.10.
 
 ## Web Push
 

@@ -23,7 +23,6 @@ describe('mockup screens', () => {
     ['/inbox', 'Inbox'],
     ['/profile', 'Profile'],
     ['/settings', 'Settings'],
-    ['/plans/sanctuary/review', /happen\?/],
     ['/nope', 'Nothing here'],
   ])('%s renders', async (path, heading) => {
     renderAt(path)

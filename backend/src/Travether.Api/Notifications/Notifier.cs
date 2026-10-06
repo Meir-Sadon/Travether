@@ -136,6 +136,15 @@ public sealed class Notifier(TravetherDbContext db, IHubContext<ChatHub> hub, No
             ct).ConfigureAwait(false);
     }
 
+    /// <summary>Says who reviewed you, never what they wrote (that stays hidden until it's published).</summary>
+    public async Task ReviewReceivedAsync(Guid planId, Guid reviewerId, Guid revieweeId, CancellationToken ct) =>
+        await SendAsync(
+            [revieweeId],
+            NotificationTypes.ReviewReceived,
+            new NotificationPayload($"/plans/{planId}/review", await NameAsync(reviewerId, ct).ConfigureAwait(false)),
+            $"review:{planId:N}:{reviewerId:N}",
+            ct).ConfigureAwait(false);
+
     private Task<string> NameAsync(Guid userId, CancellationToken ct) =>
         db.Users.AsNoTracking().Where(u => u.Id == userId).Select(u => u.DisplayName).FirstAsync(ct);
 }

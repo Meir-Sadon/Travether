@@ -20,6 +20,8 @@ const icons: Record<string, IconName> = {
   plan_cancelled: 'close',
   plan_reminder: 'clock',
   matches_digest: 'compass',
+  meet_prompt: 'star',
+  review_received: 'star',
 }
 
 const knownTypes = new Set(Object.keys(icons))
