@@ -32,3 +32,12 @@
   padding-block-start: 20vh;
   text-align: center;
 }
+
+.review__given {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+}

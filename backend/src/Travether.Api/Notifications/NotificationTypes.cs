@@ -25,12 +25,15 @@ public static class NotificationTypes
     public const string PlanReminder = "plan_reminder";
     public const string ChatMessage = "chat_message";
     public const string MatchesDigest = "matches_digest";
+    public const string MeetPrompt = "meet_prompt";
+    public const string ReviewReceived = "review_received";
 
     public static NotificationCategory CategoryOf(string type) => type switch
     {
         ChatMessage => NotificationCategory.Messages,
         MatchesDigest => NotificationCategory.Matches,
         PlanReminder or PlanCancelled => NotificationCategory.Reminders,
+        MeetPrompt or ReviewReceived => NotificationCategory.Reviews,
         _ => NotificationCategory.Requests,
     };
 
@@ -39,7 +42,7 @@ public static class NotificationTypes
 
     /// <summary>Types that also go out by email (when the user keeps email on).</summary>
     public static bool Emails(string type) => type is CardRequest or CardRequestApproved or CardRequestRejected
-        or PlanRequest or PlanRequestApproved or PlanRequestRejected or PlanCancelled or MatchesDigest;
+        or PlanRequest or PlanRequestApproved or PlanRequestRejected or PlanCancelled or MatchesDigest or MeetPrompt;
 
     /// <summary>English push and email text. The app itself translates from the type and payload.</summary>
     public static (string Title, string Body) Text(string type, NotificationPayload p)
@@ -57,6 +60,8 @@ public static class NotificationTypes
             PlanReminder => ($"Coming up: {subject}", string.Create(CultureInfo.InvariantCulture, $"Starts in about {p.Count ?? 2} hours.")),
             ChatMessage => (subject, p.Preview is { } preview ? $"{actor}: {preview}" : $"{actor} shared a contact number."),
             MatchesDigest => ($"New plans near {subject}", p.Count == 1 ? "1 new plan matches your trip." : string.Create(CultureInfo.InvariantCulture, $"{p.Count} new plans match your trip.")),
+            MeetPrompt => ($"Did {subject} happen?", "Tell us whether you met. If you both say yes, you can review each other."),
+            ReviewReceived => ("You got a review", $"{actor} reviewed you. Leave your review to see theirs."),
             _ => ("Travether", subject),
         };
     }

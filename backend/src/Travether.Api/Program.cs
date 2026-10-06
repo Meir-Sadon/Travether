@@ -12,6 +12,7 @@ using Travether.Api.Notifications;
 using Travether.Api.Places;
 using Travether.Api.Plans;
 using Travether.Api.Profiles;
+using Travether.Api.Reviews;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddTravetherDatabase(builder.Configuration);
 builder.Services.AddScoped<AccessQueries>();
 builder.Services.AddScoped<RatingQueries>();
+builder.Services.AddScoped<ReviewService>();
 builder.Services.AddScoped<CardViews>();
 builder.Services.AddScoped<PlanViews>();
 builder.Services.AddHostedService<PlanRequestSweeper>();

@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router'
 import { FormError } from '../components'
 import { ProfileView } from '../features/ProfileView'
+import { ReviewList } from '../features/ReviewList'
 import { ScreenHeader } from '../layout/ScreenHeader'
 import type { PublicProfile } from '../lib/types'
 import { useApi } from '../lib/useApi'
@@ -39,6 +40,7 @@ export function PersonScreen() {
           fullName={data.fullName}
         />
       )}
+      {data && <ReviewList userId={data.id} />}
       <div className="screen__section" />
     </div>
   )

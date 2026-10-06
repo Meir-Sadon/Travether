@@ -209,3 +209,39 @@ export type NotificationSettings = {
   quietTo: string | null
   timeZone: string
 }
+
+export type MeetAnswer = 'met' | 'cancelled' | 'noShow'
+
+/** My side of reviewing someone: `waiting` never says what they answered. */
+export type ReviewState = 'waiting' | 'open' | 'reviewed' | 'closed'
+
+/** `reviewer` is null for a deleted or banned account. */
+export type Review = {
+  id: string
+  reviewer: Person | null
+  stars: number
+  text: string | null
+  planId: string
+  planTitle: string
+  category: PlanCategory
+  createdAt: string
+  reply: string | null
+  repliedAt: string | null
+}
+
+export type ReviewPage = { items: Review[]; hasMore: boolean }
+
+export type WrapUpPerson = { person: Person; state: ReviewState; reviewUntil: string | null; myReview: Review | null; theyReviewedMe: boolean; theirReview: Review | null }
+
+export type WrapUp = {
+  planId: string
+  title: string
+  category: PlanCategory
+  localDate: string
+  myAnswer: MeetAnswer | null
+  canAnswer: boolean
+  answerUntil: string
+  people: WrapUpPerson[]
+}
+
+export type PendingWrapUp = { planId: string; title: string; category: PlanCategory; localDate: string; needsAnswer: boolean; toReview: number }

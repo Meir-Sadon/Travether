@@ -30,6 +30,8 @@ public sealed partial class NotificationWorker(IServiceScopeFactory scopes, Noti
                     var jobs = services.GetRequiredService<NotificationJobs>();
                     await jobs.RemindAsync(stoppingToken).ConfigureAwait(false);
                     await jobs.DigestAsync(stoppingToken).ConfigureAwait(false);
+                    await jobs.MeetPromptsAsync(stoppingToken).ConfigureAwait(false);
+                    await services.GetRequiredService<Reviews.ReviewService>().PublishDueAsync(stoppingToken).ConfigureAwait(false);
                 }
 
                 var delivery = services.GetRequiredService<NotificationDelivery>();

@@ -1,0 +1,32 @@
+.review-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.review-list__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-block-end: var(--space-4);
+  border-block-end: 1px solid var(--color-border);
+}
+
+.review-list__stars {
+  color: var(--color-warning);
+  letter-spacing: 0.1em;
+}
+
+.review-list__stars-off {
+  color: var(--color-border-strong);
+}
+
+.review-list__reply {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: var(--space-3);
+  border-inline-start: 3px solid var(--color-border-strong);
+  background: var(--color-surface);
+}

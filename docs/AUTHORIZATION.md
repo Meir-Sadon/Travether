@@ -107,7 +107,11 @@ The REST API (`/api/chats`) does every read and write and checks access each tim
 
 ## Ratings (§4.6)
 
-- Reviewing opens only when **both** people answered *Yes, we met*, and closes **14 days after the second answer**.
-- One review per reviewer, reviewee and plan; 1–5 stars; never yourself (also enforced by the database).
-- **Double-blind:** a review is visible to anyone other than its author only once the other person's review exists or the window has closed. This is computed from the data, so it holds even if the job that sets `published_at` is late.
+- **"Did you meet?"** Only active participants answer, once each (`AlreadyAnswered`), from the plan's start (`PlanNotOver`) until 14 days after it (`AnswerClosed`). Answers: *Yes, we met* / *It was cancelled* / *I didn't go*. Nobody sees another person's answer: until both said yes, the other side only shows as *waiting*. From 10:00 local time the day after, the plan becomes `done` and everyone on it with company is asked (again on day 7 if they haven't answered).
+- Reviewing opens only when **both** people answered *Yes, we met*, and closes **14 days after the second answer** (`ReviewNotOpen`). People who left, were removed, are banned or deleted, or are blocked either way can't be reviewed.
+- One review per reviewer, reviewee and plan (`AlreadyReviewed`); 1–5 stars (`InvalidStars`); never yourself (also enforced by the database).
+- **Double-blind:** a review is visible to anyone other than its author only once the other person's review exists or the window has closed. This is computed from the data, so it holds even if the job that sets `published_at` is late. The person reviewed learns *that* someone reviewed them, not what they wrote.
+- Published reviews about someone are visible to whoever can see their profile, minus reviewers blocked either way with the viewer. A deleted or banned reviewer shows as "Deleted user".
+- The person reviewed may **reply once**, publicly, after the review is visible (`ReviewNotPublished`, `AlreadyReplied`).
 - The average shows only from **3** published reviews; the count is always shown.
+- Reporting an abusive review comes with step 1.11.

@@ -5,6 +5,7 @@ import type { Me } from '../auth/types'
 import { useAuth, useMe } from '../auth/useAuth'
 import { Button, Card, CardBody, FormError, Icon, TextField } from '../components'
 import { ProfileView } from '../features/ProfileView'
+import { ReviewList } from '../features/ReviewList'
 import { ScreenHeader } from '../layout/ScreenHeader'
 import { api, errorCode } from '../lib/api'
 import type { PublicProfile } from '../lib/types'
@@ -108,6 +109,7 @@ export function ProfileScreen() {
           </Link>
         </section>
       </ProfileView>
+      <ReviewList userId={me.id} canReply />
       <div className="screen__section" />
     </div>
   )
