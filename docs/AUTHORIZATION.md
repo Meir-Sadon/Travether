@@ -56,12 +56,23 @@ Levels: `None` → `Public` → `Participant` → `Host`. A plan is `Public` to 
 |------|:---:|:---:|
 | Title, category, date/time, seats left, host's public profile | ✔ | ✔ |
 | Meeting area label and **rounded distance** (to the grid-snapped point, see [DATA_MODEL.md](DATA_MODEL.md#meeting-point-privacy-origin_public)) | ✔ | ✔ |
-| **Exact meeting point** | | ✔ |
+| **Exact meeting point** (name and coordinates) | | ✔ |
 | Destination, when marked *Exact* | | ✔ |
 | Destination, when marked *Regional* | ✔ | ✔ |
 | Plan chat | | ✔ |
 
-Members of the plan's own card who haven't joined see it like the public; they self-join instead of requesting.
+Members of the plan's own card who haven't joined see it like the public, plus the list of who's going; they self-join instead of requesting.
+
+**Plan actions** (`PlansController`):
+
+| Action | Needs |
+|--------|-------|
+| Create a plan, list the card's plans | `Member` of the card. The host may add card members as participants. |
+| Take a free seat (self-join) | `Member` of the plan's card, plan `open`, seats free, start in the future. Two people can't take the last seat (the plan row is locked). |
+| Leave | `Participant`. The host cancels instead (`HostCannotLeave`). |
+| Edit, cancel | The host, or a co-admin/owner of the plan's card. Cancelling expires open requests. |
+
+A plan's date must fall within its card's dates (`PlanOutsideTrip`) and in the future (`PlanInPast`). Times are entered in the meeting point's local time; the time zone comes from the coordinates.
 
 **Deciding requests:** the host, or a co-admin/owner of the plan's card.
 

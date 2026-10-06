@@ -72,6 +72,7 @@ public static class AuthSetup
         services.AddAuthorization();
 
         var perMinute = config.GetValue("RateLimits:AuthPerMinute", 20);
+        var placesPerMinute = config.GetValue("RateLimits:PlacesPerMinute", 60);
         services.AddRateLimiter(limiter =>
         {
             limiter.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -79,6 +80,9 @@ public static class AuthSetup
             limiter.AddPolicy(AuthRateLimit, http => RateLimitPartition.GetFixedWindowLimiter(
                 http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
                 _ => new FixedWindowRateLimiterOptions { PermitLimit = perMinute, Window = TimeSpan.FromMinutes(1) }));
+            limiter.AddPolicy(Places.PlaceSetup.RateLimit, http => RateLimitPartition.GetFixedWindowLimiter(
+                http.User.GetUserId()?.ToString() ?? http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                _ => new FixedWindowRateLimiterOptions { PermitLimit = placesPerMinute, Window = TimeSpan.FromMinutes(1) }));
         });
 
         return services;

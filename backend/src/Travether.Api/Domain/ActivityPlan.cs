@@ -27,6 +27,9 @@ public sealed class ActivityPlan
     /// </summary>
     public Point OriginPublic { get; private set; } = null!;
 
+    /// <summary>Name of the exact meeting point, e.g. "Tha Phae Gate". Private like <see cref="Origin"/>.</summary>
+    public string OriginName { get; set; } = "";
+
     /// <summary>Public, coarse label for the meeting area, e.g. "Old City, Chiang Mai".</summary>
     public required string OriginAreaLabel { get; set; }
 

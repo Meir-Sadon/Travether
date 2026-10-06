@@ -239,7 +239,7 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 - [x] Profile (minimal + gradual completion), contact-verified badge
 - [x] Vacation Cards: create/edit/delete, cities + dates, visibility, share link + QR, public preview
 - [x] Card join requests (anyone), approve/reject, co-admins, leave/remove
-- [ ] Activity Plans: templates, seat limit, open/groups-only, location privacy
+- [x] Activity Plans: templates, seat limit, open/groups-only, location privacy
 - [ ] Discover: city radius + date overlap, distance sort, list view, basic filters
 - [ ] Plan join requests with status stepper
 - [ ] In-app chat (card + plan) via SignalR; voluntary contact sharing
