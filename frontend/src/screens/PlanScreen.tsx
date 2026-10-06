@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useLocation, useParams } from 'react-router'
+import { Link, useLocation, useParams, useSearchParams } from 'react-router'
 import { useAuth } from '../auth/useAuth'
 import { BottomSheet, Button, Card, CardBody, Chip, FormError, Icon } from '../components'
 import { PersonItem } from '../features/PersonItem'
@@ -18,7 +18,10 @@ export function PlanScreen() {
   const { planId } = useParams()
   const { user } = useAuth()
   const here = useLocation()
-  const { data: plan, error, setData } = useApi<Plan>(user === undefined ? null : `/plans/${planId}`)
+  // Opened from Discover: the search origin, so the page shows the same rounded distance.
+  const [search] = useSearchParams()
+  const near = search.get('lat') && search.get('lng') ? `?lat=${search.get('lat')}&lng=${search.get('lng')}` : ''
+  const { data: plan, error, setData } = useApi<Plan>(user === undefined ? null : `/plans/${planId}${near}`)
   const [editing, setEditing] = useState(false)
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [busy, setBusy] = useState(false)

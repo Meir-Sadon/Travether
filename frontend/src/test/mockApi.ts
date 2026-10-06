@@ -1,7 +1,7 @@
 import { vi } from 'vitest'
 import type { Me } from '../auth/types'
 
-export type ApiCall = { method: string; path: string; body: unknown }
+export type ApiCall = { method: string; path: string; query: URLSearchParams; body: unknown }
 type Reply = unknown | ((body: unknown, url: URL) => unknown)
 
 /** A thrown or returned ApiReply sets the status, e.g. `reply(409, { code: 'EmailTaken' })`. */
@@ -51,7 +51,7 @@ export function mockApi(routes: Record<string, Reply> = {}) {
     const method = (init?.method ?? 'GET').toUpperCase()
     const path = url.pathname.replace(/^\/api/, '')
     const body = typeof init?.body === 'string' ? (JSON.parse(init.body) as unknown) : init?.body
-    calls.push({ method, path, body })
+    calls.push({ method, path, query: url.searchParams, body })
 
     const key = `${method} ${path}`
     if (!(key in table)) return json(404, { code: 'NotFound', detail: `No mock for ${key}` })

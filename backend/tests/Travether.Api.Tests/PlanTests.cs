@@ -23,22 +23,24 @@ public sealed class PlanTests(PostgresFixture pg) : IAsyncLifetime
 
     private static DateOnly Today => DateOnly.FromDateTime(DateTime.UtcNow);
 
-    public static object NewPlan(int inDays = 6, string time = "09:00", int seatLimit = 4, string precision = "exact", Guid[]? participantIds = null) => new
-    {
-        title = "Sunrise hike to Doi Suthep",
-        category = "hike",
-        origin = ThaPhaeGate,
-        originName = "Tha Phae Gate",
-        originAreaLabel = "Old City, Chiang Mai",
-        destination = "Wat Phra That Doi Suthep",
-        destinationPrecision = precision,
-        date = Today.AddDays(inDays),
-        time,
-        purpose = "Monk's trail up, breakfast after.",
-        seatLimit,
-        audience = "open",
-        participantIds = participantIds ?? [],
-    };
+    public static object NewPlan(
+        int inDays = 6, string time = "09:00", int seatLimit = 4, string precision = "exact", Guid[]? participantIds = null,
+        object? origin = null, string category = "hike", string title = "Sunrise hike to Doi Suthep") => new
+        {
+            title,
+            category,
+            origin = origin ?? ThaPhaeGate,
+            originName = "Tha Phae Gate",
+            originAreaLabel = "Old City, Chiang Mai",
+            destination = "Wat Phra That Doi Suthep",
+            destinationPrecision = precision,
+            date = Today.AddDays(inDays),
+            time,
+            purpose = "Monk's trail up, breakfast after.",
+            seatLimit,
+            audience = "open",
+            participantIds = participantIds ?? [],
+        };
 
     private sealed record Group(CardDto Card, HttpClient Owner, Guid OwnerId);
 
