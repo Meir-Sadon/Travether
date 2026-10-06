@@ -42,7 +42,19 @@ public sealed record CardDto(
     int MemberCount,
     string Access,
     string? ShareSlug,
-    IReadOnlyList<CardMemberDto>? Members);
+    IReadOnlyList<CardMemberDto>? Members,
+    MyCardRequestDto? MyRequest,
+    int? PendingRequestCount);
+
+/// <summary>The viewer's own latest request to join this card, so the preview can show its status.</summary>
+public sealed record MyCardRequestDto(Guid Id, RequestStatus Status, DateTimeOffset CreatedAt);
+
+public sealed record CardJoinRequestInput([MaxLength(300)] string? Message, [MaxLength(32)] string? ShareSlug);
+
+/// <summary>An open request as the card's owner and co-admins see it.</summary>
+public sealed record CardRequestDto(Guid Id, PersonDto Person, string? Message, RequestStatus Status, DateTimeOffset CreatedAt);
+
+public sealed record MemberRoleInput(CardRole Role);
 
 /// <summary>A card on the signed-in user's Home screen.</summary>
 public sealed record MyCardDto(
@@ -57,4 +69,5 @@ public sealed record MyCardDto(
     CardRole Role,
     int MemberCount,
     int PlanCount,
-    IReadOnlyList<PersonDto> MembersPreview);
+    IReadOnlyList<PersonDto> MembersPreview,
+    int PendingRequests);

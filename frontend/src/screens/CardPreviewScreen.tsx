@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, Navigate, useParams } from 'react-router'
 import { useAuth } from '../auth/useAuth'
 import { FormError } from '../components'
+import { JoinRequest } from '../features/JoinRequest'
 import type { Card } from '../lib/types'
 import { useApi } from '../lib/useApi'
 import { NotFoundScreen } from './NotFoundScreen'
@@ -12,7 +13,7 @@ export function CardPreviewScreen() {
   const { t } = useTranslation()
   const { slug } = useParams()
   const { user } = useAuth()
-  const { data: card, error } = useApi<Card>(user === undefined ? null : `/cards/share/${slug}`)
+  const { data: card, error, setData } = useApi<Card>(user === undefined ? null : `/cards/share/${slug}`)
 
   if (error === 'NotFound') return <NotFoundScreen />
   if (!card) {
@@ -29,7 +30,9 @@ export function CardPreviewScreen() {
     <TripPreview
       card={card}
       footer={
-        user ? null : (
+        user ? (
+          <JoinRequest card={card} shareSlug={slug} onChange={setData} />
+        ) : (
           <Link to={`/signup?next=${encodeURIComponent(here)}`} className="btn btn--primary btn--lg btn--block">
             {t('trip.signUpToJoin')}
           </Link>

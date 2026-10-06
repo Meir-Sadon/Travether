@@ -208,7 +208,30 @@
     "deleteConfirm": "Delete trip",
     "travelers_one": "{{count}} traveler",
     "travelers_other": "{{count}} travelers",
-    "signUpToJoin": "Sign up to request to join"
+    "signUpToJoin": "Sign up to request to join",
+    "requestPending": "Request sent. The group will see it and decide.",
+    "withdrawRequest": "Withdraw request",
+    "requestDeclined": "Your last request wasn't approved. You can ask again.",
+    "sendRequest": "Send request",
+    "requestIntro": "The owner and co-admins see your profile and this note, then approve or decline.",
+    "requestMessage": "A note to the group (optional)",
+    "requestMessageHint": "Say hi: your dates, what you'd like to do.",
+    "requests_one": "{{count}} join request",
+    "requests_other": "{{count}} join requests",
+    "members": "Members",
+    "approve": "Approve",
+    "decline": "Decline",
+    "manageMember": "Manage {{name}}",
+    "makeCoAdmin": "Make co-admin",
+    "makeMember": "Make regular member",
+    "handOver": "Hand over ownership",
+    "handOverBody": "{{name}} becomes the owner and you become a co-admin. Only the new owner can undo this.",
+    "handOverConfirm": "Hand over",
+    "remove": "Remove from trip",
+    "leave": "Leave trip",
+    "leaveTitle": "Leave this trip?",
+    "leaveBody": "You'll lose the trip chat and its plans. You can ask to join again later.",
+    "stay": "Stay in the trip"
   },
   "share": {
     "title": "Invite to your trip",
@@ -440,6 +463,13 @@
     "DatesOutOfOrder": "The end date is before the start date.",
     "TripTooLong": "A trip can be up to a year long.",
     "TripInPast": "This trip has already ended.",
-    "TryAgain": "Something clashed. Please try again."
+    "TryAgain": "Something clashed. Please try again.",
+    "AlreadyMember": "You're already in this trip.",
+    "AlreadyRequested": "You've already asked to join. The group will decide soon.",
+    "TripEnded": "This trip is over, so it doesn't take new travelers.",
+    "AlreadyDecided": "Someone already answered this request.",
+    "RequestExpired": "This request can't be approved anymore.",
+    "OwnerCannotLeave": "Hand over ownership or delete the trip first.",
+    "CannotChangeOwnRole": "You can't change your own role."
   }
 }

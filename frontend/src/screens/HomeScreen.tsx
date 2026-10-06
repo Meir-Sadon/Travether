@@ -64,6 +64,7 @@ export function HomeScreen() {
                     people={tr.membersPreview.map((p) => ({ name: p.displayName, photoUrl: p.photoUrl ?? undefined, tint: 'var(--color-accent-soft)' }))}
                   />
                   <span className="screen__row">
+                    {tr.pendingRequests > 0 && <Chip tone="accent">{t('home.requestCount', { count: tr.pendingRequests })}</Chip>}
                     <Chip>{t('home.planCount', { count: tr.planCount })}</Chip>
                   </span>
                 </div>
