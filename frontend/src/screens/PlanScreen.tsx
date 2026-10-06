@@ -6,6 +6,7 @@ import { BottomSheet, Button, Card, CardBody, Chip, FormError, Icon, Stepper } f
 import { PersonItem } from '../features/PersonItem'
 import { PlanForm, type PlanFields } from '../features/PlanForm'
 import { PlanRequestSheet } from '../features/PlanRequestSheet'
+import { ReportSheet, type ReportTarget } from '../features/ReportSheet'
 import { api, errorCode } from '../lib/api'
 import { categoryTint, formatPlanWhen, mapLink } from '../lib/plans'
 import type { Card as TripCard, Plan, PlanRequest } from '../lib/types'
@@ -26,6 +27,7 @@ export function PlanScreen() {
   const [editing, setEditing] = useState(false)
   const [confirmCancel, setConfirmCancel] = useState(false)
   const [requesting, setRequesting] = useState(false)
+  const [reporting, setReporting] = useState<ReportTarget | null>(null)
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const { data: card } = useApi<TripCard>(editing && plan ? `/cards/${plan.cardId}` : null)
@@ -244,9 +246,18 @@ export function PlanScreen() {
               <Icon name="shieldCheck" size={16} className="plan__inline-icon" /> {t('plan.safetyTitle')}
             </strong>
             <span className="screen__meta">{t('plan.safetyBody')}</span>
+            <Link to="/safety" className="screen__link">
+              {t('plan.safetyMore')}
+            </Link>
           </CardBody>
         </Card>
+        {user && plan.access !== 'host' && (
+          <Button variant="ghost" size="sm" onClick={() => setReporting({ type: 'plan', id: plan.id })}>
+            {t('report.title_plan')}
+          </Button>
+        )}
       </section>
+      <ReportSheet target={reporting} onClose={() => setReporting(null)} />
 
       {!closed && (
         <footer className="screen__footer">

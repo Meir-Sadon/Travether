@@ -1,0 +1,22 @@
+.report__reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.report__reason {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: var(--tap-target);
+  cursor: pointer;
+}
+
+.report__reason input {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  accent-color: var(--palette-ink);
+}

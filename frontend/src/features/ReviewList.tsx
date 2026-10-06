@@ -4,7 +4,9 @@ import { Button, FormError, TextField } from '../components'
 import { api, errorCode } from '../lib/api'
 import type { Review, ReviewPage } from '../lib/types'
 import { useApi } from '../lib/useApi'
+import { useAuth } from '../auth/useAuth'
 import { PersonItem } from './PersonItem'
+import { ReportSheet, type ReportTarget } from './ReportSheet'
 import './ReviewList.css'
 
 export function Stars({ count }: { count: number }) {
@@ -21,6 +23,8 @@ export function Stars({ count }: { count: number }) {
 export function ReviewList({ userId, canReply = false }: { userId: string; canReply?: boolean }) {
   const { t, i18n } = useTranslation()
   const { data, setData } = useApi<ReviewPage>(`/users/${userId}/reviews`)
+  const { user } = useAuth()
+  const [reporting, setReporting] = useState<ReportTarget | null>(null)
   const when = new Intl.DateTimeFormat(i18n.language, { month: 'short', year: 'numeric' })
 
   if (!data) return null
@@ -45,9 +49,15 @@ export function ReviewList({ userId, canReply = false }: { userId: string; canRe
               </blockquote>
             )}
             {canReply && !r.reply && <ReplyForm review={r} onReplied={replaced} />}
+            {user && r.reviewer?.id !== user.id && (
+              <Button size="sm" variant="ghost" onClick={() => setReporting({ type: 'review', id: r.id })}>
+                {t('report.title_review')}
+              </Button>
+            )}
           </li>
         ))}
       </ul>
+      <ReportSheet target={reporting} onClose={() => setReporting(null)} />
     </section>
   )
 }

@@ -72,7 +72,7 @@ public sealed class ReviewService(TravetherDbContext db, RatingQueries ratings, 
             var myReview = reviews.FirstOrDefault(r => r.ReviewerId == me && r.RevieweeId == u.Id);
             var theirReview = reviews.FirstOrDefault(r => r.ReviewerId == u.Id && r.RevieweeId == me);
             var windowEnd = AccessRules.ReviewWindowEnd(mine, theirs);
-            var published = theirReview is not null && (theirReview.PublishedAt is not null || AccessRules.IsReviewPublished(myReview is not null, windowEnd, now));
+            var published = theirReview is { HiddenAt: null } && (theirReview.PublishedAt is not null || AccessRules.IsReviewPublished(myReview is not null, windowEnd, now));
             var state = ReviewRules.StateFor(mine, theirs, myReview is not null, answerUntil, now);
             return new WrapUpPersonDto(
                 PersonDto.From(u, today),

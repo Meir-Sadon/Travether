@@ -17,7 +17,7 @@ public sealed class RatingQueries(TravetherDbContext db, TimeProvider clock)
     {
         var closedBefore = clock.GetUtcNow().AddDays(-AccessRules.ReviewWindowDays);
         return db.Reviews.AsNoTracking()
-            .Where(r => r.RevieweeId == userId)
+            .Where(r => r.RevieweeId == userId && r.HiddenAt == null)
             .Where(r => r.PublishedAt != null
                 || db.Reviews.Any(c => c.PlanId == r.PlanId && c.ReviewerId == r.RevieweeId && c.RevieweeId == r.ReviewerId)
                 || db.MeetConfirmations

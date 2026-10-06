@@ -1,13 +1,14 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useParams } from 'react-router'
-import { useMe } from '../auth/useAuth'
+import { useAuth, useMe } from '../auth/useAuth'
 import { BottomSheet, Button, Chip, FormError, Icon, IconButton, Segmented } from '../components'
 import { CardForm, type CardFields } from '../features/CardForm'
 import { CreateSheet } from '../features/CreateSheet'
 import { JoinRequest } from '../features/JoinRequest'
 import { PersonItem } from '../features/PersonItem'
 import { PlanTile } from '../features/PlanTile'
+import { ReportSheet, type ReportTarget } from '../features/ReportSheet'
 import { ShareSheet } from '../features/ShareSheet'
 import { api, errorCode } from '../lib/api'
 import { countryName } from '../lib/countries'
@@ -386,6 +387,8 @@ export function TripScreen() {
 /** The public face of a card: what a visitor or non-member sees (name, where, when, who's going). */
 export function TripPreview({ card, footer }: { card: Card; footer?: ReactNode }) {
   const { t, i18n } = useTranslation()
+  const { user } = useAuth()
+  const [reporting, setReporting] = useState<ReportTarget | null>(null)
   return (
     <div className="screen" style={{ minBlockSize: '100dvh' }}>
       <TripCover card={card} backTo="/welcome" />
@@ -402,8 +405,14 @@ export function TripPreview({ card, footer }: { card: Card; footer?: ReactNode }
       </section>
       <section className="screen__section">
         <p className="screen__note">{t('trip.previewNote')}</p>
+        {user && (
+          <Button variant="ghost" size="sm" onClick={() => setReporting({ type: 'card', id: card.id })}>
+            {t('report.title_card')}
+          </Button>
+        )}
       </section>
       {footer && <footer className="screen__footer">{footer}</footer>}
+      <ReportSheet target={reporting} onClose={() => setReporting(null)} />
     </div>
   )
 }

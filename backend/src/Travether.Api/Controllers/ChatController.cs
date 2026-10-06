@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Travether.Api.Api;
 using Travether.Api.Auth;
@@ -7,6 +8,7 @@ using Travether.Api.Chat;
 using Travether.Api.Data;
 using Travether.Api.Domain;
 using Travether.Api.Plans;
+using Travether.Api.Safety;
 
 namespace Travether.Api.Controllers;
 
@@ -48,6 +50,7 @@ public sealed class ChatController(TravetherDbContext db, ChatService chats, Pla
     }
 
     [HttpPost("{kind}/{refId:guid}/messages")]
+    [EnableRateLimiting(SafetySetup.MessagesRateLimit)]
     public async Task<IActionResult> Send(string kind, Guid refId, SendMessageInput input, CancellationToken ct)
     {
         var body = input.Body?.Trim() ?? "";
@@ -63,6 +66,7 @@ public sealed class ChatController(TravetherDbContext db, ChatService chats, Pla
 
     /// <summary>Shares the sender's own phone number (as a call or WhatsApp link) in this chat.</summary>
     [HttpPost("{kind}/{refId:guid}/contact")]
+    [EnableRateLimiting(SafetySetup.MessagesRateLimit)]
     public async Task<IActionResult> ShareContact(string kind, Guid refId, ShareContactInput input, CancellationToken ct)
     {
         if (await OpenAsync(kind, refId, ct).ConfigureAwait(false) is not { } convo)

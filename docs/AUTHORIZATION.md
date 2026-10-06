@@ -105,6 +105,18 @@ A plan's date must fall within its card's dates (`PlanOutsideTrip`) and in the f
 
 The REST API (`/api/chats`) does every read and write and checks access each time; the SignalR hub (`/hubs/chat`) only pushes new messages to members who are signed in, minus anyone who blocked the sender. Sharing a phone or WhatsApp number posts the sender's own profile number as a message (`PhoneRequired` when they have none); nobody else's number is ever revealed. Plan chats stay listed for 30 days after the plan.
 
+## Safety (§4.8)
+
+**Blocking** (`POST/DELETE /api/users/{id}/block`) is one-sided to set up and works both ways (general rule 3). Blocking also lapses open join requests between the two people (to each other's plans, or to cards where the other is owner or co-admin). The blocked person isn't told.
+
+**Reporting** (`POST /api/reports`) works only on what the reporter can see, never on their own things: a profile they can open, a card that exists, a plan they can see and don't host, a message in a chat they can read, a review that is published or about them. Anything else answers 404. One open report per person and target (`AlreadyReported`).
+
+**Moderation** (`/api/admin/*`) is for accounts with `role = moderator`; everyone else gets 404. A moderator can dismiss a report, remove the content (message or review hidden; plan or card deleted the way an owner would, with requests expired), suspend its author, or both. Every action except dismiss needs a note, which is emailed to the person affected (EU DSA statement of reasons). Resolving a report resolves every open report on the same target.
+
+**Suspension** (ban) sets `banned_at` and ends all the person's sessions. The account then counts as absent everywhere. Their canonical email (lower-case, no `+tag`, Gmail without dots), phone and devices are kept as keyed hashes; signing up again with any of them is refused (`AccountSuspended`), and so is adding a banned phone number to a profile (`PhoneNotAllowed`).
+
+**Rate limits** (429 `TooManyRequests`), per signed-in person: join requests 20 an hour, chat messages 30 a minute, reports 20 a day; new accounts 20 a day per IP address, kept generous because travelers in a hostel share one address.
+
 ## Ratings (§4.6)
 
 - **"Did you meet?"** Only active participants answer, once each (`AlreadyAnswered`), from the plan's start (`PlanNotOver`) until 14 days after it (`AnswerClosed`). Answers: *Yes, we met* / *It was cancelled* / *I didn't go*. Nobody sees another person's answer: until both said yes, the other side only shows as *waiting*. From 10:00 local time the day after, the plan becomes `done` and everyone on it with company is asked (again on day 7 if they haven't answered).

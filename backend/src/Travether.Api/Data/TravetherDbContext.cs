@@ -27,6 +27,8 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
     public DbSet<Review> Reviews => Set<Review>();
     public DbSet<Report> Reports => Set<Report>();
     public DbSet<Block> Blocks => Set<Block>();
+    public DbSet<BannedIdentifier> BannedIdentifiers => Set<BannedIdentifier>();
+    public DbSet<UserDevice> UserDevices => Set<UserDevice>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<PushSubscription> PushSubscriptions => Set<PushSubscription>();
     public DbSet<NotificationSettings> NotificationSettings => Set<NotificationSettings>();
@@ -50,6 +52,8 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
         configurationBuilder.Properties<MeetAnswer>().HaveConversion<SnakeCaseEnumConverter<MeetAnswer>>();
         configurationBuilder.Properties<ReportTargetType>().HaveConversion<SnakeCaseEnumConverter<ReportTargetType>>();
         configurationBuilder.Properties<ReportStatus>().HaveConversion<SnakeCaseEnumConverter<ReportStatus>>();
+        configurationBuilder.Properties<ReportReason>().HaveConversion<SnakeCaseEnumConverter<ReportReason>>();
+        configurationBuilder.Properties<BannedIdentifierKind>().HaveConversion<SnakeCaseEnumConverter<BannedIdentifierKind>>();
         configurationBuilder.Properties<ConsentKind>().HaveConversion<SnakeCaseEnumConverter<ConsentKind>>();
         configurationBuilder.Properties<ExternalProvider>().HaveConversion<SnakeCaseEnumConverter<ExternalProvider>>();
         configurationBuilder.Properties<LoginCodePurpose>().HaveConversion<SnakeCaseEnumConverter<LoginCodePurpose>>();
@@ -275,9 +279,12 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
             {
                 InCheck(t, "target_type", EnumText.AllDbValues<ReportTargetType>());
                 InCheck(t, "status", EnumText.AllDbValues<ReportStatus>());
+                InCheck(t, "reason", EnumText.AllDbValues<ReportReason>());
             });
             e.Property(x => x.TargetType).HasMaxLength(16);
-            e.Property(x => x.Reason).HasMaxLength(1000);
+            e.Property(x => x.Reason).HasMaxLength(32);
+            e.Property(x => x.Details).HasMaxLength(1000);
+            e.HasIndex(x => new { x.ReporterId, x.TargetType, x.TargetId }).IsUnique().HasFilter("status = 'open'");
             e.Property(x => x.Status).HasMaxLength(16);
             e.Property(x => x.ResolutionNote).HasMaxLength(1000);
             e.Property(x => x.CreatedAt).HasDefaultValueSql("now()");
@@ -295,6 +302,24 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
             e.HasIndex(x => x.BlockedId);
             e.HasOne<User>().WithMany().HasForeignKey(x => x.BlockerId).OnDelete(DeleteBehavior.Cascade);
             e.HasOne<User>().WithMany().HasForeignKey(x => x.BlockedId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<BannedIdentifier>(e =>
+        {
+            e.ToTable("banned_identifiers", t => InCheck(t, "kind", EnumText.AllDbValues<BannedIdentifierKind>()));
+            e.HasKey(x => x.Hash);
+            e.Property(x => x.Hash).HasMaxLength(64);
+            e.Property(x => x.Kind).HasMaxLength(16);
+            e.Property(x => x.CreatedAt).HasDefaultValueSql("now()");
+            e.HasIndex(x => x.UserId);
+        });
+
+        modelBuilder.Entity<UserDevice>(e =>
+        {
+            e.ToTable("user_devices");
+            e.HasKey(x => new { x.UserId, x.DeviceHash });
+            e.Property(x => x.DeviceHash).HasMaxLength(64);
+            e.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Notification>(e =>

@@ -245,7 +245,7 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 - [x] In-app chat (card + plan) via SignalR; voluntary contact sharing
 - [x] Notifications: in-app + email + Web Push; daily digest for matches
 - [x] "Did you meet?" flow + double-blind reviews + rating display rules
-- [ ] Safety: block, report, moderation admin page, rate limits, safety tips
+- [x] Safety: block, report, moderation admin page, rate limits, safety tips
 - [ ] Privacy: policy pages, consent, data export, delete account
 - [ ] Calendar (.ics) export, WhatsApp share
 - [ ] Analytics funnels + Sentry
