@@ -4,6 +4,7 @@ import { RequireAuth } from './auth/RequireAuth'
 import { AppShell, BareShell } from './layout/AppShell'
 import { DesignSystemPage } from './pages/DesignSystemPage'
 import { StatusPage } from './pages/StatusPage'
+import { CardPreviewScreen } from './screens/CardPreviewScreen'
 import { ChatScreen } from './screens/ChatScreen'
 import { DiscoverScreen } from './screens/DiscoverScreen'
 import { EditProfileScreen } from './screens/EditProfileScreen'
@@ -42,7 +43,7 @@ export default function App() {
           <Route path="signup" element={<SignupScreen />} />
           <Route path="login" element={<LoginScreen />} />
           <Route path="forgot" element={<ForgotPasswordScreen />} />
-          <Route path="c/:slug" element={<TripScreen preview />} />
+          <Route path="c/:slug" element={<CardPreviewScreen />} />
           <Route path="plans/:planId" element={<PlanScreen />} />
           <Route path="people/:userId" element={<PersonScreen />} />
           <Route element={<RequireAuth />}>

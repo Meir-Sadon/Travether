@@ -2,15 +2,22 @@ import QRCode from 'qrcode'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet, Button } from '../components'
-import type { MockTrip } from '../mock/data'
+import { formatDateRange } from '../lib/dates'
+import type { Card } from '../lib/types'
 import './ShareSheet.css'
 
-type ShareSheetProps = { trip: MockTrip; open: boolean; onClose: () => void }
+type ShareSheetProps = {
+  card: Pick<Card, 'name' | 'startsOn' | 'endsOn' | 'regions' | 'countryCode'> & { shareSlug: string }
+  open: boolean
+  onClose: () => void
+  /** Owner only: issue a new link so the old one and its QR code stop working. */
+  onNewLink?: () => void
+}
 
-/** Boarding-pass style invite with link + QR code (PLAN.md §4.2). */
-export function ShareSheet({ trip, open, onClose }: ShareSheetProps) {
-  const { t } = useTranslation()
-  const url = `https://travether.app/c/${trip.shareSlug}`
+/** Boarding-pass style invite with link + QR code (PLAN.md §4.2). The link works without an account. */
+export function ShareSheet({ card: trip, open, onClose, onNewLink }: ShareSheetProps) {
+  const { t, i18n } = useTranslation()
+  const url = `${window.location.origin}/c/${trip.shareSlug}`
   const [qr, setQr] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
 
@@ -42,7 +49,7 @@ export function ShareSheet({ trip, open, onClose }: ShareSheetProps) {
         <dl className="pass__grid">
           <div>
             <dt>{t('share.dates')}</dt>
-            <dd>{trip.dates}</dd>
+            <dd>{formatDateRange(trip.startsOn, trip.endsOn, i18n.language)}</dd>
           </div>
           <div>
             <dt>{t('share.where')}</dt>
@@ -55,7 +62,7 @@ export function ShareSheet({ trip, open, onClose }: ShareSheetProps) {
         <div className="pass__qr">
           {qr ? <img src={qr} alt={t('share.qrAlt', { name: trip.name })} width={180} height={180} /> : <span className="pass__qr-placeholder" />}
           <span className="screen__meta">{t('share.scan')}</span>
-          <code className="pass__url">{url.replace('https://', '')}</code>
+          <code className="pass__url">{url.replace(/^https?:\/\//, '')}</code>
         </div>
       </div>
       <div className="screen__row pass__actions">
@@ -67,6 +74,11 @@ export function ShareSheet({ trip, open, onClose }: ShareSheetProps) {
         </Button>
       </div>
       <p className="screen__note">{t('share.note')}</p>
+      {onNewLink && (
+        <Button variant="ghost" block onClick={onNewLink}>
+          {t('share.newLink')}
+        </Button>
+      )}
     </BottomSheet>
   )
 }

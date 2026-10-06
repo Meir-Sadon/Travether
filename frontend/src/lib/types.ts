@@ -30,3 +30,42 @@ export type Person = {
   photoUrl: string | null
   badges: Badge[]
 }
+
+export type CardVisibility = 'public' | 'inviteOnly'
+export type CardRole = 'owner' | 'coAdmin' | 'member'
+export type CardAccess = 'preview' | 'member' | 'coAdmin' | 'owner'
+
+export type CardMember = { person: Person; role: CardRole; joinedAt: string }
+
+/** A Vacation Card as the viewer may see it; members and shareSlug only arrive for members. */
+export type Card = {
+  id: string
+  name: string
+  countryCode: string
+  regions: string[]
+  startsOn: string
+  endsOn: string
+  description: string | null
+  coverUrl: string | null
+  visibility: CardVisibility
+  memberCount: number
+  access: CardAccess
+  shareSlug: string | null
+  members: CardMember[] | null
+}
+
+/** A card on Home. */
+export type MyCard = {
+  id: string
+  name: string
+  countryCode: string
+  regions: string[]
+  startsOn: string
+  endsOn: string
+  coverUrl: string | null
+  visibility: CardVisibility
+  role: CardRole
+  memberCount: number
+  planCount: number
+  membersPreview: Person[]
+}

@@ -2,22 +2,41 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 import { BottomSheet, Button, Chip, Icon, IconButton, Segmented, TextField } from '../components'
+import { api, errorCode } from '../lib/api'
+import type { Card } from '../lib/types'
 import type { CategoryKey } from '../mock/data'
+import { CardForm, type CardFields } from './CardForm'
 import './CreateSheet.css'
 
 type Mode = 'choose' | 'plan' | 'trip'
 
 const categories: CategoryKey[] = ['hike', 'dayTrip', 'food', 'nightlife', 'tour', 'beach', 'transport', 'other']
 
-/** The + button: create a Vacation Card or an Activity Plan (bottom-sheet forms, PLAN.md §5). Mockup only. */
+/** The + button: create a Vacation Card or an Activity Plan (bottom-sheet forms, PLAN.md §5). */
 export function CreateSheet({ open, onClose, initialMode = 'choose' }: { open: boolean; onClose: () => void; initialMode?: Mode }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [mode, setMode] = useState<Mode>(initialMode)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const close = () => {
     onClose()
     setMode(initialMode)
+    setError(null)
+  }
+
+  const createCard = async (fields: CardFields) => {
+    setBusy(true)
+    setError(null)
+    try {
+      const card = await api.post<Card>('/cards', fields)
+      finish(`/trips/${card.id}`)
+    } catch (err) {
+      setError(errorCode(err))
+    } finally {
+      setBusy(false)
+    }
   }
   const finish = (to: string) => {
     close()
@@ -37,7 +56,7 @@ export function CreateSheet({ open, onClose, initialMode = 'choose' }: { open: b
             {t('create.publishPlan')}
           </Button>
         ) : mode === 'trip' ? (
-          <Button size="lg" block onClick={() => finish('/trips/cm-crew')}>
+          <Button size="lg" block type="submit" form="create-card" loading={busy}>
             {t('create.createTrip')}
           </Button>
         ) : undefined
@@ -70,7 +89,7 @@ export function CreateSheet({ open, onClose, initialMode = 'choose' }: { open: b
         </ul>
       )}
       {mode === 'plan' && <PlanForm />}
-      {mode === 'trip' && <TripForm />}
+      {mode === 'trip' && <CardForm id="create-card" error={error} onSubmit={(f) => void createCard(f)} />}
     </BottomSheet>
   )
 }
@@ -139,33 +158,6 @@ function PlanForm() {
         ))}
       </fieldset>
       <TextField multiline label={t('create.purpose')} defaultValue="Monk’s trail up, sunrise at the temple, breakfast after." />
-    </form>
-  )
-}
-
-function TripForm() {
-  const { t } = useTranslation()
-  const [visibility, setVisibility] = useState<'public' | 'inviteOnly'>('public')
-  return (
-    <form className="screen__stack" onSubmit={(e) => e.preventDefault()}>
-      <TextField label={t('create.tripName')} placeholder="Chiang Mai Crew" />
-      <TextField label={t('create.country')} placeholder="Thailand" />
-      <TextField label={t('create.cities')} placeholder="Chiang Mai, Pai" hint={t('create.citiesHint')} />
-      <div className="create__two">
-        <TextField label={t('create.from')} type="date" />
-        <TextField label={t('create.to')} type="date" />
-      </div>
-      <Segmented
-        label={t('create.visibility')}
-        value={visibility}
-        onChange={setVisibility}
-        options={[
-          { value: 'public', label: t('trip.public') },
-          { value: 'inviteOnly', label: t('trip.inviteOnly') },
-        ]}
-      />
-      <p className="screen__meta">{t(`create.visibility_${visibility}`)}</p>
-      <TextField multiline label={t('create.about')} placeholder={t('create.aboutPlaceholder')} />
     </form>
   )
 }

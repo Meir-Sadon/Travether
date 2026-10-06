@@ -1,165 +1,270 @@
-import { useState } from 'react'
+import { useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useParams } from 'react-router'
-import { AvatarStack, Button, Card, CardBody, Chip, Icon, IconButton, Segmented } from '../components'
+import { Link, useNavigate, useParams } from 'react-router'
+import { useMe } from '../auth/useAuth'
+import { BottomSheet, Button, Chip, FormError, Icon, IconButton, Segmented } from '../components'
+import { CardForm, type CardFields } from '../features/CardForm'
 import { CreateSheet } from '../features/CreateSheet'
-import { PersonRow } from '../features/PersonRow'
+import { PersonItem } from '../features/PersonItem'
 import { ShareSheet } from '../features/ShareSheet'
-import { categoryTint, me, messages, person, plans, seatsLeft, trip as findTrip, trips } from '../mock/data'
+import { api, errorCode } from '../lib/api'
+import { countryName } from '../lib/countries'
+import { formatDateRange, tintFor } from '../lib/dates'
+import type { Card } from '../lib/types'
+import { useApi } from '../lib/useApi'
 import { NotFoundScreen } from './NotFoundScreen'
 import './TripScreen.css'
 
 type Tab = 'plans' | 'members' | 'chat'
 
-/**
- * 4 · Vacation Card: cover, plans, members, chat, share/QR (PLAN.md §4.2).
- * With `preview`, the public page a visitor sees from a share link or QR code.
- */
-export function TripScreen({ preview = false }: { preview?: boolean }) {
+/** The cover band shared by the trip page and its public preview. */
+export function TripCover({ card, backTo, action }: { card: Pick<Card, 'id' | 'coverUrl'>; backTo: string; action?: ReactNode }) {
   const { t } = useTranslation()
-  const { tripId, slug } = useParams()
-  const tr = preview ? trips.find((x) => x.shareSlug === slug) : findTrip(tripId)
-  const [tab, setTab] = useState<Tab>('plans')
-  const [request, setRequest] = useState<'pending' | 'approved' | 'declined'>('pending')
-  const [sharing, setSharing] = useState(false)
-  const [creating, setCreating] = useState(false)
-
-  if (!tr) return <NotFoundScreen />
-
-  const members = tr.members.map((m) => ({ ...m, person: person(m.id) }))
-  if (request === 'approved') members.push({ id: 'lena', role: 'member', person: person('lena') })
-  const tripPlans = plans.filter((p) => p.tripId === tr.id)
-
   return (
-    <div className="screen" style={{ minBlockSize: preview ? '100dvh' : undefined }}>
-      <div className="trip__cover" style={{ background: tr.tint }}>
+    <div
+      className="trip__cover"
+      style={{ background: card.coverUrl ? `center / cover no-repeat url("${card.coverUrl}")` : tintFor(card.id) }}
+    >
+      {!card.coverUrl && (
         <svg viewBox="0 0 390 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
           <path d="M0 140 L80 96 L150 128 L230 80 L310 124 L390 100 L390 200 L0 200Z" fill="#9CC3C9" />
           <path d="M0 170 L110 130 L190 160 L280 120 L390 160 L390 200 L0 200Z" fill="#6E9EA5" />
         </svg>
-        <Link to={preview ? '/welcome' : '/'} className="icon-btn icon-btn--raised trip__back" aria-label={t('common.back')}>
-          <Icon name="back" />
-        </Link>
-        {!preview && <IconButton icon="share" label={t('trip.share')} variant="raised" className="trip__share" onClick={() => setSharing(true)} />}
-      </div>
+      )}
+      <Link to={backTo} className="icon-btn icon-btn--raised trip__back" aria-label={t('common.back')}>
+        <Icon name="back" />
+      </Link>
+      {action}
+    </div>
+  )
+}
+
+/** 4 · Vacation Card, inside view for members: plans, members, chat, share/QR (PLAN.md §4.2). */
+export function TripScreen() {
+  const { t, i18n } = useTranslation()
+  const { tripId } = useParams()
+  const me = useMe()
+  const navigate = useNavigate()
+  const { data: card, error, setData } = useApi<Card>(`/cards/${tripId}`)
+  const [tab, setTab] = useState<Tab>('plans')
+  const [sharing, setSharing] = useState(false)
+  const [creating, setCreating] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const coverRef = useRef<HTMLInputElement>(null)
+
+  if (error === 'NotFound') return <NotFoundScreen />
+  if (!card) {
+    return (
+      <p className="screen__loading" role="status">
+        {error ? <FormError code={error} /> : t('common.loading')}
+      </p>
+    )
+  }
+
+  // A preview-level viewer (public card, not a member) gets the public page instead.
+  if (card.access === 'preview') return <TripPreview card={card} />
+
+  const isOwner = card.access === 'owner'
+  const members = card.members ?? []
+
+  const run = async (work: () => Promise<void>) => {
+    setBusy(true)
+    setActionError(null)
+    try {
+      await work()
+    } catch (err) {
+      setActionError(errorCode(err))
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const save = (fields: CardFields) =>
+    run(async () => {
+      setData(await api.patch<Card>(`/cards/${card.id}`, fields))
+      setEditing(false)
+    })
+
+  const uploadCover = (file: File) =>
+    run(async () => {
+      const form = new FormData()
+      form.append('file', file)
+      setData(await api.post<Card>(`/cards/${card.id}/cover`, form))
+    })
+
+  return (
+    <div className="screen">
+      <TripCover
+        card={card}
+        backTo="/"
+        action={<IconButton icon="share" label={t('trip.share')} variant="raised" className="trip__share" onClick={() => setSharing(true)} />}
+      />
 
       <section className="screen__section">
         <div className="screen__row">
-          <Chip tone={tr.visibility === 'public' ? 'success' : 'neutral'}>{tr.visibility === 'public' ? t('trip.public') : t('trip.inviteOnly')}</Chip>
-          <Chip>{tr.country}</Chip>
+          <Chip tone={card.visibility === 'public' ? 'success' : 'neutral'}>{card.visibility === 'public' ? t('trip.public') : t('trip.inviteOnly')}</Chip>
+          <Chip>{countryName(card.countryCode, i18n.language)}</Chip>
         </div>
-        <h1 className="trip__name">{tr.name}</h1>
+        <h1 className="trip__name">{card.name}</h1>
         <p className="screen__meta">
-          {tr.dates} · {tr.regions.join(', ')}
+          {formatDateRange(card.startsOn, card.endsOn, i18n.language)} · {card.regions.join(', ')}
         </p>
-        <p className="screen__body">{tr.description}</p>
-        {preview && (
-          <div className="trip__preview-meta">
-            <AvatarStack people={members.map((m) => m.person)} size="md" />
-            <span className="screen__meta">{t('trip.previewMeta', { members: members.length, plans: tripPlans.length })}</span>
+        {card.description && <p className="screen__body">{card.description}</p>}
+        {isOwner && (
+          <div className="screen__row">
+            <Button size="sm" variant="secondary" onClick={() => setEditing(true)}>
+              {t('trip.edit')}
+            </Button>
+            <input
+              ref={coverRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              hidden
+              aria-label={t('trip.coverInput')}
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) void uploadCover(file)
+                e.target.value = ''
+              }}
+            />
+            <Button size="sm" variant="secondary" loading={busy && !editing} onClick={() => coverRef.current?.click()}>
+              {card.coverUrl ? t('trip.changeCover') : t('trip.addCover')}
+            </Button>
           </div>
         )}
+        {!editing && <FormError code={actionError} />}
       </section>
 
-      {preview ? (
-        <>
-          <section className="screen__section">
-            <p className="screen__note">{t('trip.previewNote')}</p>
-          </section>
-          <footer className="screen__footer">
-            <Link to="/signup" className="btn btn--primary btn--lg btn--block">
-              {t('trip.requestToJoin')}
-            </Link>
-          </footer>
-        </>
-      ) : (
-        <>
-          <div className="screen__section">
-            <Segmented
-              label={t('trip.sections')}
-              value={tab}
-              onChange={setTab}
-              options={[
-                { value: 'plans', label: t('trip.tabPlans') },
-                { value: 'members', label: t('trip.tabMembers', { count: members.length }) },
-                { value: 'chat', label: t('trip.tabChat') },
-              ]}
-            />
-          </div>
+      <div className="screen__section">
+        <Segmented
+          label={t('trip.sections')}
+          value={tab}
+          onChange={setTab}
+          options={[
+            { value: 'plans', label: t('trip.tabPlans') },
+            { value: 'members', label: t('trip.tabMembers', { count: members.length }) },
+            { value: 'chat', label: t('trip.tabChat') },
+          ]}
+        />
+      </div>
 
-          {tab === 'plans' && (
-            <section className="screen__section" aria-label={t('trip.tabPlans')}>
-              <ul className="list-reset screen__stack">
-                {tripPlans.map((p) => (
-                  <Card as="li" key={p.id} interactive>
-                    <Link to={`/plans/${p.id}`} className="trip__plan">
-                      <span className="trip__plan-tile" style={{ background: categoryTint[p.category] }}>
-                        {t(`category.${p.category}`)}
-                      </span>
-                      <span className="trip__plan-text">
-                        <strong>{p.title}</strong>
-                        <span className="screen__meta">
-                          {p.when} · {t(`plan.audience_${p.audience}`)}
-                        </span>
-                        <span className="screen__meta">{t('trip.seats', { going: p.goingIds.length, total: p.seatLimit, left: seatsLeft(p) })}</span>
-                      </span>
-                    </Link>
-                  </Card>
-                ))}
-              </ul>
-              <Button variant="secondary" icon="plus" onClick={() => setCreating(true)}>
-                {t('create.planTitle')}
-              </Button>
-            </section>
-          )}
-
-          {tab === 'members' && (
-            <section className="screen__section" aria-label={t('trip.tabMembers', { count: members.length })}>
-              {request === 'pending' && (
-                <Card variant="filled">
-                  <CardBody>
-                    <strong>{t('trip.joinRequest')}</strong>
-                    <PersonRow person={person('lena')} />
-                    <p className="screen__body">“{t('trip.lenaMessage')}”</p>
-                    <div className="screen__row">
-                      <Button size="sm" variant="secondary" onClick={() => setRequest('declined')}>
-                        {t('common.decline')}
-                      </Button>
-                      <Button size="sm" variant="brand" onClick={() => setRequest('approved')}>
-                        {t('common.approve')}
-                      </Button>
-                    </div>
-                  </CardBody>
-                </Card>
-              )}
-              <ul className="list-reset screen__stack">
-                {members.map((m) => (
-                  <li key={m.id}>
-                    <PersonRow person={m.person} you={m.id === me.id} trailing={<Chip>{t(`trip.role_${m.role}`)}</Chip>} />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {tab === 'chat' && (
-            <section className="screen__section" aria-label={t('trip.tabChat')}>
-              <ul className="list-reset screen__stack">
-                {(messages[tr.id] ?? []).map((m, i) => (
-                  <li key={i} className="screen__meta">
-                    <strong>{person(m.from).name}:</strong> {m.text}
-                  </li>
-                ))}
-              </ul>
-              <Link to={`/inbox/${tr.id}`} className="btn btn--secondary">
-                {t('trip.openChat')}
-              </Link>
-            </section>
-          )}
-          <ShareSheet trip={tr} open={sharing} onClose={() => setSharing(false)} />
-          <CreateSheet open={creating} onClose={() => setCreating(false)} initialMode="plan" />
-        </>
+      {tab === 'plans' && (
+        <section className="screen__section" aria-label={t('trip.tabPlans')}>
+          <p className="screen__empty">{t('trip.noPlans')}</p>
+          <Button variant="secondary" icon="plus" onClick={() => setCreating(true)}>
+            {t('create.planTitle')}
+          </Button>
+        </section>
       )}
+
+      {tab === 'members' && (
+        <section className="screen__section" aria-label={t('trip.tabMembers', { count: members.length })}>
+          <ul className="list-reset screen__stack">
+            {members.map((m) => (
+              <li key={m.person.id}>
+                <PersonItem person={m.person} you={m.person.id === me.id} trailing={<Chip>{t(`trip.role_${m.role}`)}</Chip>} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {tab === 'chat' && (
+        <section className="screen__section" aria-label={t('trip.tabChat')}>
+          <p className="screen__meta">{t('trip.chatHint')}</p>
+          <Link to={`/inbox/card-${card.id}`} className="btn btn--secondary">
+            {t('trip.openChat')}
+          </Link>
+        </section>
+      )}
+
+      {isOwner && (
+        <section className="screen__section">
+          <Button variant="ghost" onClick={() => setConfirmDelete(true)}>
+            {t('trip.delete')}
+          </Button>
+        </section>
+      )}
+      <div className="screen__section" />
+
+      {card.shareSlug && (
+        <ShareSheet
+          card={{ ...card, shareSlug: card.shareSlug }}
+          open={sharing}
+          onClose={() => setSharing(false)}
+          onNewLink={isOwner ? () => void run(async () => setData(await api.post<Card>(`/cards/${card.id}/share-link`))) : undefined}
+        />
+      )}
+      <CreateSheet open={creating} onClose={() => setCreating(false)} initialMode="plan" />
+
+      <BottomSheet
+        open={editing}
+        onClose={() => setEditing(false)}
+        title={t('trip.edit')}
+        footer={
+          <Button size="lg" block type="submit" form="edit-card" loading={busy}>
+            {t('profile.save')}
+          </Button>
+        }
+      >
+        <CardForm id="edit-card" initial={card} error={actionError} onSubmit={(f) => void save(f)} />
+      </BottomSheet>
+
+      <BottomSheet
+        open={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        title={t('trip.deleteTitle')}
+        footer={
+          <div className="screen__stack">
+            <Button block size="lg" variant="brand" onClick={() => setConfirmDelete(false)}>
+              {t('trip.keep')}
+            </Button>
+            <Button
+              block
+              variant="ghost"
+              loading={busy}
+              onClick={() =>
+                void run(async () => {
+                  await api.del(`/cards/${card.id}`)
+                  void navigate('/', { replace: true })
+                })
+              }
+            >
+              {t('trip.deleteConfirm')}
+            </Button>
+          </div>
+        }
+      >
+        <p className="screen__body">{t('trip.deleteBody')}</p>
+      </BottomSheet>
+    </div>
+  )
+}
+
+/** The public face of a card: what a visitor or non-member sees (name, where, when, who's going). */
+export function TripPreview({ card, footer }: { card: Card; footer?: ReactNode }) {
+  const { t, i18n } = useTranslation()
+  return (
+    <div className="screen" style={{ minBlockSize: '100dvh' }}>
+      <TripCover card={card} backTo="/welcome" />
+      <section className="screen__section">
+        <div className="screen__row">
+          <Chip>{countryName(card.countryCode, i18n.language)}</Chip>
+        </div>
+        <h1 className="trip__name">{card.name}</h1>
+        <p className="screen__meta">
+          {formatDateRange(card.startsOn, card.endsOn, i18n.language)} · {card.regions.join(', ')}
+        </p>
+        {card.description && <p className="screen__body">{card.description}</p>}
+        <p className="screen__meta">{t('trip.travelers', { count: card.memberCount })}</p>
+      </section>
+      <section className="screen__section">
+        <p className="screen__note">{t('trip.previewNote')}</p>
+      </section>
+      {footer && <footer className="screen__footer">{footer}</footer>}
     </div>
   )
 }
