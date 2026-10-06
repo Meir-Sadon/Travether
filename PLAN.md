@@ -170,23 +170,29 @@ Interaction principles: one primary action per screen; thumb-reachable bottom na
 
 ---
 
-## 6. Technical architecture (recommended)
+## 6. Technical architecture (same stack as kuskus-shel-ima)
+
+Same technologies and conventions as the [kuskus-shel-ima](https://github.com/Meir-Sadon/kuskus-shel-ima) repo, so tooling, deployment and know-how carry over.
 
 | Layer | Choice | Why |
 |-------|--------|-----|
-| Frontend | **Next.js (App Router) + TypeScript + Tailwind CSS** | Mobile-first web with good SEO for public preview pages |
-| PWA | Web App Manifest + service worker; Web Push (VAPID) | Push on Android, and on iOS after the app is added to the Home Screen |
-| Backend / DB | **Supabase**: Postgres + **PostGIS**, Auth, Realtime, Storage, Edge Functions | Geo queries, date-range overlap, built-in auth incl. Google/Apple/OTP, realtime chat |
-| Authorization | Postgres **Row Level Security** | Private fields and chats visible only to approved participants, enforced in the database |
-| i18n | `next-intl`, logical CSS properties | English at launch, Hebrew/RTL ready |
+| Frontend | **React 19 + Vite + TypeScript** (`frontend/`), React Router, plain CSS with design tokens | Same as kuskus; fast mobile-first SPA |
+| i18n | **i18next / react-i18next**, `<html lang dir>` kept in sync, logical CSS properties | English at launch; Hebrew/RTL = one more JSON file |
+| PWA | Web App Manifest + service worker (`vite-plugin-pwa`); Web Push (VAPID) | Push on Android, and on iOS after "Add to Home Screen" |
+| Backend | **ASP.NET Core (.NET 10) Web API** (`backend/`), controllers + DTO validation, errors as codes | Same as kuskus |
+| Database | **PostgreSQL** via **EF Core + Npgsql**, with **PostGIS** (`Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite`) | Radius + date-overlap queries; migrations in EF Core |
+| Auth | JWT in **httpOnly cookies**, CSRF header guard; email one-time code + **Google / Apple** sign-in | Same cookie pattern as kuskus; no national ID |
+| Authorization | Enforced **server-side** in the API (participant checks on every query/endpoint) | Private fields, exact meeting points and chats only for approved participants |
+| Realtime chat | **ASP.NET Core SignalR** | Built into .NET; card and plan chat rooms |
+| Images | **Cloudinary** behind an `IImageStore` interface (fallback when not configured) | Same as kuskus |
+| Email | Resend or Postmark behind an interface (simulated sender locally) | Transactional + digest |
 | Maps & places | Mapbox or Google Places Autocomplete | City/region selection, meeting points |
-| Email | Resend (or Postmark) | Transactional + digest |
-| QR | `qrcode` library, generated on the client | Share cards |
-| Analytics | PostHog (EU cloud) | Funnels: signup → card → plan → request → meetup |
-| Errors | Sentry | |
-| Hosting | Vercel + Supabase (EU region) | Simple, scalable, GDPR-friendly |
-| Testing | Vitest (unit), Playwright (E2E) | |
-| CI | GitHub Actions: lint, typecheck, tests, preview deploys | |
+| QR | `qrcode` library on the client | Share cards |
+| Analytics / errors | PostHog (EU) + Sentry | Funnels: signup → card → plan → request → meetup |
+| Local dev | **Docker / docker compose** (Postgres+PostGIS, API, frontend behind nginx) | `docker compose up --build` |
+| Hosting | **Render** (one Docker web service: API serves the built frontend) + **Neon** Postgres (EU) | Same as kuskus; one origin, simple deploys |
+| Testing | Frontend: **Vitest + Testing Library** (jsdom), **oxlint**; Backend: **xUnit** integration tests with **Testcontainers** (Postgres); Playwright E2E later | Same as kuskus |
+| CI | GitHub Actions: lint, typecheck/build, frontend + backend tests | |
 
 ### 6.1 Data model (initial)
 ```
@@ -220,8 +226,8 @@ Key queries: `ST_DWithin(origin, :point, :radius)` and `daterange(starts_on, end
 ## 7. Roadmap
 
 ### Phase 0 — Foundations (≈1–2 weeks)
-- [ ] Repo setup: Next.js, TypeScript, Tailwind, ESLint/Prettier, Vitest, Playwright, GitHub Actions
-- [ ] Supabase project (EU), PostGIS enabled, migrations workflow
+- [ ] Repo setup: `frontend/` (React + Vite + TS, oxlint, Vitest), `backend/` (.NET 10 Web API + xUnit), Dockerfile, docker-compose, render.yaml, GitHub Actions
+- [ ] PostgreSQL + PostGIS (docker compose locally, Neon EU in production), EF Core migrations workflow
 - [ ] Design tokens, base components (Button, Card, Chip, Avatar stack, BottomSheet, Stepper)
 - [ ] i18n scaffolding (en), logical CSS for future RTL
 - [ ] Clickable mockups of key screens; quick test with 5–10 travelers
@@ -234,7 +240,7 @@ Key queries: `ST_DWithin(origin, :point, :radius)` and `daterange(starts_on, end
 - [ ] Activity Plans: templates, seat limit, open/groups-only, location privacy
 - [ ] Discover: city radius + date overlap, distance sort, list view, basic filters
 - [ ] Plan join requests with status stepper
-- [ ] In-app chat (card + plan) via Supabase Realtime; voluntary contact sharing
+- [ ] In-app chat (card + plan) via SignalR; voluntary contact sharing
 - [ ] Notifications: in-app + email + Web Push; daily digest for matches
 - [ ] "Did you meet?" flow + double-blind reviews + rating display rules
 - [ ] Safety: block, report, moderation admin page, rate limits, safety tips

@@ -8,7 +8,7 @@ Which Claude model should run each step of [PLAN.md](PLAN.md), and whether to **
 
 | Model | ID | Use for |
 |-------|----|---------|
-| **Opus 5.5** | `claude-opus-5-5` | Architecture, data model, security/privacy logic (RLS), complex algorithms, research and planning |
+| **Opus 5.5** | `claude-opus-5-5` | Architecture, data model, security/privacy logic (authorization), complex algorithms, research and planning |
 | **Sonnet 5.5** | `claude-sonnet-5-5` | Most feature implementation: UI screens, CRUD, integrations, tests |
 | **Haiku 4.5** | `claude-haiku-4-5-20251001` | Small, mechanical work: copy/text, translations, config tweaks, renames, docs, simple bug fixes |
 
@@ -23,8 +23,8 @@ Which Claude model should run each step of [PLAN.md](PLAN.md), and whether to **
 |------|-------|--------------------|-------|---------|-----|
 | R0 | Research | Competitive research + PLAN.md (done) | Opus 5.5 | — | Completed |
 | R1 | Research *(on hold)* | Starting destinations research (§11) | Opus 5.5 | 🆕 New | Multi-source research and synthesis; unrelated to code context |
-| 0.1 | Phase 0 | Repo setup: Next.js, TS, Tailwind, lint, Vitest, Playwright, GitHub Actions (§6, §7) | Sonnet 5.5 | 🆕 New | Standard scaffolding; fresh start of the build |
-| 0.2 | Phase 0 | Supabase project, PostGIS, migrations, **full data model + RLS policies** (§6.1, §4.9) | Opus 5.5 | 🆕 New | Security-critical design that every later step depends on |
+| 0.1 | Phase 0 | Repo setup: React/Vite frontend, .NET 10 API, Docker, Render, lint, Vitest, xUnit, GitHub Actions (§6, §7) | Sonnet 5.5 | 🆕 New | Standard scaffolding; fresh start of the build |
+| 0.2 | Phase 0 | PostgreSQL + PostGIS, EF Core migrations, **full data model + authorization rules** (§6.1, §4.9) | Opus 5.5 | 🆕 New | Security-critical design that every later step depends on |
 | 0.3 | Phase 0 | Design tokens + base components (§5) | Sonnet 5.5 | 🔁 Same as 0.1 | Builds directly on the scaffolded frontend |
 | 0.4 | Phase 0 | i18n scaffolding (en) + logical CSS for RTL (§6) | Haiku 4.5 | 🔁 Same as 0.3 | Small mechanical config on top of 0.3 |
 | 0.5 | Phase 0 | Clickable mockups of key screens (§5) | Sonnet 5.5 | 🔁 Same as 0.3 | Reuses components and tokens just built |
@@ -35,9 +35,9 @@ Which Claude model should run each step of [PLAN.md](PLAN.md), and whether to **
 | 1.5 | Phase 1 | Activity Plans: templates, seat limit, open/groups-only, **location privacy** (§4.3) | Sonnet 5.5 | 🆕 New | New domain |
 | 1.6 | Phase 1 | **Discovery & matching:** PostGIS radius + date overlap, distance rounding, sort, filters (§4.4) | Opus 5.5 | 🆕 New | Geo queries, performance and privacy-sensitive rounding |
 | 1.7 | Phase 1 | Plan join requests + status stepper (§4.5) | Sonnet 5.5 | 🔁 Same as 1.5 | Builds on plan code |
-| 1.8 | Phase 1 | In-app chat (card + plan) via Realtime; voluntary contact sharing (§4.3, §2) | Sonnet 5.5 | 🆕 New | Separate realtime subsystem |
+| 1.8 | Phase 1 | In-app chat (card + plan) via SignalR; voluntary contact sharing (§4.3, §2) | Sonnet 5.5 | 🆕 New | Separate realtime subsystem |
 | 1.9 | Phase 1 | Notifications: in-app, email, Web Push (PWA), daily digest (§4.7) | Sonnet 5.5 | 🆕 New | Separate subsystem (service worker, push, email) |
-| 1.10 | Phase 1 | **"Did you meet?" + double-blind reviews + rating rules** (§4.6) | Opus 5.5 | 🆕 New | Subtle state machine + visibility rules enforced in RLS |
+| 1.10 | Phase 1 | **"Did you meet?" + double-blind reviews + rating rules** (§4.6) | Opus 5.5 | 🆕 New | Subtle state machine + visibility rules enforced in the API |
 | 1.11 | Phase 1 | Safety: block, report, moderation admin, rate limits, safety tips (§4.8) | Sonnet 5.5 | 🆕 New | Cross-cutting; fresh context |
 | 1.12 | Phase 1 | Privacy: policy pages, consent, data export, delete account (§4.9) | Opus 5.5 | 🔁 Same as 1.11 | Legal/data-deletion correctness; shares safety context |
 | 1.13 | Phase 1 | Calendar (.ics) export + WhatsApp share (§4.3) | Haiku 4.5 | 🆕 New | Small, self-contained |
