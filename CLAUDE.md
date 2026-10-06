@@ -20,3 +20,19 @@ The "Any — small bug fix / typo" row applies to quick fixes outside the plan s
 
 - After finishing a step, tick its checkbox in PLAN.md and commit.
 - Don't put model identifiers in commit messages, code or docs other than PHASE_MODEL_MAP.md / CLAUDE.md.
+
+## Branch naming
+
+Every new branch gets a short, readable name that says what it contains: `<type>/<step-id>-<short-description>`, lowercase, words joined with `-`.
+
+| Type | Use for | Example |
+|------|---------|---------|
+| `feature/` | New functionality (a PLAN.md step) | `feature/1.3-vacation-cards` |
+| `fix/` | Bug fixes | `fix/join-request-double-submit` |
+| `docs/` | Plans, research, README, guides | `docs/starting-destinations-research` |
+| `design/` | Prototype and design changes | `design/chat-bubbles` |
+| `chore/` | Setup, config, dependencies, CI | `chore/0.1-repo-setup` |
+
+- Include the PHASE_MODEL_MAP.md step ID when the work belongs to a plan step; leave it out otherwise.
+- Never use random or auto-generated names (e.g. `claude/sweet-wozniak-0glfej`). If the session was started on such a branch, create a properly named branch from it before the first commit and work there, and tell the user the new name.
+- One branch (and one PR) per step or topic.
