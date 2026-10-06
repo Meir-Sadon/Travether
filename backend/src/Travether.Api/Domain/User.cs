@@ -3,7 +3,8 @@ namespace Travether.Api.Domain;
 /// <summary>
 /// A registered traveler. Field visibility (PLAN.md §4.1) is enforced by
 /// <see cref="Authorization.AccessRules"/>, never by the client.
-/// Auth credentials (password hash, OAuth links) arrive with step 1.1.
+/// Credentials: an optional password hash here, Google/Apple links in <see cref="ExternalLogin"/>,
+/// and one-time email codes in <see cref="LoginCode"/>.
 /// </summary>
 public sealed class User
 {
@@ -33,6 +34,15 @@ public sealed class User
     public List<string> Interests { get; set; } = [];
     public VerificationBadges VerificationBadges { get; set; }
     public UserRole Role { get; set; }
+
+    /// <summary>ASP.NET Core Identity hash (PBKDF2). Null for accounts that only use codes or Google/Apple.</summary>
+    public string? PasswordHash { get; set; }
+
+    /// <summary>
+    /// Bumped on logout-everywhere, password change, ban and deletion. Session cookies carry the
+    /// version they were issued with and stop working once it changes.
+    /// </summary>
+    public int SessionVersion { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; }
 

@@ -235,7 +235,7 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 - [ ] Quick test of the mockups with 5–10 travelers (script in [docs/MOCKUPS.md](docs/MOCKUPS.md#quick-test-with-510-travelers))
 
 ### Phase 1 — MVP (≈6–8 weeks)
-- [ ] Auth: email + password, email OTP, Google and Apple sign-in; 18+ gate; onboarding wizard
+- [x] Auth: email + password, email OTP, Google and Apple sign-in; 18+ gate; onboarding wizard
 - [ ] Profile (minimal + gradual completion), contact-verified badge
 - [ ] Vacation Cards: create/edit/delete, cities + dates, visibility, share link + QR, public preview
 - [ ] Card join requests (anyone), approve/reject, co-admins, leave/remove

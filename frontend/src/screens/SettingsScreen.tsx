@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router'
+import { useAuth } from '../auth/useAuth'
 import { BottomSheet, Button, Icon } from '../components'
 import { ScreenHeader } from '../layout/ScreenHeader'
 import './SettingsScreen.css'
@@ -11,6 +13,13 @@ export function SettingsScreen() {
   const { t } = useTranslation()
   const [on, setOn] = useState<Record<string, boolean>>({ requests: true, messages: true, matches: true, reminders: true, reviews: false })
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const { logout } = useAuth()
+  const navigate = useNavigate()
+
+  const logOut = async () => {
+    await logout()
+    void navigate('/welcome', { replace: true })
+  }
 
   return (
     <div className="screen">
@@ -52,6 +61,20 @@ export function SettingsScreen() {
           <li>
             <button type="button" className="settings__row settings__row--danger" onClick={() => setConfirmDelete(true)}>
               {t('settings.delete')}
+              <Icon name="forward" size={18} />
+            </button>
+          </li>
+        </ul>
+      </section>
+
+      <section className="screen__section" aria-labelledby="settings-account">
+        <h2 id="settings-account" className="screen__section-title">
+          {t('settings.account')}
+        </h2>
+        <ul className="list-reset settings__list">
+          <li>
+            <button type="button" className="settings__row" onClick={() => void logOut()}>
+              {t('settings.logOut')}
               <Icon name="forward" size={18} />
             </button>
           </li>

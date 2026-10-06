@@ -1,6 +1,10 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Travether.Api.Auth;
 using Travether.Api.Authorization;
 using Travether.Api.Data;
+using Travether.Api.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +15,16 @@ if (!string.IsNullOrWhiteSpace(port))
     builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 }
 
-builder.Services.AddControllers();
+// Enums travel as camelCase strings ("coAdmin", "groupsOnly"), matching the frontend types.
+builder.Services.AddControllers().AddJsonOptions(o =>
+    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false)));
 builder.Services.AddProblemDetails();
 builder.Services.AddOpenApi();
 builder.Services.AddTravetherDatabase(builder.Configuration);
 builder.Services.AddScoped<AccessQueries>();
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddTravetherEmail(builder.Configuration);
+builder.Services.AddTravetherAuth(builder.Configuration, builder.Environment);
 
 if (builder.Configuration.GetValue<bool>("ForwardedHeaders:Enabled"))
 {
@@ -40,6 +48,7 @@ if (app.Configuration.GetValue<bool>("ForwardedHeaders:Enabled"))
 
 app.UseExceptionHandler();
 app.UseStatusCodePages();
+app.UseMiddleware<CsrfMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -49,6 +58,10 @@ if (app.Environment.IsDevelopment())
 // The built frontend is copied into wwwroot by the Dockerfile, so one service serves both.
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseRateLimiter();
 
 app.MapControllers();
 
