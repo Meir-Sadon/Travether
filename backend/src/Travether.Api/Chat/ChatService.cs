@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Travether.Api.Authorization;
 using Travether.Api.Data;
 using Travether.Api.Domain;
+using Travether.Api.Notifications;
 
 namespace Travether.Api.Chat;
 
 /// <summary>Card and plan chats (PLAN.md §4.3, decision 3): who may read, who gets pushed a message.</summary>
-public sealed class ChatService(TravetherDbContext db, AccessQueries access, IHubContext<ChatHub> hub, TimeProvider clock)
+public sealed class ChatService(TravetherDbContext db, AccessQueries access, IHubContext<ChatHub> hub, Notifier notifier, TimeProvider clock)
 {
     public const int PageSize = 50;
 
@@ -32,6 +33,7 @@ public sealed class ChatService(TravetherDbContext db, AccessQueries access, IHu
         var dto = new MessageDto(message.Id, sender, message.Body, message.Kind, message.CreatedAt);
         var recipients = await RecipientsAsync(convo, senderId, ct).ConfigureAwait(false);
         await hub.Clients.Users(recipients.Select(id => id.ToString())).SendAsync("message", new MessageEvent(ChatKeys.For(convo.Type, convo.RefId!.Value), dto), ct).ConfigureAwait(false);
+        await notifier.ChatMessageAsync(convo, await TitleAsync(convo, ct).ConfigureAwait(false), dto, recipients.Where(id => id != senderId), ct).ConfigureAwait(false);
         return dto;
     }
 
@@ -110,6 +112,10 @@ public sealed class ChatService(TravetherDbContext db, AccessQueries access, IHu
     public async Task<int> MemberCountAsync(Conversation convo, CancellationToken ct) => convo.Type == ConversationType.Card
         ? await db.CardMembers.CountAsync(m => m.CardId == convo.RefId && m.Status == MembershipStatus.Active, ct).ConfigureAwait(false)
         : await db.PlanParticipants.CountAsync(p => p.PlanId == convo.RefId && p.Status == MembershipStatus.Active, ct).ConfigureAwait(false);
+
+    private Task<string> TitleAsync(Conversation convo, CancellationToken ct) => convo.Type == ConversationType.Card
+        ? db.VacationCards.Where(c => c.Id == convo.RefId).Select(c => c.Name).FirstAsync(ct)
+        : db.ActivityPlans.Where(p => p.Id == convo.RefId).Select(p => p.Title).FirstAsync(ct);
 
     /// <summary>Everyone who may read the chat now, minus people who blocked the sender (they never see those messages).</summary>
     private async Task<List<Guid>> RecipientsAsync(Conversation convo, Guid senderId, CancellationToken ct)

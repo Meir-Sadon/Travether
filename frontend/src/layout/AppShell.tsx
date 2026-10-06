@@ -4,7 +4,7 @@ import { NavLink, Outlet, useLocation } from 'react-router'
 import { useAuth } from '../auth/useAuth'
 import { Icon, type IconName } from '../components'
 import { CreateSheet } from '../features/CreateSheet'
-import { useChatEvents } from '../lib/chatHub'
+import { useChatEvents, useNotificationEvents } from '../lib/chatHub'
 import type { ChatSummary, InboxRequest } from '../lib/types'
 import { useApi } from '../lib/useApi'
 import './AppShell.css'
@@ -35,6 +35,7 @@ export function AppShell() {
     reloadRequests()
   }, [pathname, user, reloadChats, reloadRequests])
   useChatEvents(() => reloadChats(), !!user)
+  useNotificationEvents(() => reloadRequests(), !!user)
 
   const tabs: Tab[] = [
     { to: '/', icon: 'home', label: 'nav.home' },

@@ -31,6 +31,9 @@ The tables follow [PLAN.md §6.1](../PLAN.md#61-data-model-initial). Additions a
 | `reviews` | Added `replied_at`. Unique per (plan, reviewer, reviewee); stars 1–5; no self-review. | |
 | `reports` | Added `resolved_by_id`, `resolved_at`, `resolution_note`. | EU DSA: reasons are given when content is removed (§4.9). |
 | `push_subscriptions` | Added `id`; `keys` split into `p256dh` and `auth`. | Web Push needs both keys; endpoints are unique. |
+| `notifications` | Added `dedupe_key` (unique per user when set) and `delivered_at` (step 1.9). | Reminders, digests and chat batches are sent once; `delivered_at` null means push/email are still queued. |
+| `notification_settings` | New (step 1.9): one row per user with a toggle per category, `email`, `quiet_from`/`quiet_to` and `time_zone_id`. No row means the defaults. | PLAN.md §4.7: users control each category; quiet hours follow their time zone. |
+| `vacation_cards` | Added `area` (geography point, nullable; step 1.9). | The first region, geocoded once, so the daily digest can find plans near the trip. |
 | `consents` | New: `user_id`, `kind`, `version`, `granted_at`, `withdrawn_at`. | Consent records for GDPR / Israeli PPL Amendment 13 (§4.9). |
 
 ### Meeting-point privacy: `origin_public`

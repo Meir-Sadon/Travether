@@ -7,6 +7,7 @@ using Travether.Api.Auth;
 using Travether.Api.Authorization;
 using Travether.Api.Data;
 using Travether.Api.Domain;
+using Travether.Api.Notifications;
 using Travether.Api.Plans;
 using Travether.Api.Profiles;
 
@@ -19,7 +20,7 @@ namespace Travether.Api.Controllers;
 [ApiController]
 [Authorize]
 [Route("api")]
-public sealed class PlanRequestsController(TravetherDbContext db, AccessQueries access, PlanViews views, TimeProvider clock) : ControllerBase
+public sealed class PlanRequestsController(TravetherDbContext db, AccessQueries access, PlanViews views, Notifier notifier, TimeProvider clock) : ControllerBase
 {
     public const int MaxParty = 20;
 
@@ -94,6 +95,7 @@ public sealed class PlanRequestsController(TravetherDbContext db, AccessQueries 
             return ApiError.Conflict("AlreadyRequested");
         }
 
+        await notifier.PlanRequestedAsync(planId, Me, ct).ConfigureAwait(false);
         return Ok(await views.LoadAsync(planId, Me, null, ct).ConfigureAwait(false));
     }
 
@@ -207,26 +209,31 @@ public sealed class PlanRequestsController(TravetherDbContext db, AccessQueries 
         }
 
         await tx.CommitAsync(ct).ConfigureAwait(false);
+        await notifier.PlanRequestDecidedAsync(plan.Id, people, approved: true, ct).ConfigureAwait(false);
         return Ok(await views.LoadAsync(plan.Id, Me, null, ct).ConfigureAwait(false));
     }
 
     [HttpPost("plan-requests/{requestId:guid}/reject")]
     public async Task<IActionResult> Reject(Guid requestId, CancellationToken ct)
     {
-        var planId = await db.PlanRequests.Where(r => r.Id == requestId).Select(r => (Guid?)r.PlanId).FirstOrDefaultAsync(ct).ConfigureAwait(false);
-        if (planId is null)
+        var request = await db.PlanRequests.Where(r => r.Id == requestId).Select(r => new { r.PlanId, r.RequesterId }).FirstOrDefaultAsync(ct).ConfigureAwait(false);
+        if (request is null)
         {
             return ApiError.NotFound();
         }
 
-        if (await RequireManageAsync(planId.Value, ct).ConfigureAwait(false) is { } denied)
+        if (await RequireManageAsync(request.PlanId, ct).ConfigureAwait(false) is { } denied)
         {
             return denied;
         }
 
-        return await SetStatusAsync(requestId, RequestStatus.Rejected, clock.GetUtcNow(), ct).ConfigureAwait(false)
-            ? Ok(await views.LoadAsync(planId.Value, Me, null, ct).ConfigureAwait(false))
-            : ApiError.Conflict("AlreadyDecided");
+        if (!await SetStatusAsync(requestId, RequestStatus.Rejected, clock.GetUtcNow(), ct).ConfigureAwait(false))
+        {
+            return ApiError.Conflict("AlreadyDecided");
+        }
+
+        await notifier.PlanRequestDecidedAsync(request.PlanId, [request.RequesterId], approved: false, ct).ConfigureAwait(false);
+        return Ok(await views.LoadAsync(request.PlanId, Me, null, ct).ConfigureAwait(false));
     }
 
     /// <summary>The requester takes back an open request.</summary>

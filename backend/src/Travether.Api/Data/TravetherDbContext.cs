@@ -29,6 +29,7 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
     public DbSet<Block> Blocks => Set<Block>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<PushSubscription> PushSubscriptions => Set<PushSubscription>();
+    public DbSet<NotificationSettings> NotificationSettings => Set<NotificationSettings>();
     public DbSet<Consent> Consents => Set<Consent>();
     public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
     public DbSet<LoginCode> LoginCodes => Set<LoginCode>();
@@ -95,6 +96,7 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
             e.Property(x => x.Description).HasMaxLength(1000);
             e.Property(x => x.Visibility).HasMaxLength(16);
             e.Property(x => x.ShareSlug).HasMaxLength(32);
+            e.Property(x => x.Area).HasColumnType("geography (point, 4326)");
             e.Property(x => x.CreatedAt).HasDefaultValueSql("now()");
             e.HasIndex(x => x.ShareSlug).IsUnique();
             e.HasIndex(x => x.OwnerId);
@@ -301,7 +303,18 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
             e.Property(x => x.Type).HasMaxLength(48);
             e.Property(x => x.Payload).HasColumnType("jsonb");
             e.Property(x => x.CreatedAt).HasDefaultValueSql("now()");
+            e.Property(x => x.DedupeKey).HasMaxLength(120);
             e.HasIndex(x => new { x.UserId, x.CreatedAt });
+            e.HasIndex(x => new { x.UserId, x.DedupeKey }).IsUnique().HasFilter("dedupe_key IS NOT NULL");
+            e.HasIndex(x => x.CreatedAt).HasFilter("delivered_at IS NULL").HasDatabaseName("ix_notifications_undelivered");
+            e.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<NotificationSettings>(e =>
+        {
+            e.ToTable("notification_settings");
+            e.HasKey(x => x.UserId);
+            e.Property(x => x.TimeZoneId).HasMaxLength(64);
             e.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
         });
 

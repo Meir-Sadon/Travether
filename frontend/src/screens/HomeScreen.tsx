@@ -8,11 +8,13 @@ import { PlanTile } from '../features/PlanTile'
 import { ScreenHeader } from '../layout/ScreenHeader'
 import { countryName } from '../lib/countries'
 import { formatDateRange, tintFor, todayIso } from '../lib/dates'
+import { useNotificationEvents } from '../lib/chatHub'
 import { discoverPath, useTripOrigin } from '../lib/discover'
 import { shareCodeFrom } from '../lib/share'
 import type { DiscoverPlan, MyCard } from '../lib/types'
 import { useApi } from '../lib/useApi'
 import './HomeScreen.css'
+import './NotificationsScreen.css'
 
 /** 3 · Home: my trips + plans matching my dates nearby. */
 export function HomeScreen() {
@@ -30,6 +32,9 @@ export function HomeScreen() {
     current && origin ? discoverPath({ origin, from: current.startsOn > today ? current.startsOn : today, to: current.endsOn }) : null,
   )
   const nearby = matches?.slice(0, 8) ?? []
+  const unread = useApi<{ count: number }>('/notifications/unread')
+  useNotificationEvents(() => unread.reload())
+  const unreadCount = unread.data?.count ?? 0
 
   const join = (e: FormEvent) => {
     e.preventDefault()
@@ -43,6 +48,12 @@ export function HomeScreen() {
         large
         title={t('home.greeting', { name: me.displayName })}
         subtitle={current ? `${current.regions[0]} · ${formatDateRange(current.startsOn, current.endsOn, i18n.language)}` : t('home.noTripSubtitle')}
+        action={
+          <Link to="/notifications" className="home__bell" aria-label={unreadCount ? t('home.notificationsUnread', { count: unreadCount }) : t('home.notifications')}>
+            <Icon name="bell" size={24} />
+            {unreadCount > 0 && <span className="home__bell-dot" />}
+          </Link>
+        }
       />
 
       <section className="screen__section" aria-labelledby="home-trips">

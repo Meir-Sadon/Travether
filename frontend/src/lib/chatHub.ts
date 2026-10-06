@@ -2,7 +2,10 @@ import { HubConnectionBuilder, HubConnectionState, LogLevel, type HubConnection 
 import { useEffect, useRef } from 'react'
 import type { ChatEvent } from './types'
 
-type Listener = (event: ChatEvent) => void
+/** Server pushes: a chat message, or a new in-app notification. */
+export type HubEvent = { kind: 'message'; event: ChatEvent } | { kind: 'notification'; type: string }
+
+type Listener = (event: HubEvent) => void
 
 const listeners = new Set<Listener>()
 let connection: HubConnection | null = null
@@ -12,7 +15,8 @@ let retry: ReturnType<typeof setTimeout> | undefined
 function connect() {
   if (connection) return
   const hub = new HubConnectionBuilder().withUrl(new URL('/hubs/chat', window.location.origin).href).withAutomaticReconnect().configureLogging(LogLevel.None).build()
-  hub.on('message', (event: ChatEvent) => listeners.forEach((l) => l(event)))
+  hub.on('message', (event: ChatEvent) => listeners.forEach((l) => l({ kind: 'message', event })))
+  hub.on('notification', (n: { type: string }) => listeners.forEach((l) => l({ kind: 'notification', type: n.type })))
   hub.onclose(scheduleRetry)
   connection = hub
   start()
@@ -44,11 +48,25 @@ function subscribe(listener: Listener): () => void {
   }
 }
 
-/** Calls `handler` for every chat message pushed to the signed-in user. */
-export function useChatEvents(handler: Listener, enabled = true) {
+/** Calls `handler` for everything pushed to the signed-in user. */
+export function useHubEvents(handler: Listener, enabled = true) {
   const latest = useRef(handler)
   useEffect(() => {
     latest.current = handler
   })
   useEffect(() => (enabled ? subscribe((e) => latest.current(e)) : undefined), [enabled])
+}
+
+/** Calls `handler` for every chat message pushed to the signed-in user. */
+export function useChatEvents(handler: (event: ChatEvent) => void, enabled = true) {
+  useHubEvents((e) => {
+    if (e.kind === 'message') handler(e.event)
+  }, enabled)
+}
+
+/** Calls `handler` when a new in-app notification arrives. */
+export function useNotificationEvents(handler: (type: string) => void, enabled = true) {
+  useHubEvents((e) => {
+    if (e.kind === 'notification') handler(e.type)
+  }, enabled)
 }

@@ -1,0 +1,11 @@
+{
+  "name": "Travether",
+  "short_name": "Travether",
+  "description": "Find people to do things with on your trip.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0E2F2C",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
