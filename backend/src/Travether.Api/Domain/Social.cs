@@ -30,10 +30,19 @@ public sealed class Message
     public Guid SenderId { get; set; }
     public User Sender { get; set; } = null!;
     public required string Body { get; set; }
+    public MessageKind Kind { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 
     /// <summary>Set by moderation; hidden messages are not returned to participants.</summary>
     public DateTimeOffset? HiddenAt { get; set; }
+}
+
+/// <summary>How far a person has read a conversation, for unread counts.</summary>
+public sealed class ConversationRead
+{
+    public Guid ConversationId { get; set; }
+    public Guid UserId { get; set; }
+    public DateTimeOffset LastReadAt { get; set; }
 }
 
 public sealed class MeetConfirmation

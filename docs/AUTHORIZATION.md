@@ -103,6 +103,8 @@ A plan's date must fall within its card's dates (`PlanOutsideTrip`) and in the f
 | Plan | Active plan participants and the host |
 | Direct | Its two members, unless either blocked the other |
 
+The REST API (`/api/chats`) does every read and write and checks access each time; the SignalR hub (`/hubs/chat`) only pushes new messages to members who are signed in, minus anyone who blocked the sender. Sharing a phone or WhatsApp number posts the sender's own profile number as a message (`PhoneRequired` when they have none); nobody else's number is ever revealed. Plan chats stay listed for 30 days after the plan.
+
 ## Ratings (§4.6)
 
 - Reviewing opens only when **both** people answered *Yes, we met*, and closes **14 days after the second answer**.

@@ -26,6 +26,8 @@ The tables follow [PLAN.md §6.1](../PLAN.md#61-data-model-initial). Additions a
 | `card_requests`, `plan_requests` | Partial unique index: one open (`requested`) request per person per card/plan. | Stops double-submits; a rejected request doesn't block a new one. |
 | `activity_plans` | Added `time_zone_id` (IANA), `origin_public` and `origin_name` (the meeting point's name, private like `origin`). `seat_limit` 2–100. | Local dates for reminders and "Did you meet?" (§4.6). `origin_public` is explained below. |
 | `conversation_members` | New. Members of `direct` conversations. | Card and plan chats derive members from memberships; direct chats need their own list. CHECK: `ref_id` is null exactly for `direct`. |
+| `messages` | Added `kind` (`text`, `contact_phone`, `contact_whatsapp`; step 1.8). | A shared number is a message of its own kind, so the client can render it as a call / WhatsApp link. |
+| `conversation_reads` | New (step 1.8): `conversation_id`, `user_id`, `last_read_at`. PK (conversation, user). | Unread counts for the inbox and the tab badge. |
 | `reviews` | Added `replied_at`. Unique per (plan, reviewer, reviewee); stars 1–5; no self-review. | |
 | `reports` | Added `resolved_by_id`, `resolved_at`, `resolution_note`. | EU DSA: reasons are given when content is removed (§4.9). |
 | `push_subscriptions` | Added `id`; `keys` split into `p256dh` and `auth`. | Web Push needs both keys; endpoints are unique. |

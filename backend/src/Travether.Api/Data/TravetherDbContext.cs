@@ -21,6 +21,7 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
     public DbSet<PlanRequest> PlanRequests => Set<PlanRequest>();
     public DbSet<Conversation> Conversations => Set<Conversation>();
     public DbSet<ConversationMember> ConversationMembers => Set<ConversationMember>();
+    public DbSet<ConversationRead> ConversationReads => Set<ConversationRead>();
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<MeetConfirmation> MeetConfirmations => Set<MeetConfirmation>();
     public DbSet<Review> Reviews => Set<Review>();
@@ -37,6 +38,7 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
         configurationBuilder.Properties<UserRole>().HaveConversion<SnakeCaseEnumConverter<UserRole>>();
         configurationBuilder.Properties<CardVisibility>().HaveConversion<SnakeCaseEnumConverter<CardVisibility>>();
         configurationBuilder.Properties<CardRole>().HaveConversion<SnakeCaseEnumConverter<CardRole>>();
+        configurationBuilder.Properties<MessageKind>().HaveConversion<SnakeCaseEnumConverter<MessageKind>>();
         configurationBuilder.Properties<MembershipStatus>().HaveConversion<SnakeCaseEnumConverter<MembershipStatus>>();
         configurationBuilder.Properties<RequestStatus>().HaveConversion<SnakeCaseEnumConverter<RequestStatus>>();
         configurationBuilder.Properties<PlanCategory>().HaveConversion<SnakeCaseEnumConverter<PlanCategory>>();
@@ -219,10 +221,19 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
             e.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
         });
 
+        modelBuilder.Entity<ConversationRead>(e =>
+        {
+            e.ToTable("conversation_reads");
+            e.HasKey(x => new { x.ConversationId, x.UserId });
+            e.HasOne<Conversation>().WithMany().HasForeignKey(x => x.ConversationId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+        });
+
         modelBuilder.Entity<Message>(e =>
         {
-            e.ToTable("messages");
+            e.ToTable("messages", t => InCheck(t, "kind", EnumText.AllDbValues<MessageKind>()));
             e.Property(x => x.Body).HasMaxLength(4000);
+            e.Property(x => x.Kind).HasMaxLength(24);
             e.Property(x => x.CreatedAt).HasDefaultValueSql("now()");
             e.HasIndex(x => new { x.ConversationId, x.CreatedAt });
             e.HasOne(x => x.Conversation).WithMany().HasForeignKey(x => x.ConversationId).OnDelete(DeleteBehavior.Cascade);

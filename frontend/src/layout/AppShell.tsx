@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { NavLink, Outlet } from 'react-router'
+import { NavLink, Outlet, useLocation } from 'react-router'
+import { useAuth } from '../auth/useAuth'
 import { Icon, type IconName } from '../components'
 import { CreateSheet } from '../features/CreateSheet'
-import { chats, incomingRequests } from '../mock/data'
+import { useChatEvents } from '../lib/chatHub'
+import type { ChatSummary, InboxRequest } from '../lib/types'
+import { useApi } from '../lib/useApi'
 import './AppShell.css'
 
 type Tab = { to: string; icon: IconName; label: 'nav.home' | 'nav.discover' | 'nav.inbox' | 'nav.profile'; badge?: number }
@@ -12,7 +15,26 @@ type Tab = { to: string; icon: IconName; label: 'nav.home' | 'nav.discover' | 'n
 export function AppShell() {
   const { t } = useTranslation()
   const [creating, setCreating] = useState(false)
-  const inboxCount = incomingRequests.length + chats.reduce((n, c) => n + c.unread, 0)
+  const { user } = useAuth()
+  const { pathname } = useLocation()
+  const chats = useApi<ChatSummary[]>(user ? '/chats' : null)
+  const requests = useApi<{ incoming: InboxRequest[] }>(user ? '/inbox/requests' : null)
+  const inboxCount = (requests.data?.incoming.length ?? 0) + (chats.data ?? []).reduce((n, c) => n + c.unread, 0)
+  const { reload: reloadChats } = chats
+  const { reload: reloadRequests } = requests
+
+  // The badge catches up when you move between screens and when a message arrives.
+  const firstVisit = useRef(true)
+  useEffect(() => {
+    if (!user) return
+    if (firstVisit.current) {
+      firstVisit.current = false
+      return
+    }
+    reloadChats()
+    reloadRequests()
+  }, [pathname, user, reloadChats, reloadRequests])
+  useChatEvents(() => reloadChats(), !!user)
 
   const tabs: Tab[] = [
     { to: '/', icon: 'home', label: 'nav.home' },
