@@ -6,6 +6,7 @@ import { PersonItem } from '../features/PersonItem'
 import { Stars } from '../features/ReviewList'
 import { ScreenHeader } from '../layout/ScreenHeader'
 import { api, errorCode } from '../lib/api'
+import { track } from '../lib/telemetry'
 import { parseDate } from '../lib/dates'
 import { categoryTint } from '../lib/plans'
 import type { MeetAnswer, WrapUp, WrapUpPerson } from '../lib/types'
@@ -28,6 +29,7 @@ export function ReviewScreen() {
     setActionError(null)
     try {
       setData(await api.post<WrapUp>(`/plans/${planId}/meet`, { answer: a }))
+      if (a === 'met') track('met')
     } catch (err) {
       setActionError(errorCode(err))
     } finally {

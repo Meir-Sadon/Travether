@@ -56,7 +56,7 @@ describe('auth', () => {
     await userEvent.type(screen.getByLabelText('Last name'), 'Levi')
     await userEvent.type(screen.getByLabelText('Date of birth'), '1996-04-02')
     await userEvent.selectOptions(screen.getByLabelText('Country of origin'), 'IL')
-    await userEvent.click(screen.getByRole('checkbox'))
+    await userEvent.click(screen.getByRole('checkbox', { name: /I'm 18 or older/ }))
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }))
 
     await userEvent.click(await screen.findByRole('button', { name: 'Food' }))
@@ -70,6 +70,7 @@ describe('auth', () => {
       dateOfBirth: '1996-04-02',
       countryCode: 'IL',
       acceptTerms: true,
+      allowAnalytics: false,
     })
     expect(api.calls.find((c) => c.path === '/me')?.body).toEqual({ interests: ['food'], languages: [] })
   })
@@ -86,7 +87,7 @@ describe('auth', () => {
     const thisYear = new Date().getFullYear()
     await userEvent.type(screen.getByLabelText('Date of birth'), `${thisYear - 10}-01-01`)
     await userEvent.selectOptions(screen.getByLabelText('Country of origin'), 'IL')
-    await userEvent.click(screen.getByRole('checkbox'))
+    await userEvent.click(screen.getByRole('checkbox', { name: /I'm 18 or older/ }))
     await userEvent.click(screen.getByRole('button', { name: 'Continue' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('You must be 18 or older')

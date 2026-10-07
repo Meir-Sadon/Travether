@@ -4,7 +4,9 @@ import { Link } from 'react-router'
 import { FormError, Icon } from '../components'
 import { ScreenHeader } from '../layout/ScreenHeader'
 import { legalDocs, type LegalDoc } from '../legal/documents'
+import { useMe } from '../auth/useAuth'
 import { api, errorCode } from '../lib/api'
+import { syncAnalytics } from '../lib/telemetry'
 import type { Privacy } from '../lib/types'
 import { useApi } from '../lib/useApi'
 import './SettingsScreen.css'
@@ -14,6 +16,7 @@ const audiences = ['everyone', 'approved', 'onlyYou'] as const
 /** Settings → Who sees what (PLAN.md §4.1, §4.9): field visibility, optional consents, data download, legal texts. */
 export function PrivacyScreen() {
   const { t, i18n } = useTranslation()
+  const me = useMe()
   const { data, setData } = useApi<Privacy>('/me/privacy')
   const [error, setError] = useState<string | null>(null)
 
@@ -21,6 +24,7 @@ export function PrivacyScreen() {
     setError(null)
     try {
       setData(await api.put<Privacy>('/me/consents', { kind: 'analytics', granted }))
+      void syncAnalytics(me.id, granted)
     } catch (err) {
       setError(errorCode(err))
     }

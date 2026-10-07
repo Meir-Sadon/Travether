@@ -22,12 +22,14 @@ public sealed partial class PrivacyService(
     TimeProvider clock,
     ILogger<PrivacyService> log)
 {
-    public async Task<bool> NeedsConsentAsync(Guid userId, CancellationToken ct)
+    /// <summary>For the session: whether the legal documents need accepting again, and whether analytics may run.</summary>
+    public async Task<(bool NeedsConsent, bool Analytics)> SessionFlagsAsync(Guid userId, CancellationToken ct)
     {
-        var accepted = await db.Consents
-            .Where(c => c.UserId == userId && c.Version == auth.LegalVersion && c.WithdrawnAt == null && PrivacyRules.Legal.Contains(c.Kind))
-            .Select(c => c.Kind).Distinct().CountAsync(ct).ConfigureAwait(false);
-        return accepted < PrivacyRules.Legal.Count;
+        var active = await db.Consents
+            .Where(c => c.UserId == userId && c.WithdrawnAt == null)
+            .Select(c => new { c.Kind, c.Version }).ToListAsync(ct).ConfigureAwait(false);
+        var accepted = active.Where(c => c.Version == auth.LegalVersion && PrivacyRules.Legal.Contains(c.Kind)).Select(c => c.Kind).Distinct().Count();
+        return (accepted < PrivacyRules.Legal.Count, active.Any(c => c.Kind == ConsentKind.Analytics));
     }
 
     public async Task<PrivacyDto> GetAsync(Guid userId, CancellationToken ct)

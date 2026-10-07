@@ -32,6 +32,15 @@ services:
         sync: false
       - key: Email__From
         sync: false
+      # Analytics (PostHog EU, opt-in per user) and error tracking (Sentry); each is off while empty
+      - key: Telemetry__PostHogKey
+        sync: false
+      - key: Telemetry__SentryDsn
+        sync: false
+      - key: Sentry__Dsn
+        sync: false
+      - key: Telemetry__Environment
+        value: production
       - key: Database__MigrateOnStartup
         value: "true"
       - key: ForwardedHeaders__Enabled

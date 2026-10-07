@@ -7,8 +7,10 @@ import './i18n'
 import './screens/screens.css'
 import App from './App.tsx'
 import { registerServiceWorker } from './lib/push'
+import { startErrorTracking } from './lib/telemetry'
 
 registerServiceWorker()
+void startErrorTracking()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

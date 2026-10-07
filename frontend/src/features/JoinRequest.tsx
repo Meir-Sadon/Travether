@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet, Button, FormError, TextField } from '../components'
 import { api, errorCode } from '../lib/api'
+import { track } from '../lib/telemetry'
 import type { Card } from '../lib/types'
 
 type JoinRequestProps = {
@@ -79,6 +80,7 @@ export function JoinRequest({ card, shareSlug, onChange }: JoinRequestProps) {
             e.preventDefault()
             void run(async () => {
               onChange(await api.post<Card>(`/cards/${card.id}/requests`, { message, shareSlug }))
+              track('card_requested')
               setOpen(false)
             })
           }}

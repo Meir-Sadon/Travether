@@ -6,8 +6,11 @@ namespace Travether.Api.Auth;
 
 public sealed record ProvidersDto(string? GoogleClientId, string? AppleClientId, string? AppleRedirectUri);
 
-/// <summary><c>NeedsConsent</c>: the legal documents changed since the user last accepted them.</summary>
-public sealed record SessionDto(MeDto? User, bool NeedsConsent = false);
+/// <summary>
+/// <c>NeedsConsent</c>: the legal documents changed since the user last accepted them.
+/// <c>Analytics</c>: the user opted in to product analytics.
+/// </summary>
+public sealed record SessionDto(MeDto? User, bool NeedsConsent = false, bool Analytics = false);
 
 /// <summary>
 /// Result of a sign-in step. <c>signedIn</c>: the cookie is set. <c>needsProfile</c>: the identity is
@@ -36,7 +39,8 @@ public sealed record RegisterRequest(
     [Required, MaxLength(120)] string FullName,
     DateOnly DateOfBirth,
     [Required, RegularExpression("^[A-Z]{2}$")] string CountryCode,
-    bool AcceptTerms);
+    bool AcceptTerms,
+    bool AllowAnalytics = false);
 
 public sealed record PasswordResetRequest(
     [Required, EmailAddress, MaxLength(254)] string Email,

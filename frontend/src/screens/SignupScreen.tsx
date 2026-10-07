@@ -7,6 +7,7 @@ import type { AuthResult, Me } from '../auth/types'
 import { Button, Checkbox, Chip, FormError, SelectField, Stepper, TextField } from '../components'
 import { ScreenHeader } from '../layout/ScreenHeader'
 import { api, errorCode } from '../lib/api'
+import { track } from '../lib/telemetry'
 import { countryOptions, interestTags, languageCodes, languageName } from '../lib/countries'
 
 type NeedsProfile = Extract<AuthResult, { status: 'needsProfile' }>
@@ -41,6 +42,7 @@ export function SignupScreen() {
   const [dob, setDob] = useState('')
   const [country, setCountry] = useState('')
   const [terms, setTerms] = useState(false)
+  const [analytics, setAnalytics] = useState(false)
   const [interests, setInterests] = useState<string[]>([])
   const [languages, setLanguages] = useState<string[]>([])
   const [busy, setBusy] = useState(false)
@@ -80,8 +82,12 @@ export function SignupScreen() {
         dateOfBirth: dob,
         countryCode: country,
         acceptTerms: terms,
+        allowAnalytics: analytics,
       })
-      if (result.status === 'signedIn') setUser(result.user)
+      if (result.status === 'signedIn') {
+        track('signed_up')
+        setUser(result.user)
+      }
       setStep(2)
     } catch (err) {
       setError(errorCode(err))
@@ -177,6 +183,9 @@ export function SignupScreen() {
                 i18nKey="signup.acceptTerms"
                 components={{ terms: <Link to="/legal/terms" />, guidelines: <Link to="/legal/guidelines" />, privacy: <Link to="/legal/privacy" /> }}
               />
+            </Checkbox>
+            <Checkbox checked={analytics} onChange={(e) => setAnalytics(e.target.checked)}>
+              {t('signup.allowAnalytics')}
             </Checkbox>
             {errorBox}
           </section>

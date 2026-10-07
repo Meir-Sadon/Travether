@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BottomSheet, Button, Checkbox, FormError, SelectField, TextField } from '../components'
 import { api, errorCode } from '../lib/api'
+import { track } from '../lib/telemetry'
 import { todayIso } from '../lib/dates'
 import type { Card, MyCard, Plan } from '../lib/types'
 import { useApi } from '../lib/useApi'
@@ -39,6 +40,7 @@ export function PlanRequestSheet({ plan, meId, open, onClose, onSent }: PlanRequ
     try {
       const body = withTrip ? { message, sourceCardId: chosen, partyUserIds: party } : { message }
       onSent(await api.post<Plan>(`/plans/${plan.id}/requests`, body))
+      track('plan_requested', { category: plan.category })
       onClose()
     } catch (err) {
       setError(errorCode(err))

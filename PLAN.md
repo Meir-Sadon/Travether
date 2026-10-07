@@ -248,7 +248,7 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 - [x] Safety: block, report, moderation admin page, rate limits, safety tips
 - [x] Privacy: policy pages, consent, data export, delete account
 - [x] Calendar (.ics) export, WhatsApp share
-- [ ] Analytics funnels + Sentry
+- [x] Analytics funnels + Sentry
 - [ ] E2E tests for core flows
 
 ### Phase 2 — Trust and engagement (after launch)
