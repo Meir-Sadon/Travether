@@ -10,6 +10,7 @@ import { ReportSheet, type ReportTarget } from '../features/ReportSheet'
 import { api, errorCode } from '../lib/api'
 import { categoryTint, formatPlanWhen, mapLink } from '../lib/plans'
 import { planShareText, whatsAppLink } from '../lib/share'
+import { track } from '../lib/telemetry'
 import type { Card as TripCard, Plan, PlanRequest } from '../lib/types'
 import { useApi } from '../lib/useApi'
 import { NotFoundScreen } from './NotFoundScreen'
@@ -290,7 +291,12 @@ export function PlanScreen() {
             </Button>
           )}
           {plan.canSelfJoin && (
-            <Button size="lg" block loading={busy} onClick={() => void run(async () => setData(await api.post<Plan>(`/plans/${plan.id}/join`)))}>
+            <Button size="lg" block loading={busy} onClick={() =>
+              void run(async () => {
+                setData(await api.post<Plan>(`/plans/${plan.id}/join`))
+                track('plan_joined', { category: plan.category })
+              })
+            }>
               {t('plan.join')}
             </Button>
           )}

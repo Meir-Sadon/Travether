@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router'
 import { useMe } from '../auth/useAuth'
 import { BottomSheet, Button, Icon, SelectField } from '../components'
 import { api, errorCode } from '../lib/api'
+import { track } from '../lib/telemetry'
 import { todayIso } from '../lib/dates'
 import type { Card, MyCard, Plan } from '../lib/types'
 import { useApi } from '../lib/useApi'
@@ -42,6 +43,7 @@ export function CreateSheet({ open, onClose, initialMode = 'choose', cardId }: C
     setError(null)
     try {
       const card = await api.post<Card>('/cards', fields)
+      track('card_created', { visibility: card.visibility })
       finish(`/trips/${card.id}`)
     } catch (err) {
       setError(errorCode(err))
@@ -54,6 +56,7 @@ export function CreateSheet({ open, onClose, initialMode = 'choose', cardId }: C
     setError(null)
     try {
       const plan = await api.post<Plan>(`/cards/${planCardId}/plans`, fields)
+      track('plan_created', { category: plan.category, audience: plan.audience })
       finish(`/plans/${plan.id}`)
     } catch (err) {
       setError(errorCode(err))

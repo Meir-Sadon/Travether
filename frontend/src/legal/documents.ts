@@ -96,13 +96,14 @@ export const legalDocs: Record<LegalDoc, LegalText> = {
         body: [
           'To provide the service you signed up for (contract): your account, profile, trips, plans, chats, notifications and reviews.',
           'To keep the community safe (legitimate interest and legal obligations): rate limits, reports, moderation, and records of suspended email addresses, phone numbers and devices, stored as one-way hashes.',
-          'Product analytics only with your consent, which you can withdraw at any time in Settings → Who sees what.',
+          'Product analytics only with your consent, which you can withdraw at any time in Settings → Who sees what. We count a few steps (signing up, creating a trip or plan, asking to join, meeting) linked to your account id, never your name or messages.',
+          'Error reports (legitimate interest): when the app breaks, a report without personal details helps us fix it.',
         ],
       },
       {
         heading: 'Service providers',
         body: [
-          'Render (hosting, EU) and Neon (database, EU), Cloudinary (photos), Resend (email), and the browser push services of Google, Apple, Mozilla and Microsoft for notifications. Meeting-point search sends your search text to a Photon (OpenStreetMap) geocoder. Each processes data only on our instructions.',
+          'Render (hosting, EU) and Neon (database, EU), Cloudinary (photos), Resend (email), and the browser push services of Google, Apple, Mozilla and Microsoft for notifications. Meeting-point search sends your search text to a Photon (OpenStreetMap) geocoder. Sentry receives error reports (what broke, the page and the browser, without your name, email or account id). PostHog (EU) receives product statistics only if you opt in. Each processes data only on our instructions.',
         ],
       },
       {

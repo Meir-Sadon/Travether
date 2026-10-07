@@ -7,7 +7,7 @@ PLAN.md §4.9: privacy policy, consent records, data export and account deletion
 - `/legal/terms`, `/legal/privacy` and `/legal/guidelines` are public, so they can be read before signing up.
 - Sign-up records `terms`, `privacy_policy` and `community_guidelines` consents with `Auth:LegalVersion`.
 - When `Auth:LegalVersion` changes (keep it equal to `LEGAL_VERSION` in `documents.ts`), `GET /api/auth/me` returns `needsConsent: true` and every signed-in screen is replaced by "We updated our terms" until the user accepts (`POST /api/me/consents/legal`) or logs out. Visitor pages stay open.
-- Optional consents, off by default: `analytics` (used by step 1.14 before any tracking starts) and `marketing_email` (no marketing email exists yet). `PUT /api/me/consents { kind, granted }`. Withdrawing sets `withdrawn_at`; rows are never deleted, so they prove what was agreed and when.
+- Optional consents, off by default: `analytics` (asked as an unticked box at sign-up too; gates PostHog, see [ANALYTICS.md](ANALYTICS.md)) and `marketing_email` (no marketing email exists yet). `PUT /api/me/consents { kind, granted }`. Withdrawing sets `withdrawn_at`; rows are never deleted, so they prove what was agreed and when.
 - `GET /api/me/privacy` returns the current state and the history. Settings → Who sees what shows it with the field visibility rules from [AUTHORIZATION.md](AUTHORIZATION.md).
 
 ## Data export

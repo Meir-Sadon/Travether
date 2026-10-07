@@ -52,9 +52,13 @@ public sealed class AuthController(
     {
         var id = User.GetUserId();
         var user = id is null ? null : await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id, ct).ConfigureAwait(false);
-        return user is null
-            ? new SessionDto(null)
-            : new SessionDto(MeDto.From(user, Today), await privacy.NeedsConsentAsync(user.Id, ct).ConfigureAwait(false));
+        if (user is null)
+        {
+            return new SessionDto(null);
+        }
+
+        var (needsConsent, analytics) = await privacy.SessionFlagsAsync(user.Id, ct).ConfigureAwait(false);
+        return new SessionDto(MeDto.From(user, Today), needsConsent, analytics);
     }
 
     /// <summary>Emails a sign-in code. Always 202, whether or not an account exists (no account enumeration).</summary>
@@ -222,6 +226,12 @@ public sealed class AuthController(
         foreach (var kind in PrivacyRules.Legal)
         {
             db.Consents.Add(new Consent { Id = Guid.NewGuid(), UserId = user.Id, Kind = kind, Version = options.LegalVersion, GrantedAt = user.CreatedAt });
+        }
+
+        // Optional and unticked by default.
+        if (req.AllowAnalytics)
+        {
+            db.Consents.Add(new Consent { Id = Guid.NewGuid(), UserId = user.Id, Kind = ConsentKind.Analytics, Version = options.LegalVersion, GrantedAt = user.CreatedAt });
         }
 
         try

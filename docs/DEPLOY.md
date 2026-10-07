@@ -26,6 +26,8 @@ Production runs as **one Docker web service on Render** (the API serves the buil
    | `Push__VapidPublicKey`, `Push__VapidPrivateKey`, `Push__Subject` | Web Push keys (generate once with `npx web-push generate-vapid-keys`; the private key is a secret) and a contact such as `mailto:hello@travether.app`. Without keys push is off in production; changing keys makes every device subscribe again. |
    | `Notifications__PublicUrl` | The app's public address, e.g. `https://travether.onrender.com`, for links in notification emails. |
    | `Auth__GoogleClientId` | OAuth 2.0 *Web* client id from Google Cloud Console (authorized JavaScript origin: the site URL). Empty hides the Google button. |
+   | `Telemetry__PostHogKey` | PostHog project API key from an **EU** project (`https://eu.i.posthog.com`). Analytics starts only for users who opt in. Empty turns analytics off. See [ANALYTICS.md](ANALYTICS.md). |
+   | `Telemetry__SentryDsn`, `Sentry__Dsn` | Sentry DSNs for the browser app and the API (one project each, or the same one). Empty turns error tracking off. |
    | `Auth__AppleClientId`, `Auth__AppleRedirectUri` | Sign in with Apple *Services ID* and the return URL registered for it (the site URL works). Empty hides the Apple button. |
 
    `Auth__LegalVersion` (default `2026-10-01`) is the version of the terms, privacy policy and guidelines; change it together with `LEGAL_VERSION` in `frontend/src/legal/documents.ts` when the texts change, and everyone is asked to accept again (see [PRIVACY.md](PRIVACY.md)).

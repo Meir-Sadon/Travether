@@ -104,7 +104,8 @@
     "startExploring": "Start exploring",
     "skip": "Skip for now",
     "chooseCountry": "Choose a country",
-    "acceptTerms": "I'm 18 or older and I agree to the <terms>Terms</terms>, the <guidelines>Community guidelines</guidelines> and the <privacy>Privacy policy</privacy>."
+    "acceptTerms": "I'm 18 or older and I agree to the <terms>Terms</terms>, the <guidelines>Community guidelines</guidelines> and the <privacy>Privacy policy</privacy>.",
+    "allowAnalytics": "Help improve Travether with anonymous usage statistics (optional, you can change this in Settings)"
   },
   "home": {
     "greeting": "Hi {{name}}",
