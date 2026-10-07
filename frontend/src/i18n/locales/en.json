@@ -225,7 +225,8 @@
     "withParty": "With {{names}} from {{trip}}",
     "remove": "Remove",
     "removeName": "Remove {{name}} from the plan",
-    "safetyMore": "More safety tips"
+    "safetyMore": "More safety tips",
+    "addToCalendar": "Add to calendar"
   },
   "trip": {
     "share": "Share trip",

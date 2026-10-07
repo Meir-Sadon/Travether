@@ -74,6 +74,8 @@ Members of the plan's own card who haven't joined see it like the public, plus t
 
 **Discover** (`GET /api/discover`, open to visitors) lists open plans with free seats whose public point is within the radius (default 30 km, max 100) of the searcher's origin and whose local date falls within the searcher's dates. It leaves out plans of the searcher's own trips, plans they already joined, and hosts they blocked or who blocked them. Distances are rounded from the grid-snapped point, like the plan page.
 
+`GET /api/plans/{id}/calendar.ics` (add to calendar) is built from the same plan view as the page, so the exact meeting point and its coordinates are in the file only for participants; everyone else gets the area. Calendar events last a typical time for the category (2–8 h), since plans have no end time.
+
 A plan's date must fall within its card's dates (`PlanOutsideTrip`) and in the future (`PlanInPast`). Times are entered in the meeting point's local time; the time zone comes from the coordinates.
 
 **Deciding requests:** the host, or a co-admin/owner of the plan's card.

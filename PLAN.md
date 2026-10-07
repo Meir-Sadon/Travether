@@ -247,7 +247,7 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 - [x] "Did you meet?" flow + double-blind reviews + rating display rules
 - [x] Safety: block, report, moderation admin page, rate limits, safety tips
 - [x] Privacy: policy pages, consent, data export, delete account
-- [ ] Calendar (.ics) export, WhatsApp share
+- [x] Calendar (.ics) export, WhatsApp share
 - [ ] Analytics funnels + Sentry
 - [ ] E2E tests for core flows
 

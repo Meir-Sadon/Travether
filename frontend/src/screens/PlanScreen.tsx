@@ -9,6 +9,7 @@ import { PlanRequestSheet } from '../features/PlanRequestSheet'
 import { ReportSheet, type ReportTarget } from '../features/ReportSheet'
 import { api, errorCode } from '../lib/api'
 import { categoryTint, formatPlanWhen, mapLink } from '../lib/plans'
+import { planShareText, whatsAppLink } from '../lib/share'
 import type { Card as TripCard, Plan, PlanRequest } from '../lib/types'
 import { useApi } from '../lib/useApi'
 import { NotFoundScreen } from './NotFoundScreen'
@@ -132,6 +133,7 @@ export function PlanScreen() {
           </li>
         </ul>
         {plan.purpose && <p className="screen__body plan__purpose">{plan.purpose}</p>}
+        {!closed && <PlanShareRow plan={plan} />}
         {plan.canManage && !closed && (
           <div className="screen__row">
             <Button size="sm" variant="secondary" onClick={() => setEditing(true)}>
@@ -349,6 +351,35 @@ export function PlanScreen() {
         <p className="screen__body">{t('plan.cancelBody')}</p>
         <FormError code={actionError} />
       </BottomSheet>
+    </div>
+  )
+}
+
+/** Add to calendar and share to WhatsApp (PLAN.md §4.3). The calendar file has the exact meeting point only for participants. */
+function PlanShareRow({ plan }: { plan: Plan }) {
+  const { t, i18n } = useTranslation()
+  const [copied, setCopied] = useState(false)
+  const url = `${window.location.origin}/plans/${plan.id}`
+  const text = planShareText(plan.title, formatPlanWhen(plan.localDate, plan.localTime, i18n.language), url)
+
+  const copy = () => {
+    void navigator.clipboard?.writeText(url)
+    setCopied(true)
+  }
+
+  return (
+    <div className="screen__row plan__share">
+      <a className="btn btn--secondary btn--sm" href={`/api/plans/${plan.id}/calendar.ics`} download>
+        <Icon name="calendar" size={18} />
+        <span>{t('plan.addToCalendar')}</span>
+      </a>
+      <a className="btn btn--secondary btn--sm" href={whatsAppLink(text)} target="_blank" rel="noopener noreferrer">
+        <Icon name="share" size={18} />
+        <span>{t('share.whatsapp')}</span>
+      </a>
+      <Button size="sm" variant="ghost" onClick={copy}>
+        {copied ? t('share.copied') : t('share.copy')}
+      </Button>
     </div>
   )
 }
