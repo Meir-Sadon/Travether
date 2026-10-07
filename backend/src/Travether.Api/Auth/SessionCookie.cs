@@ -19,7 +19,8 @@ public sealed class SessionCookie(TokenService tokens)
     private static CookieOptions Options(HttpContext context, DateTimeOffset? expires) => new()
     {
         HttpOnly = true,
-        Secure = context.Request.IsHttps,
+        // Always Secure in production, even if a proxy header is missing.
+        Secure = context.Request.IsHttps || context.RequestServices.GetRequiredService<IHostEnvironment>().IsProduction(),
         SameSite = SameSiteMode.Lax,
         Path = "/",
         Expires = expires,

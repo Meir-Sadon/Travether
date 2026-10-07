@@ -36,6 +36,7 @@ public static class TelemetrySetup
             {
                 e.User = new Sentry.SentryUser();
                 e.Request.Cookies = null;
+                e.Request.QueryString = null;
                 return e;
             });
         });

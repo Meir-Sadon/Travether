@@ -35,7 +35,10 @@ public sealed class PlansController(TravetherDbContext db, AccessQueries access,
         var others = (input.ParticipantIds ?? []).Where(id => id != me).Distinct().ToList();
         var activeMembers = await db.CardMembers
             .CountAsync(m => m.CardId == cardId && others.Contains(m.UserId) && m.Status == MembershipStatus.Active, ct).ConfigureAwait(false);
-        if (activeMembers != others.Count)
+        // Nobody can be brought into a plan with someone they blocked or who blocked them.
+        var blocked = others.Count > 0 && await db.Blocks.AnyAsync(
+            b => (b.BlockerId == me && others.Contains(b.BlockedId)) || (b.BlockedId == me && others.Contains(b.BlockerId)), ct).ConfigureAwait(false);
+        if (activeMembers != others.Count || blocked)
         {
             return ApiError.BadRequest("NotCardMembers");
         }
@@ -129,7 +132,10 @@ public sealed class PlansController(TravetherDbContext db, AccessQueries access,
             return denied;
         }
 
-        var plan = await db.ActivityPlans.Include(p => p.Card).FirstAsync(p => p.Id == id, ct).ConfigureAwait(false);
+        // Lock the plan row like Join and Approve do, so a seat taken meanwhile is counted against the new limit.
+        await using var tx = await db.Database.BeginTransactionAsync(ct).ConfigureAwait(false);
+        var plan = await db.ActivityPlans.FromSql($"SELECT * FROM activity_plans WHERE id = {id} FOR UPDATE").FirstAsync(ct).ConfigureAwait(false);
+        await db.Entry(plan).Reference(p => p.Card).LoadAsync(ct).ConfigureAwait(false);
         if (plan.Status is PlanStatus.Cancelled or PlanStatus.Done)
         {
             return ApiError.Conflict("PlanClosed");
@@ -178,6 +184,7 @@ public sealed class PlansController(TravetherDbContext db, AccessQueries access,
         plan.Audience = patch.Audience ?? plan.Audience;
         plan.Status = PlanRules.StatusFor(plan.Status, seatsTaken, seatLimit);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
+        await tx.CommitAsync(ct).ConfigureAwait(false);
         return Ok(await views.LoadAsync(id, me, null, ct).ConfigureAwait(false));
     }
 

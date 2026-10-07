@@ -32,7 +32,7 @@ public static class SafetySetup
             limiter.AddPolicy(MessagesRateLimit, http => PerUser(http, messagesPerMinute, TimeSpan.FromMinutes(1)));
             limiter.AddPolicy(ReportsRateLimit, http => PerUser(http, reportsPerDay, TimeSpan.FromDays(1)));
             limiter.AddPolicy(SignupRateLimit, http => RateLimitPartition.GetFixedWindowLimiter(
-                http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                ClientKey.For(http),
                 _ => new FixedWindowRateLimiterOptions { PermitLimit = signupsPerDay, Window = TimeSpan.FromDays(1) }));
         });
         return services;
@@ -40,6 +40,6 @@ public static class SafetySetup
 
     private static RateLimitPartition<string> PerUser(HttpContext http, int limit, TimeSpan window) =>
         RateLimitPartition.GetFixedWindowLimiter(
-            http.User.GetUserId()?.ToString() ?? http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            http.User.GetUserId()?.ToString() ?? ClientKey.For(http),
             _ => new FixedWindowRateLimiterOptions { PermitLimit = limit, Window = window });
 }

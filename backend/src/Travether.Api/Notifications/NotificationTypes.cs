@@ -10,7 +10,8 @@ public enum NotificationCategory { Requests, Messages, Matches, Reminders, Revie
 /// What a notification points at. The app renders its own (translated) text from the type and these
 /// fields; push and email use <see cref="NotificationTypes.Text"/>.
 /// </summary>
-public sealed record NotificationPayload(string Url, string? Actor = null, string? Subject = null, string? Preview = null, int? Count = null);
+/// <summary>What a notification shows. <see cref="ActorId"/> lets account deletion strip the actor's name and words later.</summary>
+public sealed record NotificationPayload(string Url, string? Actor = null, string? Subject = null, string? Preview = null, int? Count = null, Guid? ActorId = null);
 
 public static class NotificationTypes
 {

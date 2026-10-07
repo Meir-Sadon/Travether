@@ -43,6 +43,17 @@ function readStored(card: MyCard): Place | null {
   }
 }
 
+/** Forgets every remembered search place on this device (on log out). */
+export function forgetOrigins() {
+  try {
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith('travether.origin.'))
+      .forEach((k) => localStorage.removeItem(k))
+  } catch {
+    // Storage blocked: nothing was remembered.
+  }
+}
+
 /** Remembers a place the traveler picked for this trip, on this device. */
 export function rememberOrigin(card: MyCard, place: Place) {
   try {

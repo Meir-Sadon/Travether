@@ -80,7 +80,11 @@ public sealed class LoginCodeService(TravetherDbContext db, IEmailSender email, 
             return CodeCheck.Expired;
         }
 
-        if (row.Attempts >= MaxAttempts)
+        // Count the attempt in the database before comparing, so parallel guesses can't share one slot.
+        var counted = await db.LoginCodes
+            .Where(c => c.Id == row.Id && c.ConsumedAt == null && c.Attempts < MaxAttempts)
+            .ExecuteUpdateAsync(u => u.SetProperty(c => c.Attempts, c => c.Attempts + 1), ct).ConfigureAwait(false);
+        if (counted == 0)
         {
             return CodeCheck.TooManyAttempts;
         }
@@ -89,14 +93,14 @@ public sealed class LoginCodeService(TravetherDbContext db, IEmailSender email, 
         var actual = Encoding.ASCII.GetBytes(Hash(address, purpose, code.Trim()));
         if (!CryptographicOperations.FixedTimeEquals(expected, actual))
         {
-            row.Attempts++;
-            await db.SaveChangesAsync(ct).ConfigureAwait(false);
-            return row.Attempts >= MaxAttempts ? CodeCheck.TooManyAttempts : CodeCheck.Invalid;
+            return row.Attempts + 1 >= MaxAttempts ? CodeCheck.TooManyAttempts : CodeCheck.Invalid;
         }
 
-        row.ConsumedAt = now;
-        await db.SaveChangesAsync(ct).ConfigureAwait(false);
-        return CodeCheck.Ok;
+        // Only one request can consume the code.
+        var consumed = await db.LoginCodes
+            .Where(c => c.Id == row.Id && c.ConsumedAt == null)
+            .ExecuteUpdateAsync(u => u.SetProperty(c => c.ConsumedAt, now), ct).ConfigureAwait(false);
+        return consumed == 1 ? CodeCheck.Ok : CodeCheck.Invalid;
     }
 
     public static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();

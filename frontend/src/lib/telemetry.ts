@@ -36,10 +36,31 @@ export async function startErrorTracking() {
         delete event.request.cookies
         delete event.request.headers
         delete event.request.query_string
+        if (event.request.url) event.request.url = withoutQuery(event.request.url)
       }
       return event
     },
+    // URLs can carry coordinates (?lat&lng) and invite-only share links; keep only the path.
+    beforeBreadcrumb(crumb) {
+      const data = crumb.data
+      if (data) {
+        for (const key of ['url', 'from', 'to']) {
+          if (typeof data[key] === 'string') data[key] = scrubUrl(data[key])
+        }
+      }
+      return crumb
+    },
   })
+}
+
+/** Drops the query and fragment from a URL. */
+export function withoutQuery(url: string): string {
+  return url.split(/[?#]/, 1)[0]
+}
+
+/** Drops the query and replaces invite-only share slugs. */
+export function scrubUrl(url: string): string {
+  return withoutQuery(url).replace(/\/c\/[^/]+/, '/c/:slug')
 }
 
 /**

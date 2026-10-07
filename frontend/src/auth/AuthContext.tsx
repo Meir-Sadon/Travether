@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { api } from '../lib/api'
+import { forgetOrigins } from '../lib/discover'
 import { syncAnalytics } from '../lib/telemetry'
 import type { Me } from './types'
 import { AuthContext } from './useAuth'
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     await api.post('/auth/logout')
+    forgetOrigins()
     setUser(null)
     void syncAnalytics(null, false)
   }, [])

@@ -29,7 +29,7 @@ public sealed class PlanViews(TravetherDbContext db, AccessQueries access, TimeP
                 p.Host,
                 CardName = p.Card.Name,
                 Participants = p.Participants
-                    .Where(x => x.Status == MembershipStatus.Active)
+                    .Where(x => x.Status == MembershipStatus.Active && x.User.BannedAt == null)
                     .OrderBy(x => x.UserId != p.HostId)
                     .ThenBy(x => x.JoinedAt)
                     .Select(x => x.User)

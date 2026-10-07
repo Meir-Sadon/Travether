@@ -126,7 +126,7 @@ public sealed class PlanRequestsController(TravetherDbContext db, AccessQueries 
             })
             .ToListAsync(ct).ConfigureAwait(false);
         var partyIds = rows.SelectMany(r => r.PartyUserIds).Distinct().ToList();
-        var people = await db.Users.AsNoTracking().Where(u => partyIds.Contains(u.Id)).ToDictionaryAsync(u => u.Id, ct).ConfigureAwait(false);
+        var people = await db.Users.AsNoTracking().Where(u => partyIds.Contains(u.Id) && u.BannedAt == null).ToDictionaryAsync(u => u.Id, ct).ConfigureAwait(false);
         var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
 
         return Ok(rows.Select(r => new PlanRequestDto(

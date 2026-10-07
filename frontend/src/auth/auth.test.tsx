@@ -135,4 +135,10 @@ describe('auth', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Hi Noa' })).toBeInTheDocument()
     expect(screen.getByTestId('where')).toHaveTextContent(/^\/$/)
   })
+
+  it('ignores a next= that a browser would read as another site', async () => {
+    const { safeNext } = await import('./useAuth')
+    expect(safeNext('/\\evil.example')).toBe('/')
+    expect(safeNext('/trips/1?tab=plans')).toBe('/trips/1?tab=plans')
+  })
 })

@@ -78,10 +78,10 @@ public static class AuthSetup
             limiter.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
             limiter.OnRejected = (ctx, ct) => new ValueTask(ctx.HttpContext.Response.WriteAsJsonAsync(new { code = "TooManyRequests" }, ct));
             limiter.AddPolicy(AuthRateLimit, http => RateLimitPartition.GetFixedWindowLimiter(
-                http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                ClientKey.For(http),
                 _ => new FixedWindowRateLimiterOptions { PermitLimit = perMinute, Window = TimeSpan.FromMinutes(1) }));
             limiter.AddPolicy(Places.PlaceSetup.RateLimit, http => RateLimitPartition.GetFixedWindowLimiter(
-                http.User.GetUserId()?.ToString() ?? http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                http.User.GetUserId()?.ToString() ?? ClientKey.For(http),
                 _ => new FixedWindowRateLimiterOptions { PermitLimit = placesPerMinute, Window = TimeSpan.FromMinutes(1) }));
         });
 

@@ -83,7 +83,8 @@ public sealed partial class PrivacyService(
     {
         var user = await db.Users.AsNoTracking().FirstAsync(u => u.Id == me, ct).ConfigureAwait(false);
         var today = DateOnly.FromDateTime(clock.GetUtcNow().UtcDateTime);
-        var notifications = await db.Notifications.AsNoTracking().Where(n => n.UserId == me).OrderByDescending(n => n.CreatedAt)
+        // Chat notifications only repeat other people's messages, so they stay out; the rest lose names and previews.
+        var notifications = await db.Notifications.AsNoTracking().Where(n => n.UserId == me && n.Type != NotificationTypes.ChatMessage).OrderByDescending(n => n.CreatedAt)
             .Select(n => new { n.Type, n.Payload, n.CreatedAt, n.ReadAt }).ToListAsync(ct).ConfigureAwait(false);
 
         var export = new
@@ -180,7 +181,8 @@ public sealed partial class PrivacyService(
             ReviewsReceived = await ratings.PublishedAbout(me).OrderBy(r => r.CreatedAt)
                 .Select(r => new { r.Id, r.PlanId, r.Stars, r.Text, r.CreatedAt, r.ReplyText, r.RepliedAt })
                 .ToListAsync(ct).ConfigureAwait(false),
-            Notifications = notifications.Select(n => new { n.Type, Payload = JsonSerializer.Deserialize<JsonElement>(n.Payload), n.CreatedAt, n.ReadAt }),
+            Notifications = notifications.Select(n => (n, p: JsonSerializer.Deserialize<NotificationPayload>(n.Payload, Notifier.Json)!))
+                .Select(x => new { x.n.Type, x.p.Url, x.p.Subject, x.p.Count, x.n.CreatedAt, x.n.ReadAt }),
             Blocked = await db.Blocks.AsNoTracking().Where(b => b.BlockerId == me).OrderBy(b => b.CreatedAt)
                 .Select(b => new { UserId = b.BlockedId, b.CreatedAt }).ToListAsync(ct).ConfigureAwait(false),
             ReportsMade = await db.Reports.AsNoTracking().Where(r => r.ReporterId == me).OrderBy(r => r.CreatedAt)
@@ -241,6 +243,15 @@ public sealed partial class PrivacyService(
         await db.ExternalLogins.Where(e => e.UserId == userId).ExecuteDeleteAsync(ct).ConfigureAwait(false);
         await db.PushSubscriptions.Where(p => p.UserId == userId).ExecuteDeleteAsync(ct).ConfigureAwait(false);
         await db.Notifications.Where(n => n.UserId == userId).ExecuteDeleteAsync(ct).ConfigureAwait(false);
+
+        // Other people's notifications keep the event but lose this user's name and words.
+        var actor = userId.ToString();
+        await db.Database.ExecuteSqlAsync(
+            $"UPDATE notifications SET payload = payload - 'actor' - 'preview' - 'actorId' WHERE payload ->> 'actorId' = {actor}", ct).ConfigureAwait(false);
+
+        // A phone number shared in chat is deleted with the account, like the profile phone.
+        await db.Messages.Where(m => m.SenderId == userId && (m.Kind == MessageKind.ContactPhone || m.Kind == MessageKind.ContactWhatsapp))
+            .ExecuteUpdateAsync(u => u.SetProperty(m => m.Body, "").SetProperty(m => m.HiddenAt, now), ct).ConfigureAwait(false);
         await db.NotificationSettings.Where(s => s.UserId == userId).ExecuteDeleteAsync(ct).ConfigureAwait(false);
         await db.UserDevices.Where(d => d.UserId == userId).ExecuteDeleteAsync(ct).ConfigureAwait(false);
         await db.Blocks.Where(b => b.BlockerId == userId || b.BlockedId == userId).ExecuteDeleteAsync(ct).ConfigureAwait(false);
