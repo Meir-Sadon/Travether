@@ -57,7 +57,7 @@ public sealed class Notifier(TravetherDbContext db, IHubContext<ChatHub> hub, No
             c.Name,
             Admins = c.Members.Where(m => m.Status == MembershipStatus.Active && (m.Role == CardRole.Owner || m.Role == CardRole.CoAdmin)).Select(m => m.UserId).ToList(),
         }).FirstAsync(ct).ConfigureAwait(false);
-        await SendAsync(card.Admins, NotificationTypes.CardRequest, new NotificationPayload("/inbox", await NameAsync(requesterId, ct).ConfigureAwait(false), card.Name), null, ct).ConfigureAwait(false);
+        await SendAsync(card.Admins, NotificationTypes.CardRequest, new NotificationPayload("/inbox", await NameAsync(requesterId, ct).ConfigureAwait(false), card.Name, ActorId: requesterId), null, ct).ConfigureAwait(false);
     }
 
     public async Task CardRequestDecidedAsync(Guid cardId, Guid requesterId, bool approved, CancellationToken ct)
@@ -83,7 +83,7 @@ public sealed class Notifier(TravetherDbContext db, IHubContext<ChatHub> hub, No
         await SendAsync(
             [plan.HostId, .. plan.Admins.Where(id => id != requesterId)],
             NotificationTypes.PlanRequest,
-            new NotificationPayload("/inbox", await NameAsync(requesterId, ct).ConfigureAwait(false), plan.Title),
+            new NotificationPayload("/inbox", await NameAsync(requesterId, ct).ConfigureAwait(false), plan.Title, ActorId: requesterId),
             null,
             ct).ConfigureAwait(false);
     }
@@ -105,7 +105,7 @@ public sealed class Notifier(TravetherDbContext db, IHubContext<ChatHub> hub, No
         var plan = await db.ActivityPlans.AsNoTracking().Where(p => p.Id == planId).Select(p => new { p.Title, p.HostId }).FirstAsync(ct).ConfigureAwait(false);
         if (plan.HostId != joinerId)
         {
-            await SendAsync([plan.HostId], NotificationTypes.PlanJoined, new NotificationPayload($"/plans/{planId}", await NameAsync(joinerId, ct).ConfigureAwait(false), plan.Title), null, ct).ConfigureAwait(false);
+            await SendAsync([plan.HostId], NotificationTypes.PlanJoined, new NotificationPayload($"/plans/{planId}", await NameAsync(joinerId, ct).ConfigureAwait(false), plan.Title, ActorId: joinerId), null, ct).ConfigureAwait(false);
         }
     }
 
@@ -131,7 +131,7 @@ public sealed class Notifier(TravetherDbContext db, IHubContext<ChatHub> hub, No
         await SendAsync(
             recipients,
             NotificationTypes.ChatMessage,
-            new NotificationPayload($"/inbox/{ChatKeys.For(convo.Type, convo.RefId!.Value)}", message.Sender.DisplayName, title, preview),
+            new NotificationPayload($"/inbox/{ChatKeys.For(convo.Type, convo.RefId!.Value)}", message.Sender.DisplayName, title, preview, ActorId: message.Sender.Id),
             $"chat:{convo.Id:N}:{bucket}",
             ct).ConfigureAwait(false);
     }
@@ -141,7 +141,7 @@ public sealed class Notifier(TravetherDbContext db, IHubContext<ChatHub> hub, No
         await SendAsync(
             [revieweeId],
             NotificationTypes.ReviewReceived,
-            new NotificationPayload($"/plans/{planId}/review", await NameAsync(reviewerId, ct).ConfigureAwait(false)),
+            new NotificationPayload($"/plans/{planId}/review", await NameAsync(reviewerId, ct).ConfigureAwait(false), ActorId: reviewerId),
             $"review:{planId:N}:{reviewerId:N}",
             ct).ConfigureAwait(false);
 

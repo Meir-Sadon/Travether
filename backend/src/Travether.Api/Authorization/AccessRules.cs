@@ -162,13 +162,14 @@ public static class AccessRules
             return PlanAccess.Participant;
         }
 
-        // Members of the plan's own card see it like the public until they join.
-        if (planCardAccess >= CardAccess.Member)
+        // A block with the host hides the plan, even from members of the host's own card.
+        if (blockedByHost)
         {
-            return PlanAccess.Public;
+            return PlanAccess.None;
         }
 
-        return blockedByHost ? PlanAccess.None : PlanAccess.Public;
+        // Members of the plan's own card see it like the public until they join.
+        return PlanAccess.Public;
     }
 
     /// <summary>Exact meeting point and exact destination.</summary>

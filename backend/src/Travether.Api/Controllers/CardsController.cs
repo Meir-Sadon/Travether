@@ -37,7 +37,7 @@ public sealed class CardsController(TravetherDbContext db, AccessQueries access,
                 PlanCount = m.Card.Plans.Count(p => p.Status != PlanStatus.Cancelled),
                 Pending = m.Role == CardRole.Member ? 0 : db.CardRequests.Count(r => r.CardId == m.CardId && r.Status == RequestStatus.Requested),
                 Preview = m.Card.Members
-                    .Where(x => x.Status == MembershipStatus.Active)
+                    .Where(x => x.Status == MembershipStatus.Active && x.User.BannedAt == null)
                     .OrderBy(x => x.JoinedAt)
                     .Select(x => x.User)
                     .Take(5)

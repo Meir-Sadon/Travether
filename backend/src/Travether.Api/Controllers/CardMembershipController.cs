@@ -256,10 +256,13 @@ public sealed class CardMembershipController(TravetherDbContext db, AccessQuerie
 
     /// <summary>
     /// Ends a membership and the participations it brought: plans of this card joined as its member.
-    /// Plans they joined from their own card through a request stay theirs.
+    /// Plans they joined from their own card through a request stay theirs. Upcoming plans they host
+    /// in this card are cancelled, so a removed member keeps no host powers over the group.
     /// </summary>
     private async Task<bool> EndMembershipAsync(Guid cardId, Guid userId, MembershipStatus status, CancellationToken ct)
     {
+        var now = clock.GetUtcNow();
+        List<Guid> cancelled = [];
         await using var tx = await db.Database.BeginTransactionAsync(ct).ConfigureAwait(false);
         var changed = await db.CardMembers
             .Where(m => m.CardId == cardId && m.UserId == userId && m.Status == MembershipStatus.Active && m.Role != CardRole.Owner)
@@ -269,9 +272,22 @@ public sealed class CardMembershipController(TravetherDbContext db, AccessQuerie
             await db.PlanParticipants
                 .Where(p => p.UserId == userId && p.SourceCardId == cardId && p.Plan.CardId == cardId && p.Status == MembershipStatus.Active)
                 .ExecuteUpdateAsync(u => u.SetProperty(p => p.Status, status), ct).ConfigureAwait(false);
+
+            cancelled = await db.ActivityPlans
+                .Where(p => p.CardId == cardId && p.HostId == userId && p.StartsAt > now && (p.Status == PlanStatus.Open || p.Status == PlanStatus.Full))
+                .Select(p => p.Id).ToListAsync(ct).ConfigureAwait(false);
+            await db.ActivityPlans.Where(p => cancelled.Contains(p.Id))
+                .ExecuteUpdateAsync(u => u.SetProperty(p => p.Status, PlanStatus.Cancelled), ct).ConfigureAwait(false);
+            await db.PlanRequests.Where(r => cancelled.Contains(r.PlanId) && r.Status == RequestStatus.Requested)
+                .ExecuteUpdateAsync(u => u.SetProperty(r => r.Status, RequestStatus.Expired).SetProperty(r => r.DecidedAt, now), ct).ConfigureAwait(false);
         }
 
         await tx.CommitAsync(ct).ConfigureAwait(false);
+        foreach (var planId in cancelled)
+        {
+            await notifier.PlanCancelledAsync(planId, userId, ct).ConfigureAwait(false);
+        }
+
         return changed > 0;
     }
 }

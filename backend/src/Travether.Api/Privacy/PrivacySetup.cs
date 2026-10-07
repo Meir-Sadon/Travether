@@ -14,7 +14,7 @@ public static class PrivacySetup
         var exportsPerDay = config.GetValue("RateLimits:ExportsPerDay", 5);
         services.Configure<RateLimiterOptions>(limiter =>
             limiter.AddPolicy(ExportRateLimit, http => RateLimitPartition.GetFixedWindowLimiter(
-                http.User.GetUserId()?.ToString() ?? http.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                http.User.GetUserId()?.ToString() ?? ClientKey.For(http),
                 _ => new FixedWindowRateLimiterOptions { PermitLimit = exportsPerDay, Window = TimeSpan.FromDays(1) })));
         return services;
     }

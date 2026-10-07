@@ -103,20 +103,20 @@ export const legalDocs: Record<LegalDoc, LegalText> = {
       {
         heading: 'Service providers',
         body: [
-          'Render (hosting, EU) and Neon (database, EU), Cloudinary (photos), Resend (email), and the browser push services of Google, Apple, Mozilla and Microsoft for notifications. Meeting-point search sends your search text to a Photon (OpenStreetMap) geocoder. Sentry receives error reports (what broke, the page and the browser, without your name, email or account id). PostHog (EU) receives product statistics only if you opt in. Each processes data only on our instructions.',
+          'Render (hosting, EU) and Neon (database, EU), Cloudinary (photos), Resend (email), and the browser push services of Google, Apple, Mozilla and Microsoft for notifications. Place search sends your search text, and the map point you pick or your device location when you ask for it, to a Photon (OpenStreetMap) geocoder. Sentry receives error reports (what broke, the page and the browser, without your name, email or account id). PostHog (EU) receives product statistics only if you opt in. Each processes data only on our instructions.',
         ],
       },
       {
         heading: 'How long we keep it',
         body: [
-          'Your account data: until you delete your account. Notifications: 90 days. One-time sign-in codes: one day after they expire. Device identifiers: 180 days after last use. Records of consent and of moderation decisions are kept as long as we may need to show them.',
+          'Your account data: until you delete your account. Notifications: 90 days. One-time sign-in codes: one day after they expire. Device identifiers: 180 days after last use. Product statistics in PostHog are linked only to your account id, which leads to nobody once your account is deleted. Records of consent and of moderation decisions are kept as long as we may need to show them.',
         ],
       },
       {
         heading: 'Deleting your account',
         body: [
           'In Settings → Delete account. Your name, email, phone, birth date, photo, bio, sign-in methods, devices, notifications, blocks and reviews about you are deleted at once. Trips you own pass to a co-admin or member, or are deleted if nobody else is on them; plans you host that haven’t happened are cancelled.',
-          'Messages you sent in shared chats and reviews you wrote stay with the people they were sent to, shown as from a deleted account, because they are part of those people’s conversations and ratings.',
+          'Messages you sent in shared chats and reviews you wrote stay with the people they were sent to, shown as from a deleted account, because they are part of those people’s conversations and ratings. Phone numbers you shared in a chat are removed, and so is your name in other people’s notifications.',
         ],
       },
       {

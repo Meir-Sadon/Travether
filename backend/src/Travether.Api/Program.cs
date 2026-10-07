@@ -40,6 +40,8 @@ builder.Services.AddScoped<PlanViews>();
 builder.Services.AddHostedService<PlanRequestSweeper>();
 builder.Services.AddScoped<ChatService>();
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<HubSessions>();
+builder.Services.AddHostedService<HubSessionSweeper>();
 builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, UserIdProvider>();
 builder.Services.AddTravetherPlaces(builder.Configuration);
 builder.Services.AddTravetherImages(builder.Configuration, builder.Environment);
@@ -63,6 +65,10 @@ if (builder.Configuration.GetValue<bool>("ForwardedHeaders:Enabled"))
     });
 }
 
+// JSON bodies are small; photo uploads raise their own limit with [RequestSizeLimit].
+builder.WebHost.ConfigureKestrel(k => k.Limits.MaxRequestBodySize = 256 * 1024);
+builder.Services.AddHsts(o => o.MaxAge = TimeSpan.FromDays(365));
+
 var app = builder.Build();
 
 await app.MigrateIfConfiguredAsync();
@@ -70,6 +76,12 @@ await app.MigrateIfConfiguredAsync();
 if (app.Configuration.GetValue<bool>("ForwardedHeaders:Enabled"))
 {
     app.UseForwardedHeaders();
+}
+
+app.UseMiddleware<SecurityHeadersMiddleware>();
+if (app.Environment.IsProduction())
+{
+    app.UseHsts();
 }
 
 app.UseExceptionHandler();

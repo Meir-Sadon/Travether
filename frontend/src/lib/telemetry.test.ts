@@ -54,4 +54,11 @@ describe('telemetry', () => {
     track('met')
     expect(posthog.init).not.toHaveBeenCalled()
   })
+
+  it('keeps coordinates and share links out of error reports', async () => {
+    const { scrubUrl, withoutQuery } = await import('./telemetry')
+    expect(withoutQuery('https://travether.app/api/discover?lat=18.79&lng=98.98')).toBe('https://travether.app/api/discover')
+    expect(scrubUrl('/api/places/reverse?lat=1&lng=2#x')).toBe('/api/places/reverse')
+    expect(scrubUrl('https://travether.app/c/AbC123xyz?ref=1')).toBe('https://travether.app/c/:slug')
+  })
 })

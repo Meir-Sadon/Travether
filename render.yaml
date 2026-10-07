@@ -27,7 +27,7 @@ services:
         sync: false
       - key: Auth__AppleRedirectUri
         sync: false
-      # Resend API key and sender; while empty, emails (sign-in codes) are only logged
+      # Resend API key and sender; while empty, no email (sign-in codes) is sent
       - key: Email__ResendApiKey
         sync: false
       - key: Email__From

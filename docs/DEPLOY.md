@@ -22,7 +22,7 @@ Production runs as **one Docker web service on Render** (the API serves the buil
    | `ConnectionStrings__Default` | The Npgsql string from step 1 |
    | `Cloudinary__Url` | `cloudinary://<api_key>:<api_secret>@<cloud_name>`. **Needed for profile photos and covers in production**: without it, uploads go to the container's disk, which Render wipes on every deploy. |
    | `Places__PhotonUrl` | Optional. Meeting-point search uses the public [Photon](https://photon.komoot.io) geocoder (OpenStreetMap, no key) until a map provider is chosen; set this to point at another Photon instance. |
-   | `Email__ResendApiKey`, `Email__From` | Resend API key and a sender on a verified domain, e.g. `Travether <hello@travether.app>`. **Needed for sign-in codes**; while empty, emails are only written to the log. |
+   | `Email__ResendApiKey`, `Email__From` | Resend API key and a sender on a verified domain, e.g. `Travether <hello@travether.app>`. **Needed for sign-in codes**; while empty, no email is sent and only an error is logged (the message itself is never logged in production, since it holds sign-in codes). |
    | `Push__VapidPublicKey`, `Push__VapidPrivateKey`, `Push__Subject` | Web Push keys (generate once with `npx web-push generate-vapid-keys`; the private key is a secret) and a contact such as `mailto:hello@travether.app`. Without keys push is off in production; changing keys makes every device subscribe again. |
    | `Notifications__PublicUrl` | The app's public address, e.g. `https://travether.onrender.com`, for links in notification emails. |
    | `Auth__GoogleClientId` | OAuth 2.0 *Web* client id from Google Cloud Console (authorized JavaScript origin: the site URL). Empty hides the Google button. |

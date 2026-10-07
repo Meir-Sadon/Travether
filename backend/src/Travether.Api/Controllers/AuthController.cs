@@ -95,8 +95,7 @@ public sealed class AuthController(
             return ApiError.Forbidden("AccountSuspended");
         }
 
-        // Receiving the code proves the address: that earns the contact-verified badge.
-        user.VerificationBadges |= VerificationBadges.ContactVerified;
+        ClaimAddress(user);
         await db.SaveChangesAsync(ct).ConfigureAwait(false);
         return await SignInAsync(user, ct).ConfigureAwait(false);
     }
@@ -138,7 +137,7 @@ public sealed class AuthController(
 
             // The provider verified this address, so it may sign in to the account that owns it.
             db.ExternalLogins.Add(new ExternalLogin { Provider = identity.Provider, Subject = identity.Subject, UserId = user.Id });
-            user.VerificationBadges |= VerificationBadges.ContactVerified;
+            ClaimAddress(user);
             await db.SaveChangesAsync(ct).ConfigureAwait(false);
             return await SignInAsync(user, ct).ConfigureAwait(false);
         }
@@ -273,6 +272,22 @@ public sealed class AuthController(
         }
 
         return await SignInAsync(user, ct).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// The address owner has just proven it (emailed code or Google/Apple). If nobody had proven it before, the
+    /// account may have been registered by someone else with a password they chose: drop that password and end
+    /// its sessions, so only the real owner keeps access. Then the account earns the contact-verified badge.
+    /// </summary>
+    private static void ClaimAddress(User user)
+    {
+        if (!user.VerificationBadges.HasFlag(VerificationBadges.ContactVerified))
+        {
+            user.PasswordHash = null;
+            user.SessionVersion++;
+        }
+
+        user.VerificationBadges |= VerificationBadges.ContactVerified;
     }
 
     [HttpPost("logout")]

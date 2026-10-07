@@ -14,7 +14,7 @@ PLAN.md §4.9: privacy policy, consent records, data export and account deletion
 
 `GET /api/me/export` downloads one JSON file (`travether-data-<date>.json`, `Cache-Control: no-store`), limited to `RateLimits:ExportsPerDay` (5) per user. It contains the account and profile, sign-in methods (provider only), device last-seen dates, consents, notification settings, push services (host only, not the endpoint secret), card memberships, card and plan requests, hosted plans (with the exact meeting point), plans joined, messages sent, "did you meet?" answers, reviews written, published reviews received, notifications, blocks and reports made.
 
-Left out on purpose: other people's personal details (only their ids), password and code hashes, device and ban hashes, and reviews about the user that aren't published yet (they appear once published, at most 14 days later, so the export can't break the double-blind window).
+Left out on purpose: other people's personal details (only their ids; notifications keep their link, subject and count but lose names and previews, and chat notifications are left out since they only repeat other people's messages), password and code hashes, device and ban hashes, and reviews about the user that aren't published yet (they appear once published, at most 14 days later, so the export can't break the double-blind window).
 
 ## Account deletion
 
@@ -31,6 +31,8 @@ Settings → Delete account. Confirmed with the password (`POST /api/me/delete {
 | Google/Apple links, push subscriptions, notifications, notification settings, devices, blocks (both ways), read markers, login codes | Deleted. |
 | Consents | Withdrawn, kept as proof. |
 | Messages sent, reviews written, "did you meet?" answers | Kept, shown as from "Deleted account": they belong to other people's conversations and ratings. **Counsel to confirm.** |
+| Phone or WhatsApp numbers shared in chat | Emptied and hidden. |
+| The user's name and message previews in other people's notifications | Stripped from the payload (`actorId` marks whose they were). |
 | Reports made or received, moderation records, ban hashes | Kept (legal obligation and safety; hashes can't be reversed). |
 
 All sessions end (`session_version` bumps), a confirmation email goes to the old address, and the address can sign up again at once.
