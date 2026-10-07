@@ -191,7 +191,7 @@ Same technologies and conventions as the [kuskus-shel-ima](https://github.com/Me
 | Analytics / errors | PostHog (EU) + Sentry | Funnels: signup → card → plan → request → meetup |
 | Local dev | **Docker / docker compose** (Postgres+PostGIS, API, frontend behind nginx) | `docker compose up --build` |
 | Hosting | **Render** (one Docker web service: API serves the built frontend) + **Neon** Postgres (EU) | Same as kuskus; one origin, simple deploys |
-| Testing | Frontend: **Vitest + Testing Library** (jsdom), **oxlint**; Backend: **xUnit** integration tests with **Testcontainers** (Postgres); Playwright E2E later | Same as kuskus |
+| Testing | Frontend: **Vitest + Testing Library** (jsdom), **oxlint**; Backend: **xUnit** integration tests with **Testcontainers** (Postgres); **Playwright** E2E for the core flows (`e2e/`) | Same as kuskus |
 | CI | GitHub Actions: lint, typecheck/build, frontend + backend tests | |
 
 ### 6.1 Data model (initial)
@@ -249,7 +249,7 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 - [x] Privacy: policy pages, consent, data export, delete account
 - [x] Calendar (.ics) export, WhatsApp share
 - [x] Analytics funnels + Sentry
-- [ ] E2E tests for core flows
+- [x] E2E tests for core flows
 
 ### Phase 2 — Trust and engagement (after launch)
 - [ ] Map view for Discover
