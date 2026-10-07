@@ -9,6 +9,7 @@ using Travether.Api.Auth;
 using Travether.Api.Authorization;
 using Travether.Api.Data;
 using Travether.Api.Domain;
+using Travether.Api.Privacy;
 using Travether.Api.Profiles;
 using Travether.Api.Safety;
 
@@ -29,6 +30,7 @@ public sealed class AuthController(
     IExternalIdentityVerifier external,
     AuthOptions options,
     BanGuard bans,
+    PrivacyService privacy,
     TimeProvider clock) : ControllerBase
 {
     private static readonly PasswordHasher<User> Hasher = new();
@@ -50,7 +52,9 @@ public sealed class AuthController(
     {
         var id = User.GetUserId();
         var user = id is null ? null : await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id, ct).ConfigureAwait(false);
-        return new SessionDto(user is null ? null : MeDto.From(user, Today));
+        return user is null
+            ? new SessionDto(null)
+            : new SessionDto(MeDto.From(user, Today), await privacy.NeedsConsentAsync(user.Id, ct).ConfigureAwait(false));
     }
 
     /// <summary>Emails a sign-in code. Always 202, whether or not an account exists (no account enumeration).</summary>
@@ -215,7 +219,7 @@ public sealed class AuthController(
         }
 
         // Consent records (GDPR / Israeli PPL): what was accepted, which version, when.
-        foreach (var kind in new[] { ConsentKind.Terms, ConsentKind.PrivacyPolicy, ConsentKind.CommunityGuidelines })
+        foreach (var kind in PrivacyRules.Legal)
         {
             db.Consents.Add(new Consent { Id = Guid.NewGuid(), UserId = user.Id, Kind = kind, Version = options.LegalVersion, GrantedAt = user.CreatedAt });
         }

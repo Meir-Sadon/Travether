@@ -15,7 +15,7 @@ public sealed class ExternalLogin
     public DateTimeOffset CreatedAt { get; set; }
 }
 
-public enum LoginCodePurpose { SignIn, VerifyEmail, ResetPassword }
+public enum LoginCodePurpose { SignIn, VerifyEmail, ResetPassword, DeleteAccount }
 
 /// <summary>
 /// A six-digit one-time code sent by email. Only an HMAC of the code is stored. A code expires after

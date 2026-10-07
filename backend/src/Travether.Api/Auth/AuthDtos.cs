@@ -6,7 +6,8 @@ namespace Travether.Api.Auth;
 
 public sealed record ProvidersDto(string? GoogleClientId, string? AppleClientId, string? AppleRedirectUri);
 
-public sealed record SessionDto(MeDto? User);
+/// <summary><c>NeedsConsent</c>: the legal documents changed since the user last accepted them.</summary>
+public sealed record SessionDto(MeDto? User, bool NeedsConsent = false);
 
 /// <summary>
 /// Result of a sign-in step. <c>signedIn</c>: the cookie is set. <c>needsProfile</c>: the identity is

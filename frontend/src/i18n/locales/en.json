@@ -73,7 +73,8 @@
     "verified": "Verified profiles",
     "chatFirst": "Chat before you share",
     "getStarted": "Get started, it's free",
-    "browse": "Browse plans without an account"
+    "browse": "Browse plans without an account",
+    "deleted": "Your account was deleted. Safe travels."
   },
   "signup": {
     "title": "Sign up",
@@ -403,7 +404,8 @@
     "sharedWhatsapp": "My WhatsApp:",
     "sharedPhone": "My number:",
     "report": "Report",
-    "reportMessage": "Report message from {{name}}"
+    "reportMessage": "Report message from {{name}}",
+    "deletedUser": "Deleted account"
   },
   "profile": {
     "title": "Profile",
@@ -476,11 +478,18 @@
     "export": "Download my data",
     "delete": "Delete account",
     "deleteTitle": "Delete your account?",
-    "deleteBody": "Your profile, trips and messages will be removed. Reviews you wrote stay, shown as \"Deleted user\". This can't be undone.",
+    "deleteBody": "Your name, email, photo and sign-in details are deleted. Trips you own pass to a co-admin or member, and plans you host that haven't happened yet are cancelled. Messages and reviews you wrote stay, shown as from a deleted account. This can't be undone.",
     "keepAccount": "Keep my account",
     "deleteConfirm": "Delete permanently",
     "account": "Account",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "deleteExportHint": "Want a copy first? Download your data before you continue.",
+    "deleteContinue": "Continue",
+    "deletePasswordBody": "Enter your password to confirm.",
+    "deleteUseCode": "Use an emailed code instead",
+    "deleteCodeBody": "We will send a code to {{email}} to confirm.",
+    "deleteSendCode": "Email me a code",
+    "deleteCode": "Code from the email"
   },
   "review": {
     "didItHappen": "Did \"{{plan}}\" happen?",
@@ -630,7 +639,10 @@
     "CannotBlockSelf": "You can't block yourself.",
     "NoteRequired": "Write the reason first.",
     "NothingToRemove": "Suspend the person instead.",
-    "PhoneNotAllowed": "This phone number can't be used."
+    "PhoneNotAllowed": "This phone number can't be used.",
+    "WrongPassword": "That password isn't right.",
+    "ConfirmationRequired": "Enter your password or the emailed code.",
+    "ConsentNotOptional": "This consent is required to use Travether."
   },
   "notifications": {
     "title": "Notifications",
@@ -733,5 +745,29 @@
     "ban": "Suspend author",
     "removeAndBan": "Remove and suspend",
     "resolution": "Decision: {{note}}"
+  },
+  "privacy": {
+    "title": "Who sees what",
+    "whoTitle": "Your profile",
+    "who_everyone": "Everyone",
+    "who_everyone_body": "First name, age, country, photo, bio, languages, interests, badges and published reviews. Public plans show only the area and a rough distance.",
+    "who_approved": "People you travel or meet with",
+    "who_approved_body": "Your full name and the exact meeting point, once you are approved for the same trip or plan.",
+    "who_onlyYou": "Only you",
+    "who_onlyYou_body": "Email, phone number and date of birth. Share your phone in a chat when you want to.",
+    "choicesTitle": "Your choices",
+    "analytics": "Help improve Travether",
+    "analytics_hint": "Anonymous usage statistics. Off unless you turn it on.",
+    "dataTitle": "Your data",
+    "export_body": "Download everything stored about you as a file, or read the documents you agreed to.",
+    "accepted": "You accepted version {{version}} on {{date}}."
+  },
+  "legal": {
+    "version": "Version {{version}}",
+    "draft": "Draft pending legal review.",
+    "other": "Other documents",
+    "updatedTitle": "We updated our terms",
+    "updatedBody": "Please read the updated <terms>Terms</terms>, <guidelines>Community guidelines</guidelines> and <privacy>Privacy policy</privacy> to keep using Travether.",
+    "accept": "I agree"
   }
 }

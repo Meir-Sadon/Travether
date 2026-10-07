@@ -122,16 +122,17 @@ export function ChatScreen() {
         {chat.messages.map((m, i) => {
           const mine = m.sender.id === me.id
           const firstOfRun = chat.messages[i - 1]?.sender.id !== m.sender.id
+          const name = m.sender.displayName || t('chat.deletedUser')
           return (
             <li key={m.id} className={`chat__msg${mine ? ' chat__msg--mine' : ''}`}>
               {!mine &&
                 (firstOfRun ? (
-                  <Avatar person={{ name: m.sender.displayName, photoUrl: m.sender.photoUrl ?? undefined, tint: 'var(--color-accent-soft)' }} size="sm" />
+                  <Avatar person={{ name, photoUrl: m.sender.photoUrl ?? undefined, tint: 'var(--color-accent-soft)' }} size="sm" />
                 ) : (
                   <span className="chat__avatar-gap" />
                 ))}
               <div className="chat__bubble">
-                {!mine && firstOfRun && <span className="chat__sender">{m.sender.displayName}</span>}
+                {!mine && firstOfRun && <span className="chat__sender">{name}</span>}
                 <MessageBody message={m} />
                 <span className="chat__time">
                   {time.format(new Date(m.createdAt))}
@@ -139,7 +140,7 @@ export function ChatScreen() {
                     <button
                       type="button"
                       className="chat__report"
-                      aria-label={t('chat.reportMessage', { name: m.sender.displayName })}
+                      aria-label={t('chat.reportMessage', { name })}
                       onClick={() => setReporting({ type: 'message', id: m.id })}
                     >
                       {t('chat.report')}

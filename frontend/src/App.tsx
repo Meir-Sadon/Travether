@@ -12,6 +12,7 @@ import { ForgotPasswordScreen } from './screens/ForgotPasswordScreen'
 import { HomeScreen } from './screens/HomeScreen'
 import { InboxScreen } from './screens/InboxScreen'
 import { LandingScreen } from './screens/LandingScreen'
+import { LegalScreen } from './screens/LegalScreen'
 import { LoginScreen } from './screens/LoginScreen'
 import { AdminScreen } from './screens/AdminScreen'
 import { BlockedScreen } from './screens/BlockedScreen'
@@ -19,6 +20,7 @@ import { NotFoundScreen } from './screens/NotFoundScreen'
 import { NotificationsScreen } from './screens/NotificationsScreen'
 import { PersonScreen } from './screens/PersonScreen'
 import { PlanScreen } from './screens/PlanScreen'
+import { PrivacyScreen } from './screens/PrivacyScreen'
 import { ProfileScreen } from './screens/ProfileScreen'
 import { ReviewScreen } from './screens/ReviewScreen'
 import { SafetyScreen } from './screens/SafetyScreen'
@@ -51,6 +53,7 @@ export default function App() {
           <Route path="plans/:planId" element={<PlanScreen />} />
           <Route path="people/:userId" element={<PersonScreen />} />
           <Route path="safety" element={<SafetyScreen />} />
+          <Route path="legal/:doc" element={<LegalScreen />} />
           <Route element={<RequireAuth />}>
             <Route path="trips/:tripId" element={<TripScreen />} />
             <Route path="plans/:planId/review" element={<ReviewScreen />} />
@@ -58,6 +61,7 @@ export default function App() {
             <Route path="notifications" element={<NotificationsScreen />} />
             <Route path="settings" element={<SettingsScreen />} />
             <Route path="settings/blocked" element={<BlockedScreen />} />
+            <Route path="settings/privacy" element={<PrivacyScreen />} />
             <Route path="admin" element={<AdminScreen />} />
             <Route path="profile/edit" element={<EditProfileScreen />} />
           </Route>

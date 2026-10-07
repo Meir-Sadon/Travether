@@ -245,3 +245,14 @@ export type WrapUp = {
 }
 
 export type PendingWrapUp = { planId: string; title: string; category: PlanCategory; localDate: string; needsAnswer: boolean; toReview: number }
+
+export type ConsentKind = 'terms' | 'privacyPolicy' | 'communityGuidelines' | 'marketingEmail' | 'analytics'
+
+/** `PrivacyDto`: consent state and history for Settings → Who sees what. */
+export type Privacy = {
+  legalVersion: string
+  needsConsent: boolean
+  analytics: boolean
+  marketingEmail: boolean
+  history: { kind: ConsentKind; version: string; grantedAt: string; withdrawnAt: string | null }[]
+}

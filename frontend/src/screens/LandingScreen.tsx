@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, Navigate, useSearchParams } from 'react-router'
 import { safeNext, useAuth } from '../auth/useAuth'
@@ -9,12 +10,19 @@ import './LandingScreen.css'
 /** 1 · Landing / public preview. Visitors can browse before signing up (PLAN.md §3). */
 export function LandingScreen() {
   const { t } = useTranslation()
-  const { user } = useAuth()
+  const { user, refresh } = useAuth()
   const [params] = useSearchParams()
   const next = safeNext(params.get('next'))
   const query = next === '/' ? '' : `?next=${encodeURIComponent(next)}`
 
-  if (user) return <Navigate to={next} replace />
+  const deleted = params.has('deleted')
+
+  // Right after deleting an account the old session is still in memory; reload it (the server has ended it).
+  useEffect(() => {
+    if (deleted) void refresh()
+  }, [deleted, refresh])
+
+  if (user && !deleted) return <Navigate to={next} replace />
 
   return (
     <div className="screen landing">
@@ -35,6 +43,11 @@ export function LandingScreen() {
           {t('landing.titleStart')} <mark>{t('landing.titleHighlight')}</mark>
         </h1>
         <p className="landing__lead">{t('landing.lead')}</p>
+        {deleted && (
+          <p className="screen__note" role="status">
+            {t('landing.deleted')}
+          </p>
+        )}
         <div className="landing__hero" aria-hidden="true">
           <svg viewBox="0 0 350 200" preserveAspectRatio="xMidYMid slice">
             <circle cx="270" cy="62" r="26" fill="#F6D7A7" />
