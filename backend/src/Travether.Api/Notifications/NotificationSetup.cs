@@ -1,8 +1,8 @@
 namespace Travether.Api.Notifications;
 
 /// <summary>
-/// Delivers queued notifications as soon as they are signalled (or every 30 s), and runs reminders
-/// and the digest every 5 minutes. One API instance runs it; see docs/NOTIFICATIONS.md.
+/// Delivers queued notifications as soon as they are signalled (or every 30 s), and runs reminders,
+/// the digest, review publishing and data retention every 5 minutes. One API instance runs it; see docs/NOTIFICATIONS.md.
 /// </summary>
 public sealed partial class NotificationWorker(IServiceScopeFactory scopes, NotificationSignal signal, NotificationOptions options, TimeProvider clock, ILogger<NotificationWorker> log)
     : BackgroundService
@@ -32,6 +32,7 @@ public sealed partial class NotificationWorker(IServiceScopeFactory scopes, Noti
                     await jobs.DigestAsync(stoppingToken).ConfigureAwait(false);
                     await jobs.MeetPromptsAsync(stoppingToken).ConfigureAwait(false);
                     await services.GetRequiredService<Reviews.ReviewService>().PublishDueAsync(stoppingToken).ConfigureAwait(false);
+                    await services.GetRequiredService<Privacy.PrivacyService>().ApplyRetentionAsync(stoppingToken).ConfigureAwait(false);
                 }
 
                 var delivery = services.GetRequiredService<NotificationDelivery>();

@@ -47,4 +47,4 @@ public enum ReportReason { Spam, Harassment, Inappropriate, Scam, Safety, FakePr
 
 public enum BannedIdentifierKind { Email, Phone, Device }
 
-public enum ConsentKind { Terms, PrivacyPolicy, CommunityGuidelines, MarketingEmail }
+public enum ConsentKind { Terms, PrivacyPolicy, CommunityGuidelines, MarketingEmail, Analytics }

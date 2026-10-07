@@ -7,6 +7,9 @@ export type AuthState = {
   setUser: (user: Me | null) => void
   refresh: () => Promise<void>
   logout: () => Promise<void>
+  /** The terms, privacy policy or guidelines changed since the user last accepted them. */
+  needsConsent: boolean
+  acceptConsent: () => Promise<void>
 }
 
 export const AuthContext = createContext<AuthState | null>(null)

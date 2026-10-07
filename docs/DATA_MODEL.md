@@ -8,7 +8,7 @@ PostgreSQL 17 + PostGIS 3.5, mapped with EF Core 10 and Npgsql. Code: [`backend/
 - Enums are stored as readable `snake_case` text (`co_admin`, `groups_only`) with a `CHECK` constraint listing the allowed values.
 - Timestamps are `timestamptz`, always written in UTC. Calendar dates (card dates, date of birth) are `date`.
 - Locations are `geography(Point, 4326)` (longitude, latitude).
-- Soft delete: `users`, `vacation_cards` and `activity_plans` have `deleted_at`. Cards, plans and the rows that hang off them are hidden by EF Core global query filters. Users have no global filter, so messages and reviews by a deleted account still load (shown as "Deleted user"); access checks treat deleted and banned users as absent.
+- Soft delete: `users`, `vacation_cards` and `activity_plans` have `deleted_at`. Cards, plans and the rows that hang off them are hidden by EF Core global query filters. Users have no global filter, so messages and reviews by a deleted account still load (shown as "Deleted account"); access checks treat deleted and banned users as absent.
 
 ## Tables
 
@@ -20,7 +20,7 @@ The tables follow [PLAN.md §6.1](../PLAN.md#61-data-model-initial). Additions a
 | `users` | Unique email among non-deleted accounts, stored lower-case (CHECK). | A deleted account frees its email for a new sign-up. |
 | `users` | Added `password_hash` (nullable) and `session_version` (step 1.1). | Code-only and Google/Apple accounts have no password; bumping the version ends every session ([AUTH.md](AUTH.md)). |
 | `external_logins` | New (step 1.1): `provider` (`google`/`apple`), `subject`, `user_id`. PK (provider, subject). | Google/Apple accounts linked to a user. |
-| `login_codes` | New (step 1.1): `email`, `purpose`, `code_hash`, `attempts`, `expires_at`, `consumed_at`. | Emailed one-time codes; only an HMAC is stored. |
+| `login_codes` | New (step 1.1): `email`, `purpose` (`sign_in`, `verify_email`, `reset_password`, `delete_account`), `code_hash`, `attempts`, `expires_at`, `consumed_at`. | Emailed one-time codes; only an HMAC is stored. Removed a day after they expire ([PRIVACY.md](PRIVACY.md)). |
 | `vacation_cards` | CHECK `ends_on >= starts_on`, at least one region. GiST index on `daterange(starts_on, ends_on, '[]')`. | Date-overlap matching (§4.4). The expression index is raw SQL in the migration. |
 | `card_members` | Partial unique index: one `owner` per card. | |
 | `card_requests`, `plan_requests` | Partial unique index: one open (`requested`) request per person per card/plan. | Stops double-submits; a rejected request doesn't block a new one. |
@@ -36,7 +36,7 @@ The tables follow [PLAN.md §6.1](../PLAN.md#61-data-model-initial). Additions a
 | `notifications` | Added `dedupe_key` (unique per user when set) and `delivered_at` (step 1.9). | Reminders, digests and chat batches are sent once; `delivered_at` null means push/email are still queued. |
 | `notification_settings` | New (step 1.9): one row per user with a toggle per category, `email`, `quiet_from`/`quiet_to` and `time_zone_id`. No row means the defaults. | PLAN.md §4.7: users control each category; quiet hours follow their time zone. |
 | `vacation_cards` | Added `area` (geography point, nullable; step 1.9). | The first region, geocoded once, so the daily digest can find plans near the trip. |
-| `consents` | New: `user_id`, `kind`, `version`, `granted_at`, `withdrawn_at`. | Consent records for GDPR / Israeli PPL Amendment 13 (§4.9). |
+| `consents` | New: `user_id`, `kind` (`terms`, `privacy_policy`, `community_guidelines`, `marketing_email`, `analytics`), `version`, `granted_at`, `withdrawn_at`. | Consent records for GDPR / Israeli PPL Amendment 13 (§4.9). Withdrawing sets `withdrawn_at`; rows are kept as proof. |
 
 ### Meeting-point privacy: `origin_public`
 

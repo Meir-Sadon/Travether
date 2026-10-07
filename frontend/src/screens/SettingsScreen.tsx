@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate } from 'react-router'
 import { useAuth } from '../auth/useAuth'
-import { BottomSheet, Button, FormError, Icon } from '../components'
+import { Button, FormError, Icon } from '../components'
+import { DeleteAccountSheet } from '../features/DeleteAccountSheet'
 import { ScreenHeader } from '../layout/ScreenHeader'
 import { api, errorCode } from '../lib/api'
 import { deviceTimeZone, disablePush, enablePush, pushState, type PushState } from '../lib/push'
@@ -35,14 +36,18 @@ export function SettingsScreen() {
           {t('settings.privacy')}
         </h2>
         <ul className="list-reset settings__list">
-          {(['whoSees', 'export'] as const).map((k) => (
-            <li key={k}>
-              <button type="button" className="settings__row">
-                {t(`settings.${k}`)}
-                <Icon name="forward" size={18} />
-              </button>
-            </li>
-          ))}
+          <li>
+            <Link to="/settings/privacy" className="settings__row">
+              {t('settings.whoSees')}
+              <Icon name="forward" size={18} />
+            </Link>
+          </li>
+          <li>
+            <a className="settings__row" href="/api/me/export" download>
+              {t('settings.export')}
+              <Icon name="forward" size={18} />
+            </a>
+          </li>
           <li>
             <Link to="/safety" className="settings__row">
               {t('settings.safety')}
@@ -86,23 +91,7 @@ export function SettingsScreen() {
         </ul>
       </section>
 
-      <BottomSheet
-        open={confirmDelete}
-        onClose={() => setConfirmDelete(false)}
-        title={t('settings.deleteTitle')}
-        footer={
-          <div className="screen__stack">
-            <Button block size="lg" variant="brand" onClick={() => setConfirmDelete(false)}>
-              {t('settings.keepAccount')}
-            </Button>
-            <Button block variant="ghost" onClick={() => setConfirmDelete(false)}>
-              {t('settings.deleteConfirm')}
-            </Button>
-          </div>
-        }
-      >
-        <p className="screen__body">{t('settings.deleteBody')}</p>
-      </BottomSheet>
+      <DeleteAccountSheet open={confirmDelete} onClose={() => setConfirmDelete(false)} />
     </div>
   )
 }

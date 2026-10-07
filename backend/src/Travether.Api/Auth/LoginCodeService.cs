@@ -10,7 +10,7 @@ namespace Travether.Api.Auth;
 
 public enum CodeCheck { Ok, Invalid, Expired, TooManyAttempts }
 
-/// <summary>Issues and checks six-digit email codes (sign-in, email verification, password reset).</summary>
+/// <summary>Issues and checks six-digit email codes (sign-in, email verification, password reset, account deletion).</summary>
 public sealed class LoginCodeService(TravetherDbContext db, IEmailSender email, TokenService tokens, TimeProvider clock)
 {
     public static readonly TimeSpan Lifetime = TimeSpan.FromMinutes(10);
@@ -51,6 +51,7 @@ public sealed class LoginCodeService(TravetherDbContext db, IEmailSender email, 
         {
             LoginCodePurpose.ResetPassword => ("Reset your Travether password", "Use this code to set a new password:"),
             LoginCodePurpose.VerifyEmail => ("Confirm your email for Travether", "Use this code to confirm your email address:"),
+            LoginCodePurpose.DeleteAccount => ("Confirm deleting your Travether account", "Use this code to confirm that you want to delete your account. This can't be undone:"),
             _ => ("Your Travether sign-in code", "Use this code to continue to Travether:"),
         };
         await email.SendAsync(new EmailMessage(

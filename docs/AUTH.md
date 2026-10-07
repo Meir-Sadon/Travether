@@ -13,7 +13,7 @@ Who you are is decided here; what you may see is decided by [AUTHORIZATION.md](A
 
 No national ID, ever. SMS codes are not in the MVP (they need a paid SMS vendor); the phone field stays optional.
 
-**Verify first, create later.** A code, Google or Apple sign-in for an unknown email returns `needsProfile` with a 30-minute signed **sign-up token**. The onboarding wizard's "About you" step sends it to `POST /api/auth/register` with first name, last name, date of birth and country. The API refuses anyone under 18 (`Underage`) and anyone who hasn't accepted the terms (`TermsRequired`), and records `terms`, `privacy_policy` and `community_guidelines` consents with the current legal version (`Auth:LegalVersion`).
+**Verify first, create later.** A code, Google or Apple sign-in for an unknown email returns `needsProfile` with a 30-minute signed **sign-up token**. The onboarding wizard's "About you" step sends it to `POST /api/auth/register` with first name, last name, date of birth and country. The API refuses anyone under 18 (`Underage`) and anyone who hasn't accepted the terms (`TermsRequired`), and records `terms`, `privacy_policy` and `community_guidelines` consents with the current legal version (`Auth:LegalVersion`). When that version changes, `GET /api/auth/me` returns `needsConsent: true` and the app asks to accept again ([PRIVACY.md](PRIVACY.md)).
 
 Google or Apple sign-in with a verified email that already has an account links the provider to that account. Proving control of the email earns the ✉️ contact-verified badge.
 
