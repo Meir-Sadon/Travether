@@ -107,3 +107,8 @@
 .plan__party-option[aria-checked='true'] {
   border: 2px solid var(--color-text);
 }
+
+.plan__share {
+  flex-wrap: wrap;
+  margin-block-start: var(--space-3);
+}

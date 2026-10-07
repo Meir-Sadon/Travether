@@ -17,7 +17,7 @@ namespace Travether.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api")]
-public sealed class PlansController(TravetherDbContext db, AccessQueries access, PlanViews views, Notifier notifier, TimeProvider clock) : ControllerBase
+public sealed class PlansController(TravetherDbContext db, AccessQueries access, PlanViews views, Notifier notifier, NotificationOptions notificationOptions, TimeProvider clock) : ControllerBase
 {
     /// <summary>Any member of the card can host. The host may bring card members along as participants.</summary>
     [Authorize]
@@ -102,6 +102,20 @@ public sealed class PlansController(TravetherDbContext db, AccessQueries access,
     {
         var near = lat is { } la && lng is { } ln && Places.PlaceRules.IsValid(la, ln) ? new LatLng(la, ln) : null;
         return await views.LoadAsync(id, User.GetUserId(), near, ct).ConfigureAwait(false) is { } plan ? Ok(plan) : ApiError.NotFound();
+    }
+
+    /// <summary>The plan as a calendar event. Same visibility as the plan page: the exact meeting point only for participants.</summary>
+    [HttpGet("plans/{id:guid}/calendar.ics")]
+    public async Task<IActionResult> Calendar(Guid id, CancellationToken ct)
+    {
+        if (await views.LoadAsync(id, User.GetUserId(), null, ct).ConfigureAwait(false) is not { } plan)
+        {
+            return ApiError.NotFound();
+        }
+
+        var ics = PlanCalendar.Build(plan, $"{notificationOptions.PublicUrl.TrimEnd('/')}/plans/{plan.Id}", clock.GetUtcNow());
+        Response.Headers.CacheControl = "private, no-store";
+        return File(System.Text.Encoding.UTF8.GetBytes(ics), "text/calendar; charset=utf-8", $"{PlanCalendar.FileName(plan.Title)}.ics");
     }
 
     /// <summary>The host, or the card's owner and co-admins, edit the plan.</summary>

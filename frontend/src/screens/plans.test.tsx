@@ -26,6 +26,24 @@ describe('activity plans', () => {
     expect(screen.queryByRole('button', { name: 'Edit plan' })).not.toBeInTheDocument()
   })
 
+  it('offers the plan as a calendar file and a WhatsApp message', async () => {
+    mockApi({ 'GET /plans/plan-1': hikePlan })
+    renderAt('/plans/plan-1')
+
+    expect(await screen.findByRole('link', { name: 'Add to calendar' })).toHaveAttribute('href', '/api/plans/plan-1/calendar.ics')
+    const whatsApp = new URL(screen.getByRole('link', { name: 'WhatsApp' }).getAttribute('href')!)
+    expect(whatsApp.host).toBe('wa.me')
+    expect(whatsApp.searchParams.get('text')).toMatch(/^Sunrise hike to Doi Suthep · .+\nhttp:\/\/localhost(:\d+)?\/plans\/plan-1$/)
+  })
+
+  it('hides sharing once a plan is cancelled', async () => {
+    mockApi({ 'GET /plans/plan-1': { ...hikePlan, status: 'cancelled' } })
+    renderAt('/plans/plan-1')
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Sunrise hike to Doi Suthep' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Add to calendar' })).not.toBeInTheDocument()
+  })
+
   it('asks visitors to sign up', async () => {
     mockApi({ 'GET /auth/me': { user: null }, 'GET /plans/plan-1': publicPlan })
     renderAt('/plans/plan-1')
