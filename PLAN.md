@@ -226,7 +226,7 @@ Key queries: `ST_DWithin(origin, :point, :radius)` and `daterange(starts_on, end
 ## 7. Roadmap
 
 ### Phase 0 — Foundations (≈1–2 weeks)
-- [ ] Repo setup: `frontend/` (React + Vite + TS, oxlint, Vitest), `backend/` (.NET 10 Web API + xUnit), Dockerfile, docker-compose, render.yaml, GitHub Actions
+- [x] Repo setup: `frontend/` (React + Vite + TS, oxlint, Vitest), `backend/` (.NET 10 Web API + xUnit), Dockerfile, docker-compose, render.yaml, GitHub Actions
 - [ ] PostgreSQL + PostGIS (docker compose locally, Neon EU in production), EF Core migrations workflow
 - [ ] Design tokens, base components (Button, Card, Chip, Avatar stack, BottomSheet, Stepper)
 - [ ] i18n scaffolding (en), logical CSS for future RTL

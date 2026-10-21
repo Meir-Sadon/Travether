@@ -7,7 +7,7 @@ Find people to do things with on your trip. Travether connects travelers, solo o
 - **In-app chat** once a request is approved. Phone numbers are shared only if a person chooses to.
 - **"Did you meet?"** After the activity, people who met rate each other. Reviews stay hidden until both sides submit them.
 
-> Status: **planning and prototype**. No application code yet. The build starts with Phase 0 in [PLAN.md](PLAN.md).
+> Status: **Phase 0 (foundations)** in progress. See the roadmap in [PLAN.md](PLAN.md#7-roadmap).
 
 ## Documents
 
@@ -20,7 +20,31 @@ Find people to do things with on your trip. Travether connects travelers, solo o
 | [research_notes/](research_notes/) | Raw research notes behind the report |
 | [design/prototype/](design/prototype/) | Source of the clickable 13-screen prototype ([live canvas](https://claude.ai/artifact/2dn96rPrcF8jKqSQVzFUmQ), private) |
 
-## Tech stack (planned)
+## Running locally
+
+Requirements: Node 22, .NET 10 SDK, Docker.
+
+```bash
+# API on http://localhost:5080
+cd backend && dotnet run --project src/Travether.Api
+
+# Frontend on http://localhost:5173 (proxies /api to the API)
+cd frontend && npm install && npm run dev
+
+# Or everything in Docker, the same image as production: http://localhost:8080
+docker compose up --build
+```
+
+Checks (the same ones CI runs):
+
+```bash
+cd frontend && npm run lint && npm run typecheck && npm test && npm run build
+cd backend && dotnet format --verify-no-changes && dotnet test
+```
+
+Deployment to Render + Neon: [docs/DEPLOY.md](docs/DEPLOY.md).
+
+## Tech stack
 
 Same stack as [kuskus-shel-ima](https://github.com/Meir-Sadon/kuskus-shel-ima):
 
@@ -35,11 +59,11 @@ Details are in [PLAN.md §6](PLAN.md#6-technical-architecture-same-stack-as-kusk
 
 "Fresh Explorer" style: white surfaces, deep ink green `#0E2F2C`, signature lime `#C6F36B` (always with ink text), Rubik font (Latin and Hebrew), 20px rounded cards, bottom navigation. See [PLAN.md §5](PLAN.md#5-design-direction--fresh-explorer).
 
-## Repository layout (planned)
+## Repository layout
 
 ```
-frontend/   React + Vite app
-backend/    ASP.NET Core API + tests
+frontend/   React + Vite app (Vitest tests next to the code)
+backend/    ASP.NET Core API (src/) + xUnit tests (tests/)
 design/     prototype and design assets
 docs/       deployment and other guides
 ```

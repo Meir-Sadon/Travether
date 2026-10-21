@@ -13,10 +13,7 @@ services:
       # Npgsql format, e.g. Host=...;Database=...;Username=...;Password=...;SSL Mode=Require
       - key: ConnectionStrings__Default
         sync: false
-      # Output of: dotnet run --project backend/src/Travether.Api -- hash-password '<password>'
-      - key: Admin__PasswordHash
-        sync: false
-      # cloudinary://<api_key>:<api_secret>@<cloud_name>
+      # cloudinary://<api_key>:<api_secret>@<cloud_name> (used from Phase 1; leave empty until then)
       - key: Cloudinary__Url
         sync: false
       - key: Jwt__Secret
