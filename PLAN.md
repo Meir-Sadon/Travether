@@ -230,7 +230,7 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 - [x] Repo setup: `frontend/` (React + Vite + TS, oxlint, Vitest), `backend/` (.NET 10 Web API + xUnit), Dockerfile, docker-compose, render.yaml, GitHub Actions
 - [x] PostgreSQL + PostGIS (docker compose locally, Neon EU in production), EF Core migrations workflow
 - [x] Design tokens, base components (Button, Card, Chip, Avatar stack, BottomSheet, Stepper)
-- [ ] i18n scaffolding (en), logical CSS for future RTL
+- [x] i18n scaffolding (en), logical CSS for future RTL
 - [ ] Clickable mockups of key screens; quick test with 5–10 travelers
 
 ### Phase 1 — MVP (≈6–8 weeks)
