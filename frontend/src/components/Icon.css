@@ -1,0 +1,8 @@
+.icon {
+  flex-shrink: 0;
+}
+
+/* Arrows and chevrons point the other way in right-to-left languages. */
+[dir='rtl'] .icon--directional {
+  transform: scaleX(-1);
+}

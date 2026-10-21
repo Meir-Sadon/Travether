@@ -1,0 +1,173 @@
+/*
+ * "Fresh Explorer" design tokens (PLAN.md §5).
+ * Components use only these variables, so dark mode and future themes are token swaps.
+ * Rule: lime (--color-accent) always carries ink (--color-on-accent) text or icons, never lime text on white.
+ */
+:root {
+  color-scheme: light;
+
+  /* Brand palette (raw values; prefer the semantic tokens below in components) */
+  --palette-ink: #0e2f2c;
+  --palette-lime: #c6f36b;
+  --palette-lime-soft: #eef9d6;
+  --palette-white: #ffffff;
+  --palette-grey-50: #f7f7f7;
+  --palette-grey-100: #f0f0f0;
+  --palette-grey-200: #ebebeb;
+  --palette-grey-300: #dddddd;
+  --palette-grey-500: #6a6a6a;
+  --palette-grey-900: #222222;
+
+  /* Surfaces */
+  --color-bg: var(--palette-white);
+  --color-surface: var(--palette-grey-50);
+  --color-surface-raised: var(--palette-white);
+  --color-border: var(--palette-grey-200);
+  --color-border-strong: var(--palette-grey-300);
+  --color-scrim: rgb(0 0 0 / 0.4);
+
+  /* Text */
+  --color-text: var(--palette-grey-900);
+  --color-text-secondary: var(--palette-grey-500);
+  --color-heading: var(--palette-ink);
+
+  /* Brand roles */
+  --color-brand: var(--palette-ink);
+  --color-on-brand: var(--palette-white);
+  --color-accent: var(--palette-lime);
+  --color-on-accent: var(--palette-ink);
+  --color-accent-soft: var(--palette-lime-soft);
+  --color-focus: var(--palette-ink);
+
+  /* Status */
+  --color-alert: #e5484d; /* notification dots only */
+  --color-success: #2e8b57;
+  --color-success-text: #1f7a4d;
+  --color-success-soft: #e7f4ec;
+  --color-info: #1e6fd9;
+  --color-warning: #e8a317;
+  --color-muted: var(--palette-grey-100);
+
+  /* Category tints for plan cards and chips */
+  --tint-hike: #e3efe6;
+  --tint-food: #fbe7d9;
+  --tint-day-trip: #ddebf7;
+  --tint-nightlife: #e8e1f5;
+  --tint-tour: #f3e3cf;
+  --tint-beach: #d9f0f0;
+  --tint-transport: #ececec;
+  --tint-other: #f0f0f0;
+
+  /* Typography */
+  --font-sans: 'Rubik Variable', 'Rubik', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-size-xs: 0.75rem; /* 12 */
+  --font-size-sm: 0.8125rem; /* 13 */
+  --font-size-md: 0.9375rem; /* 15 */
+  --font-size-lg: 1.125rem; /* 18 */
+  --font-size-xl: 1.5rem; /* 24 */
+  --font-size-2xl: 2.375rem; /* 38 */
+  --line-height-tight: 1.2;
+  --line-height-body: 1.5;
+
+  /* Spacing (4 px grid) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --page-gutter: var(--space-5);
+
+  /* Shape */
+  --radius-sm: 0.625rem; /* 10 */
+  --radius-md: 0.875rem; /* 14 */
+  --radius-lg: 1.25rem; /* 20: cards */
+  --radius-xl: 1.75rem; /* 28: bottom sheets */
+  --radius-pill: 999px;
+
+  /* Sizing */
+  --control-height-sm: 2.5rem; /* 40 */
+  --control-height-md: 3rem; /* 48 */
+  --control-height-lg: 3.25rem; /* 52: primary CTA */
+  --tap-target: 2.75rem; /* 44: minimum touch target */
+
+  /* Elevation and motion */
+  --shadow-sheet: 0 -8px 32px rgb(0 0 0 / 0.12);
+  --shadow-raised: 0 4px 16px rgb(0 0 0 / 0.08);
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Dark mode: follows the OS unless the app pins a theme with data-theme. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-bg: #0f1514;
+    --color-surface: #18201f;
+    --color-surface-raised: #1d2726;
+    --color-border: #2a3533;
+    --color-border-strong: #3a4745;
+    --color-scrim: rgb(0 0 0 / 0.6);
+    --color-text: #f2f4f3;
+    --color-text-secondary: #a3adab;
+    --color-heading: #f2f4f3;
+    --color-brand: var(--palette-lime);
+    --color-on-brand: var(--palette-ink);
+    --color-accent-soft: #273a17;
+    --color-focus: var(--palette-lime);
+    --color-success-text: #6fcf97;
+    --color-success-soft: #173326;
+    --color-muted: #232d2c;
+    --tint-hike: #22352a;
+    --tint-food: #3a2a1f;
+    --tint-day-trip: #1f2d3b;
+    --tint-nightlife: #2b2538;
+    --tint-tour: #382d20;
+    --tint-beach: #1c3434;
+    --tint-transport: #2a2a2a;
+    --tint-other: #2a2a2a;
+    --shadow-sheet: 0 -8px 32px rgb(0 0 0 / 0.5);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-bg: #0f1514;
+  --color-surface: #18201f;
+  --color-surface-raised: #1d2726;
+  --color-border: #2a3533;
+  --color-border-strong: #3a4745;
+  --color-scrim: rgb(0 0 0 / 0.6);
+  --color-text: #f2f4f3;
+  --color-text-secondary: #a3adab;
+  --color-heading: #f2f4f3;
+  --color-brand: var(--palette-lime);
+  --color-on-brand: var(--palette-ink);
+  --color-accent-soft: #273a17;
+  --color-focus: var(--palette-lime);
+  --color-success-text: #6fcf97;
+  --color-success-soft: #173326;
+  --color-muted: #232d2c;
+  --tint-hike: #22352a;
+  --tint-food: #3a2a1f;
+  --tint-day-trip: #1f2d3b;
+  --tint-nightlife: #2b2538;
+  --tint-tour: #382d20;
+  --tint-beach: #1c3434;
+  --tint-transport: #2a2a2a;
+  --tint-other: #2a2a2a;
+  --shadow-sheet: 0 -8px 32px rgb(0 0 0 / 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+  }
+}
