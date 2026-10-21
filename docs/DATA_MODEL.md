@@ -17,7 +17,10 @@ The tables follow [PLAN.md §6.1](../PLAN.md#61-data-model-initial). Additions a
 | Table | Change from §6.1 | Why |
 |-------|------------------|-----|
 | `users` | `verification_level` became `verification_badges` (bit set: contact 1, photo 2, ID 4). Added `role` (`traveler`/`moderator`) and `banned_at`. | Badges are independent of each other; moderators are users (§3); bans must stop access everywhere. |
-| `users` | Unique email among non-deleted accounts, stored lower-case (CHECK). | A deleted account frees its email for a new sign-up. Password/OAuth columns come with step 1.1. |
+| `users` | Unique email among non-deleted accounts, stored lower-case (CHECK). | A deleted account frees its email for a new sign-up. |
+| `users` | Added `password_hash` (nullable) and `session_version` (step 1.1). | Code-only and Google/Apple accounts have no password; bumping the version ends every session ([AUTH.md](AUTH.md)). |
+| `external_logins` | New (step 1.1): `provider` (`google`/`apple`), `subject`, `user_id`. PK (provider, subject). | Google/Apple accounts linked to a user. |
+| `login_codes` | New (step 1.1): `email`, `purpose`, `code_hash`, `attempts`, `expires_at`, `consumed_at`. | Emailed one-time codes; only an HMAC is stored. |
 | `vacation_cards` | CHECK `ends_on >= starts_on`, at least one region. GiST index on `daterange(starts_on, ends_on, '[]')`. | Date-overlap matching (§4.4). The expression index is raw SQL in the migration. |
 | `card_members` | Partial unique index: one `owner` per card. | |
 | `card_requests`, `plan_requests` | Partial unique index: one open (`requested`) request per person per card/plan. | Stops double-submits; a rejected request doesn't block a new one. |

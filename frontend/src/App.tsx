@@ -1,12 +1,16 @@
 import { Route, Routes } from 'react-router'
+import { AuthProvider } from './auth/AuthContext'
+import { RequireAuth } from './auth/RequireAuth'
 import { AppShell, BareShell } from './layout/AppShell'
 import { DesignSystemPage } from './pages/DesignSystemPage'
 import { StatusPage } from './pages/StatusPage'
 import { ChatScreen } from './screens/ChatScreen'
 import { DiscoverScreen } from './screens/DiscoverScreen'
+import { ForgotPasswordScreen } from './screens/ForgotPasswordScreen'
 import { HomeScreen } from './screens/HomeScreen'
 import { InboxScreen } from './screens/InboxScreen'
 import { LandingScreen } from './screens/LandingScreen'
+import { LoginScreen } from './screens/LoginScreen'
 import { NotFoundScreen } from './screens/NotFoundScreen'
 import { PlanScreen } from './screens/PlanScreen'
 import { ProfileScreen } from './screens/ProfileScreen'
@@ -15,29 +19,40 @@ import { SettingsScreen } from './screens/SettingsScreen'
 import { SignupScreen } from './screens/SignupScreen'
 import { TripScreen } from './screens/TripScreen'
 
-/** Phase 0: clickable mockups on dummy data (src/mock). Screens are numbered as in PLAN.md §5. */
+/**
+ * Screens are numbered as in PLAN.md §5. Visitors can open the landing page, Discover, shared
+ * cards and plan previews (PLAN.md §3); everything else sends them to sign up first.
+ */
 export default function App() {
   return (
-    <Routes>
-      <Route element={<AppShell />}>
-        <Route index element={<HomeScreen />} />
-        <Route path="discover" element={<DiscoverScreen />} />
-        <Route path="inbox" element={<InboxScreen />} />
-        <Route path="profile" element={<ProfileScreen />} />
-      </Route>
-      <Route element={<BareShell />}>
-        <Route path="welcome" element={<LandingScreen />} />
-        <Route path="signup" element={<SignupScreen />} />
-        <Route path="c/:slug" element={<TripScreen preview />} />
-        <Route path="trips/:tripId" element={<TripScreen />} />
-        <Route path="plans/:planId" element={<PlanScreen />} />
-        <Route path="plans/:planId/review" element={<ReviewScreen />} />
-        <Route path="inbox/:chatId" element={<ChatScreen />} />
-        <Route path="settings" element={<SettingsScreen />} />
-        <Route path="*" element={<NotFoundScreen />} />
-      </Route>
-      <Route path="design" element={<DesignSystemPage />} />
-      <Route path="status" element={<StatusPage />} />
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route path="discover" element={<DiscoverScreen />} />
+          <Route element={<RequireAuth />}>
+            <Route index element={<HomeScreen />} />
+            <Route path="inbox" element={<InboxScreen />} />
+            <Route path="profile" element={<ProfileScreen />} />
+          </Route>
+        </Route>
+        <Route element={<BareShell />}>
+          <Route path="welcome" element={<LandingScreen />} />
+          <Route path="signup" element={<SignupScreen />} />
+          <Route path="login" element={<LoginScreen />} />
+          <Route path="forgot" element={<ForgotPasswordScreen />} />
+          <Route path="c/:slug" element={<TripScreen preview />} />
+          <Route path="plans/:planId" element={<PlanScreen />} />
+          <Route element={<RequireAuth />}>
+            <Route path="trips/:tripId" element={<TripScreen />} />
+            <Route path="plans/:planId/review" element={<ReviewScreen />} />
+            <Route path="inbox/:chatId" element={<ChatScreen />} />
+            <Route path="settings" element={<SettingsScreen />} />
+          </Route>
+          <Route path="*" element={<NotFoundScreen />} />
+        </Route>
+        <Route path="design" element={<DesignSystemPage />} />
+        <Route path="status" element={<StatusPage />} />
+      </Routes>
+    </AuthProvider>
   )
 }

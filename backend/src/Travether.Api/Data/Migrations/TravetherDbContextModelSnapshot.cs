@@ -398,6 +398,97 @@ namespace Travether.Api.Data.Migrations
                     b.ToTable("conversation_members", (string)null);
                 });
 
+            modelBuilder.Entity("Travether.Api.Domain.ExternalLogin", b =>
+                {
+                    b.Property<string>("Provider")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("provider");
+
+                    b.Property<string>("Subject")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("subject");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Provider", "Subject")
+                        .HasName("pk_external_logins");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_external_logins_user_id");
+
+                    b.ToTable("external_logins", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_external_logins_provider", "provider IN ('google', 'apple')");
+                        });
+                });
+
+            modelBuilder.Entity("Travether.Api.Domain.LoginCode", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Attempts")
+                        .HasColumnType("integer")
+                        .HasColumnName("attempts");
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("code_hash");
+
+                    b.Property<DateTimeOffset?>("ConsumedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("consumed_at");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
+                        .HasColumnName("email");
+
+                    b.Property<DateTimeOffset>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)")
+                        .HasColumnName("purpose");
+
+                    b.HasKey("Id")
+                        .HasName("pk_login_codes");
+
+                    b.HasIndex("Email", "Purpose", "CreatedAt")
+                        .HasDatabaseName("ix_login_codes_email_purpose_created_at");
+
+                    b.ToTable("login_codes", null, t =>
+                        {
+                            t.HasCheckConstraint("ck_login_codes_email_lower", "email = lower(email)");
+
+                            t.HasCheckConstraint("ck_login_codes_purpose", "purpose IN ('sign_in', 'verify_email', 'reset_password')");
+                        });
+                });
+
             modelBuilder.Entity("Travether.Api.Domain.MeetConfirmation", b =>
                 {
                     b.Property<Guid>("PlanId")
@@ -885,6 +976,11 @@ namespace Travether.Api.Data.Migrations
                         .HasColumnType("text[]")
                         .HasColumnName("languages");
 
+                    b.Property<string>("PasswordHash")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("password_hash");
+
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
@@ -899,6 +995,10 @@ namespace Travether.Api.Data.Migrations
                         .HasMaxLength(16)
                         .HasColumnType("character varying(16)")
                         .HasColumnName("role");
+
+                    b.Property<int>("SessionVersion")
+                        .HasColumnType("integer")
+                        .HasColumnName("session_version");
 
                     b.Property<int>("VerificationBadges")
                         .HasColumnType("integer")
@@ -1123,6 +1223,18 @@ namespace Travether.Api.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_conversation_members_users_user_id");
+                });
+
+            modelBuilder.Entity("Travether.Api.Domain.ExternalLogin", b =>
+                {
+                    b.HasOne("Travether.Api.Domain.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_external_logins_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Travether.Api.Domain.MeetConfirmation", b =>

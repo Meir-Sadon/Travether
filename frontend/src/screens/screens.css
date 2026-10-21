@@ -89,3 +89,32 @@
 .list-reset.screen__section {
   padding: var(--space-5) var(--page-gutter) 0;
 }
+
+.screen__loading {
+  padding: var(--space-8) var(--page-gutter);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+/* Error text under a form; the role="alert" element is announced when it appears. */
+.form-error {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border-inline-start: 3px solid var(--color-warning);
+  background: color-mix(in srgb, var(--color-warning) 14%, var(--color-bg));
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+.auth__google {
+  display: flex;
+  justify-content: center;
+  min-block-size: 44px;
+}
+
+.auth__link {
+  align-self: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-heading);
+}

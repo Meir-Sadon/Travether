@@ -1,8 +1,9 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import App from '../App'
+import { mockApi } from '../test/mockApi'
 
 function renderAt(path: string) {
   return render(
@@ -13,8 +14,11 @@ function renderAt(path: string) {
 }
 
 describe('mockup screens', () => {
+  beforeEach(() => {
+    mockApi({ 'GET /auth/providers': { googleClientId: null, appleClientId: null, appleRedirectUri: null } })
+  })
+
   it.each([
-    ['/welcome', /Find people to do things with/],
     ['/signup', 'Sign up'],
     ['/', 'Hi Noa'],
     ['/discover', 'Chiang Mai'],
@@ -27,18 +31,19 @@ describe('mockup screens', () => {
     ['/settings', 'Settings'],
     ['/plans/sanctuary/review', /happen\?/],
     ['/nope', 'Nothing here'],
-  ])('%s renders', (path, heading) => {
+  ])('%s renders', async (path, heading) => {
     renderAt(path)
-    expect(screen.getByRole('heading', { level: 1, name: heading })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: heading })).toBeInTheDocument()
   })
 
-  it('shows the bottom navigation only on the main tabs', () => {
+  it('shows the bottom navigation only on the main tabs', async () => {
     renderAt('/discover')
-    expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument()
+    expect(await screen.findByRole('navigation', { name: 'Main' })).toBeInTheDocument()
   })
 
   it('reveals the exact meeting point only after approval', async () => {
     renderAt('/plans/sanctuary')
+    await screen.findByRole('heading', { level: 1 })
     expect(screen.queryByText(/7-Eleven/)).not.toBeInTheDocument()
     expect(screen.getByText(/Exact meeting point shown once you're approved/)).toBeInTheDocument()
 
@@ -53,21 +58,21 @@ describe('mockup screens', () => {
 
   it('lets the owner approve a join request', async () => {
     renderAt('/trips/cm-crew')
-    await userEvent.click(screen.getByRole('radio', { name: 'Members · 3' }))
+    await userEvent.click(await screen.findByRole('radio', { name: 'Members · 3' }))
     await userEvent.click(screen.getByRole('button', { name: 'Approve' }))
     expect(screen.getByRole('radio', { name: 'Members · 4' })).toBeChecked()
   })
 
   it('filters Discover by category', async () => {
     renderAt('/discover')
-    await userEvent.click(screen.getByRole('button', { name: 'Food' }))
+    await userEvent.click(await screen.findByRole('button', { name: 'Food' }))
     expect(screen.getByText('Khao soi tasting tour')).toBeInTheDocument()
     expect(screen.queryByText('Mae Sa waterfall trail')).not.toBeInTheDocument()
   })
 
   it('opens the create sheet from the + button', async () => {
     renderAt('/')
-    await userEvent.click(screen.getByRole('button', { name: 'Create a plan or trip' }))
+    await userEvent.click(await screen.findByRole('button', { name: 'Create a plan or trip' }))
     await userEvent.click(screen.getByRole('button', { name: /New Activity Plan/ }))
     expect(screen.getByRole('dialog', { name: 'New Activity Plan' })).toBeInTheDocument()
     expect(screen.getByText(/exact spot is shown only to approved participants/)).toBeInTheDocument()
@@ -75,7 +80,7 @@ describe('mockup screens', () => {
 
   it('sends a chat message', async () => {
     renderAt('/inbox/sanctuary')
-    await userEvent.type(screen.getByRole('textbox', { name: 'Message' }), 'On my way{Enter}')
+    await userEvent.type(await screen.findByRole('textbox', { name: 'Message' }), 'On my way{Enter}')
     expect(screen.getByText('On my way')).toBeInTheDocument()
   })
 })

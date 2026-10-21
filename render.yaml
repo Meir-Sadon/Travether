@@ -16,8 +16,22 @@ services:
       # cloudinary://<api_key>:<api_secret>@<cloud_name> (used from Phase 1; leave empty until then)
       - key: Cloudinary__Url
         sync: false
+      # Signs session cookies, sign-up tokens and one-time-code hashes
       - key: Jwt__Secret
         generateValue: true
+      # Google OAuth web client id; Google sign-in stays hidden while empty
+      - key: Auth__GoogleClientId
+        sync: false
+      # Sign in with Apple services id and its registered redirect URI; hidden while empty
+      - key: Auth__AppleClientId
+        sync: false
+      - key: Auth__AppleRedirectUri
+        sync: false
+      # Resend API key and sender; while empty, emails (sign-in codes) are only logged
+      - key: Email__ResendApiKey
+        sync: false
+      - key: Email__From
+        sync: false
       - key: Database__MigrateOnStartup
         value: "true"
       - key: ForwardedHeaders__Enabled

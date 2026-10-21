@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router'
+import { Link, Navigate, useSearchParams } from 'react-router'
+import { safeNext, useAuth } from '../auth/useAuth'
 import { Icon } from '../components'
 import { PlanCard } from '../features/PlanCard'
 import { plans } from '../mock/data'
@@ -8,6 +9,13 @@ import './LandingScreen.css'
 /** 1 · Landing / public preview. Visitors can browse before signing up (PLAN.md §3). */
 export function LandingScreen() {
   const { t } = useTranslation()
+  const { user } = useAuth()
+  const [params] = useSearchParams()
+  const next = safeNext(params.get('next'))
+  const query = next === '/' ? '' : `?next=${encodeURIComponent(next)}`
+
+  if (user) return <Navigate to={next} replace />
+
   return (
     <div className="screen landing">
       <header className="landing__bar">
@@ -17,7 +25,7 @@ export function LandingScreen() {
           </span>
           {t('app.name')}
         </span>
-        <Link to="/" className="landing__login">
+        <Link to={`/login${query}`} className="landing__login">
           {t('landing.logIn')}
         </Link>
       </header>
@@ -62,7 +70,7 @@ export function LandingScreen() {
       </section>
 
       <footer className="screen__footer">
-        <Link to="/signup" className="btn btn--primary btn--lg btn--block">
+        <Link to={`/signup${query}`} className="btn btn--primary btn--lg btn--block">
           {t('landing.getStarted')}
         </Link>
         <Link to="/discover" className="btn btn--ghost btn--block">

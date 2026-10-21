@@ -29,6 +29,8 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<PushSubscription> PushSubscriptions => Set<PushSubscription>();
     public DbSet<Consent> Consents => Set<Consent>();
+    public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
+    public DbSet<LoginCode> LoginCodes => Set<LoginCode>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -46,6 +48,8 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
         configurationBuilder.Properties<ReportTargetType>().HaveConversion<SnakeCaseEnumConverter<ReportTargetType>>();
         configurationBuilder.Properties<ReportStatus>().HaveConversion<SnakeCaseEnumConverter<ReportStatus>>();
         configurationBuilder.Properties<ConsentKind>().HaveConversion<SnakeCaseEnumConverter<ConsentKind>>();
+        configurationBuilder.Properties<ExternalProvider>().HaveConversion<SnakeCaseEnumConverter<ExternalProvider>>();
+        configurationBuilder.Properties<LoginCodePurpose>().HaveConversion<SnakeCaseEnumConverter<LoginCodePurpose>>();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -67,6 +71,7 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
             e.Property(x => x.CountryCode).HasMaxLength(2).IsFixedLength();
             e.Property(x => x.Bio).HasMaxLength(500);
             e.Property(x => x.Role).HasMaxLength(16);
+            e.Property(x => x.PasswordHash).HasMaxLength(200);
             e.Property(x => x.CreatedAt).HasDefaultValueSql("now()");
             // A deleted account frees its email for a new sign-up.
             e.HasIndex(x => x.Email).IsUnique().HasFilter("deleted_at IS NULL");
@@ -308,6 +313,36 @@ public sealed class TravetherDbContext(DbContextOptions<TravetherDbContext> opti
             e.Property(x => x.GrantedAt).HasDefaultValueSql("now()");
             e.HasIndex(x => new { x.UserId, x.Kind });
             e.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        ConfigureAuth(modelBuilder);
+    }
+
+    private static void ConfigureAuth(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<ExternalLogin>(e =>
+        {
+            e.ToTable("external_logins", t => InCheck(t, "provider", EnumText.AllDbValues<ExternalProvider>()));
+            e.HasKey(x => new { x.Provider, x.Subject });
+            e.Property(x => x.Provider).HasMaxLength(16);
+            e.Property(x => x.Subject).HasMaxLength(255);
+            e.Property(x => x.CreatedAt).HasDefaultValueSql("now()");
+            e.HasIndex(x => x.UserId);
+            e.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<LoginCode>(e =>
+        {
+            e.ToTable("login_codes", t =>
+            {
+                InCheck(t, "purpose", EnumText.AllDbValues<LoginCodePurpose>());
+                t.HasCheckConstraint("ck_login_codes_email_lower", "email = lower(email)");
+            });
+            e.Property(x => x.Email).HasMaxLength(254);
+            e.Property(x => x.Purpose).HasMaxLength(16);
+            e.Property(x => x.CodeHash).HasMaxLength(64);
+            e.Property(x => x.CreatedAt).HasDefaultValueSql("now()");
+            e.HasIndex(x => new { x.Email, x.Purpose, x.CreatedAt });
         });
     }
 
