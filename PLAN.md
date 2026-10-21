@@ -231,7 +231,8 @@ Key queries: `ST_DWithin(origin_public, :point, :radius)` and `daterange(starts_
 - [x] PostgreSQL + PostGIS (docker compose locally, Neon EU in production), EF Core migrations workflow
 - [x] Design tokens, base components (Button, Card, Chip, Avatar stack, BottomSheet, Stepper)
 - [x] i18n scaffolding (en), logical CSS for future RTL
-- [ ] Clickable mockups of key screens; quick test with 5–10 travelers
+- [x] Clickable mockups of key screens ([docs/MOCKUPS.md](docs/MOCKUPS.md))
+- [ ] Quick test of the mockups with 5–10 travelers (script in [docs/MOCKUPS.md](docs/MOCKUPS.md#quick-test-with-510-travelers))
 
 ### Phase 1 — MVP (≈6–8 weeks)
 - [ ] Auth: email + password, email OTP, Google and Apple sign-in; 18+ gate; onboarding wizard

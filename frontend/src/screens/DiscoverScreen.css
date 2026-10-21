@@ -1,0 +1,53 @@
+.discover__chips {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  margin-inline: calc(-1 * var(--page-gutter));
+  padding-inline: var(--page-gutter);
+  scrollbar-width: none;
+}
+
+.discover__map {
+  position: relative;
+  overflow: hidden;
+  block-size: 26rem;
+  border-radius: var(--radius-lg);
+  background: #f2efe6;
+}
+
+.discover__map > svg {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.discover__pin {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-1) var(--space-2);
+  border: 2px solid var(--palette-white);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-raised);
+  color: var(--palette-grey-900);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  transform: translate(-50%, -50%);
+}
+
+[dir='rtl'] .discover__pin {
+  transform: translate(50%, -50%);
+}
+
+.discover__you {
+  position: absolute;
+  inline-size: 1rem;
+  block-size: 1rem;
+  border: 3px solid var(--palette-white);
+  border-radius: 50%;
+  background: var(--color-info);
+  box-shadow: 0 0 0 6px rgb(30 111 217 / 0.2);
+}

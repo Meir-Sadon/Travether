@@ -1,0 +1,62 @@
+.trip-tile__link {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+}
+
+.trip-tile__cover {
+  display: flex;
+  align-items: flex-end;
+  block-size: 7.5rem;
+  padding: var(--space-3);
+}
+
+.trip-tile__name {
+  font-size: var(--font-size-lg);
+}
+
+.trip-tile__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-start: var(--space-2);
+}
+
+.home__actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.home__action {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-block-size: var(--control-height-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+}
+
+.home__action--dashed {
+  background: transparent;
+  cursor: pointer;
+  border: 1px dashed var(--color-border-strong);
+}
+
+.home__carousel {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  margin-inline: calc(-1 * var(--page-gutter));
+  padding: 0 var(--page-gutter) var(--space-5);
+  scroll-snap-type: x mandatory;
+}
+
+.home__carousel > * {
+  scroll-snap-align: start;
+}

@@ -1,0 +1,21 @@
+.person-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.person-row__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.person-row__name {
+  font-weight: var(--font-weight-semibold);
+}
+
+.person-row__meta {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}

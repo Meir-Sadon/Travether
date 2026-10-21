@@ -1,0 +1,35 @@
+.screen-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: 3.5rem;
+  padding: var(--space-2) var(--space-3);
+}
+
+.screen-header--large {
+  padding: var(--space-5) var(--page-gutter) var(--space-2);
+}
+
+.screen-header__titles {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.screen-header__title {
+  overflow: hidden;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.screen-header--large .screen-header__title {
+  font-size: 1.75rem;
+  font-weight: var(--font-weight-bold);
+  white-space: normal;
+}
+
+.screen-header__subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
