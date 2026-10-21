@@ -14,12 +14,18 @@ indent_size = 4
 [*.cs]
 csharp_style_namespace_declarations = file_scoped:warning
 dotnet_sort_system_directives_first = true
+# LoggerMessage source generators are overkill for the few log lines here
+dotnet_diagnostic.CA1848.severity = none
 
 [backend/tests/**.cs]
 # Test names read as sentences: Owner_can_see_exact_meeting_point
 dotnet_diagnostic.CA1707.severity = none
 # xUnit needs public test classes; ConfigureAwait is irrelevant in tests
 dotnet_diagnostic.CA2007.severity = none
+
+[backend/src/**/Migrations/*.cs]
+# EF Core generates these; analyzers and style rules skip them.
+generated_code = true
 
 [*.md]
 trim_trailing_whitespace = false

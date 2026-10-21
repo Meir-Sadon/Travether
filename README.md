@@ -25,8 +25,11 @@ Find people to do things with on your trip. Travether connects travelers, solo o
 Requirements: Node 22, .NET 10 SDK, Docker.
 
 ```bash
-# API on http://localhost:5080
-cd backend && dotnet run --project src/Travether.Api
+# Database (PostGIS) on :5432, then the API on http://localhost:5080
+docker compose up -d db
+dotnet tool restore
+cd backend && dotnet ef database update -p src/Travether.Api -s src/Travether.Api
+dotnet run --project src/Travether.Api
 
 # Frontend on http://localhost:5173 (proxies /api to the API)
 cd frontend && npm install && npm run dev
@@ -42,7 +45,9 @@ cd frontend && npm run lint && npm run typecheck && npm test && npm run build
 cd backend && dotnet format --verify-no-changes && dotnet test
 ```
 
-Deployment to Render + Neon: [docs/DEPLOY.md](docs/DEPLOY.md).
+Backend tests start a PostGIS container with Testcontainers, so Docker must be running.
+
+More docs: [data model and migrations](docs/DATA_MODEL.md) · [authorization rules](docs/AUTHORIZATION.md) · [deploying to Render + Neon](docs/DEPLOY.md).
 
 ## Tech stack
 
